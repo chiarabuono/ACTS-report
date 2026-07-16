@@ -1,0 +1,29 @@
+\documentclass{thesisreport}
+\usepackage{graphicx} % Required for inserting images
+
+\title{Internship Notes}
+\begin{document}
+\input{front}
+\input{abstract}
+\input{acknowledgements}
+\newpage
+\input{notation}
+\newpage
+
+\listoffigures
+\listoftables
+\tableofcontents
+
+\input{kinemato-static model}
+\input{acts-configuration}
+\input{control}
+\input{results}
+\input{conclusions.tex}
+
+\bibliography{bibliography}
+
+\appendix	
+\addcontentsline{toc}{chapter}{Appendix}
+\input{appendix.tex}
+
+\end{document}
