@@ -19,15 +19,44 @@ The trajectory planner is able to compute the payload trajectory $x(t)$ and its 
 and/or the initial and final position of the payload.
 
 \subsubsection{Payload Controller}
-Then, the desired payload wrench $W_p^*$ is computed for each point in the trajectory based on the previous state of the system. One strategy is using a PD controller:
-    \begin{equation}
-        \begin{aligned}
-            F^*_p &= m_p (\ddot{p}^* + g) + K_p (p^* - p) + K_d (\dot{p}^* - \dot{p}) \\
-            M^*_p &= K_r e_r + K_w e_w
-        \end{aligned}
-    \end{equation}
+Then, the desired payload wrench $W_p^*$ is computed for each point in the trajectory based on the previous state of the system. 
+The desired payload wrench is computed from a geometric PD controller. The translational component is given by
 
-\todo[inline]{How we computed er and ew and add paper reference}
+\begin{equation}
+F_p^* = m_p g + K_p(p^*-p)+K_d(\dot p^*-\dot p),
+\end{equation}
+
+where \(p^*\) and \(p\) denote the desired and current payload positions, respectively.
+
+For the rotational dynamics, the controller follows the geometric formulation on \(SE(3)\) \cite{lee_geometric_2010}. The attitude error and angular velocity error are defined as
+\begin{aligned}
+\begin{equation}
+e_R &=\frac{1}{2}\left(R_d^TR-R^TR_d\right)^\vee \\
+e_\Omega &=\Omega-R^TR_d\Omega_d.
+\end{equation} 
+\end{aligned}
+
+where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator.
+
+Since the controller performs setpoint regulation,
+\(\Omega_d=\mathbf{0}\), yielding $e_\Omega=\Omega$.
+
+
+The desired control moment in the world frame is then
+
+\begin{equation}
+M_p^*=R(-K_Re_R + K_\Omega e_\Omega)
+\end{equation}
+
+and the desired payload wrench becomes
+
+\begin{equation}
+W_p^*=
+\begin{bmatrix}
+F_p^*\\
+M_p^*
+\end{bmatrix}.
+\end{equation}
 
 \subsubsection{Cable length controller (winch level control)}
 When transitioning from a desired payload pose to the next along the planned trajectory, the operational priority is given to the ground actuators, as they can be controllable with significantly higher precision than UAVs.

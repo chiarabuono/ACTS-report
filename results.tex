@@ -12,10 +12,11 @@ How to structure this chapter:
     \end{itemize}
     \item Given an UAV configuration (we chose triangle), analyze cable routing
     \begin{itemize}
-        \item Why we choose the triangle for the UAVs configuration?
-        \item How the code work, how a given cable routing has been found
+        \item Why we choose the triangle for the UAVs configuration? [DONE]
+        \item How the code work, how a given cable routing has been found [DONE]
         \item How can I know a configuration is mure suscettibile to be singular? Something with a jacobian?
         \item How the results before simulation and after simulation differ?
+        \item Why we need to test it dynamically and not just trust the results we obtain before? (Answer below, write it better)
         \item Rectangle-same really unstable configuration
         \item line or diagonal results in not-feasible configurations, why? what does this mean? Geometric reasons?
     \end{itemize}
@@ -176,146 +177,113 @@ An ideal ACTS architecture should remain far from singular configurations, gener
 
 The considerations from now on will be done using the optimal tension strategy.
 
-\todo[inline]{does the configuration chooser use tau min or tau optimal?}
-
-
-\section{Ground cable routing}
-
-\todo[inline]{Why we choose the triangle for the UAVs configuration?}
-
-\todo[inline]{How the code work, how a given cable routing has been found}
-
-\todo[inline]{How can I know a configuration is mure suscettibile to be singular? Something with a jacobian?}
-
-\todo[inline]{How the results before simulation and after simulation differ?}
-
-\todo[inline]{Rectangle-same really unstable configuration}
-
-\todo[inline]{line or diagonal results in not-feasible configurations, why? what does this mean? Geometric reasons?}
-
-
-
-
-
-
-Given a candidate pair of layouts (a payload-node layout and a ground-anchor layout, e.g. pentagon/triangle), there are usually hundreds to thousands of physically valid ways to route the 6 ground cables between the two sets of nodes. Scoring an architecture using only one (arbitrarily chosen) routing confounds two different things: how good the architecture is, and how lucky the routing choice was. This script removes that confound by exhaustively enumerating every valid routing for a given architecture, scoring each one against three necessary conditions from Sec. 2.3 of the thesis (Wrench Closure, Wrench Feasibility, Interference-Freedom), and keeping only the best surviving routing — so architectures are compared on their best achievable performance, not on chance.
-
-It also scores every routing at every pose you supply, and keeps the
-worst-case result across poses (max-min), because a routing that looks excellent at one setpoint can be nearly singular at another — Sec. 2.3's performance indices are pose-dependent, and a single-pose evaluation would be misleading.
-
-The six ground cables are treated in isolation from the three UAV cables, justified by Sec. 2.6: the ground subsystem is modeled as its own Gough-Stewart parallel platform, with the UAVs supplying only a separate, vertical anti-gravity force.
-
-\begin{algorithm}
-\caption{Cable Routing Optimization and Architecture Ranking}
-\label{alg:cable_optimization}
-\begin{algorithmic}[1]
-
-\ForAll{$(\text{payload\_layout}, \text{ground\_layout}) \text{ pairs}$}
-    \State Enumerate every valid 6-cable routing via \Call{enumerate\_routings}{}
-    
-    \ForAll{routing}
-        \ForAll{pose $\in$ test-pose set}
-            \State Build $J_p$ via \Call{build\_Jp\_ground}{} \Comment{Eq. 1.7}
-            \State Check Wrench Closure via \Call{score\_Jp}{} / rank test \Comment{Note 1, Sec. 2.3}
-            
-            \State \Comment{\textbf{Optional Checks:}}
-            \State Check Wrench Feasibility via \Call{check\_wfc}{} \Comment{Eq. 1.9 / 2.35}
-            \State Check Interference-Freedom via \Call{check\_ifc}{} \Comment{Eq. 2.20}
-        \EndFor
-        \State Record this routing's \textbf{worst-case} score across all poses
-    \EndFor
-    \State Keep the \textbf{best} surviving routing for this architecture
-\EndFor
-
-\State Rank all architectures by their best routing's worst-case conditioning index
-\State Generate MuJoCo XML for the top 5
-
-\end{algorithmic}
-\end{algorithm}
-
-
-
-
-The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
-
-Increasing the spacing between the ground hooks enlarges the available wrench set and moves the system farther from wrench singularities, explaining the observed improvement in tracking performance.
-
-\section{Ground hook placement}
-
-\section{Discussion}
-
-
-\newpage
-\todo[inline]{Write this better}
-After realizing a workable controller, which was tested using the gough stewart platform, we can proceed to consider different way to connect 6 ground cable to the platform (Figure \ref{fig:6ugvsConnections}) and the drone (Figure \ref{fig:3uavsConnections}). The same coniguration to the ground can change the stability of the system based on which point is connected to which hook on the ground.
-
-
-
-\todo[inline]{Add the figure showing the evolution of the indices over time}
-Discuss what we see and why of these results
-
-We will compare the other configuration to this to find out if there's a better one or not. 
-
-
-
-We can let our imaginations run wild as we create different combinations. Here, some combination whch have given interesting results or that compared to others helps us drawing conclutions.
-
-\begin{figure}[h]
+\begin{figure}
     \centering
-    \includegraphics[width=0.6\linewidth]{images/6_ugv_config.jpeg}
+    \includegraphics[width=0.65\linewidth]{images/6_ugv_config.jpeg}
     \caption{Possible 6 UGVs connections}
     \label{fig:6ugvsConnections}
 \end{figure}
 
 \begin{figure}
     \centering
-    \includegraphics[width=0.6\linewidth]{images/3_uav_config.png}
+    \includegraphics[width=0.65\linewidth]{images/3_uav_config.png}
     \caption{Possible 3 UAVs connection with one cable}
     \label{fig:3uavsConnections}
 \end{figure}
 
+\section{Ground cable routing}
+
+Once the controller has been validated using the Stewart baseline, we can proceed to consider different ways to connect six ground cables to the platform (Figure \ref{fig:6ugvsConnections}) and the drone (Figure \ref{fig:3uavsConnections}). The same ground configuration hook-anchor can change the system's stability based on which hook is connected to which anchor point on the ground.
+%% Why we choose the triangle for the UAVs configuration?
+Therefore, we will start considering the drone attachment configuration as fixed to the triangular arrangement and vary only the routing of the six ground cables. This specific UAV configuration is chosen because it provides a symmetric distribution of the three drones around the payload. This approach allows one to isolate the influence of the ground cable routing and attribute differences in performance solely to the ground architecture. Finally, in Section \ref{sec:dronehook}, the impact of various UAV attachment geometries is examined independently.
+
+%% How the code work, how a given cable routing has been found
+Focusing on the gound cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarly chosen routing raise the question on how lucky the routing choise was and how good the architecture actually is.
+
+To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}, namely Wrench Closure, Wrench Feasibility, and Interference-Freedom. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment.
+
+\todo[inline]{Why conditioning index and not composite score?}
+
+\begin{algorithm}[h]
+\caption{Cable Routing Optimization and Architecture Ranking}
+\label{alg:cable_optimization}
+\begin{algorithmic}[1]
+
+\ForAll{$(\text{payload\_layout}, \text{ground\_layout}) \text{ pairs}$}
+    \State Enumerate every valid 6-cable routing
+    
+    \ForAll{routing}
+        \ForAll{pose $\in$ test-pose set}
+            \State Build $J_p$  \Comment{Eq. \ref{eq:jp}}
+            \State Check Wrench Closure \Comment{$\text{rank}(J_p) = 6$}
+            \State Check Wrench Feasibility \Comment{$0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$}
+            \State Check Interference-Freedom \Comment{Eq. \ref{eq:IFCconstraint}}
+        \EndFor
+        \State Record this routing's \textbf{worst-case} score across all poses
+    \EndFor
+    \State Keep the \textbf{best} surviving routing for this architecture
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
+
+
+Rank all architectures by their best routing's worst-case conditioning index
+Generate MuJoCo XML for the top 5
+
+\todo[inline]{How can I know a configuration is mure suscettibile to be singular? Something with a jacobian?}
+
+\todo[inline]{How the results before simulation and after simulation differ?}
+
+The theoretical indices assume: static equilibrium, ideal cables, no inertia, no controller dynamics.
+The simulation includes: payload inertia, controller dynamics, coupling, transient motion, oscillations.
+
+\todo[inline]{Update with correct datas}
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{llccccccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{$N_{\text{rout}}$} & \textbf{$N_{\text{pos}}$} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} & \textbf{Best Routing} \\
+\midrule
+2X3 & pentagon & 360 & 8 & \checkmark & 0.1402 & 0.3680 & 0.3275 & 2.3452 & \checkmark & A-E|B-A|C-D|D-C|E-B|F-E \\
+two-triangles & pentagon & 360 & 8 & \checkmark & 0.1383 & 0.2169 & 0.3241 & 2.3566 & \checkmark & A-E|B-A|C-C|D-D|E-B|F-E \\
+pentagon & 2X3 & 360 & 8 & \checkmark & 0.1354 & 0.3773 & 0.3169 & 2.3401 & \checkmark & A-A|B-F|C-E|D-B|E-C|E-D \\
+hexagon & pyramid & 720 & 8 & \checkmark & 0.1343 & 0.1664 & 0.3180 & 2.3794 & \checkmark & A-D|B-A|C-B|D-E|E-F|F-C \\
+pentagon & pentagon & 168 & 8 & \checkmark & 0.1316 & 0.2494 & 0.2899 & 2.3420 & \checkmark & A-E|B-C|C-B|D-E|E-A|E-D \\
+\bottomrule
+\end{tabular}
+\caption{Ground Cable Routing and Layout Performance Analysis}
+\label{tab:ground_routing_performance}
+\end{table}
+
+\todo[inline]{Rectangle-same really unstable configuration}
+
+The theoretical indices evaluate the intrinsic geometric and static properties of a cable routing. They identify configurations that are close to kinematic or wrench singularities and rank architectures according to their ability to generate payload wrenches. However, they cannot predict the transient response of the closed-loop system. Dynamic effects such as payload inertia, controller gains, load redistribution and restoring moments are only captured by simulation. Consequently, while poor theoretical indices almost always indicate poor dynamic performance, the converse is not necessarily true: a routing with good static indices may still exhibit oscillations or poor tracking due to dynamic phenomena.
+
+This is exactly what your Rectangle-Same example demonstrates: the Jacobian is full rank and the static indices are acceptable, yet the payload rocks because of an uneven load distribution and poor torsional stiffness. That example provides strong evidence that the theoretical indices are necessary but not sufficient for predicting closed-loop behavior.
+
+\todo[inline]{line or diagonal results in not-feasible configurations, why? what does this mean? Geometric reasons?}
+
+The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
+
+\todo[inline]{Other combinations that give interesting results?}
+
+
+
+\section{Ground anchor placement}
+Increasing the spacing between the ground hooks enlarges the available wrench set and moves the system farther from wrench singularities, explaining the observed improvement in tracking performance.
+
+\section{Drone hook placement}
+\label{sec:dronehook}
 
 \todo[inline]{Add link to the repository}
 
 
-
-\todo[inline]{Rectangle-same}
-The Hinge Effect: Two corners of your rectangle have double the pulling force (2 cables), while the other two corners have half the force (1 cable). This sets up a physical "rocking axis" or line of asymmetry across the platform.
-
-Loss of Torsional Stiffness: Because the rectangle's corners are orthogonal and symmetric, pairing them up this way creates an instantaneoutexts center of rotation where the platform can twist or tilt with almost zero resistance from the cables.
-
-Pure Kinematics vs. Statics: Your SVD code (score\_Jp) evaluates the kinematics at a perfectly static, frozen snapshot in space. It sees that the matrix is invertible and says "Feasible!". But it doesn't account for the fact that the moment a controller applies real force, this geometric asymmetry creates an unconstrained twisting motion that causes the platform to lose control.
-
 A full-rank Jacobian is necessary but not sufficient for good closed-loop performance.
 
-This is a very important statement.
+The Jacobian says: "Can I generate arbitrary infinitesimal wrenches?", and not "Will the closed-loop system remain dynamically stable?"
 
-Then explain why.
+Your rectangle is the perfect example. It has full rank, acceptable manipulability, acceptable conditioning, yet poor torsional stiffness, uneven load distribution, asymmetric restoring moments, oscillatory dynamics
 
-The Jacobian says
-
-Can I generate arbitrary infinitesimal wrenches?
-
-It does not say
-
-Will the closed-loop system remain dynamically stable?
-
-Your rectangle is the perfect example.
-
-It has full rank, acceptable manipulability, acceptable conditioning
-
-yet poor torsional stiffness, uneven load distribution, asymmetric restoring moments, oscillatory dynamics
-
-In other words
-
-The Jacobian is only a local kinematic property.
-
-The simulation captures
-
-inertia
-controller
-load redistribution
-dynamic coupling
-restoring torques
-
-which the Jacobian completely ignores.
+In other words: The Jacobian is only a local kinematic property. The simulation captures: inertia, controller, load redistribution, dynamic coupling, restoring torques, which the Jacobian completely ignores.
