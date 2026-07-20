@@ -1,17 +1,25 @@
-\chapter{Singularity}
+\chapter{Singularities and Performance Indices}
+\label{chap:singularities}
 
-\todo[inline]{make it better/explain it}
+\todo[inline]{write it better}
+Cable-driven parallel robots (CDPRs) and aerial cable-driven systems experience critical operating limits where force transmission or controllability degrades. Table~\ref{tab:singularity_classification} summarizes these operational singularities and their physical consequences.
+
 \begin{table}[htbp]
 \centering
-\begin{tabularx}{\textwidth}{l|XXX} % Takes exactly the page width
+
+\vspace{0.5em}
+% >{\raggedright\arraybackslash} prevents justification issues on narrow columns
+\begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
 \toprule
-\textbf{Type} & \textbf{Cause} & \textbf{Detection} & \textbf{Consequence} \\ 
+\textbf{Type} & \textbf{Cause} & \textbf{Detection Index} & \textbf{Consequence} \\ 
 \midrule
-Kinematic & $\text{rank}(J_p) < 6$ & Conditioning, Manipulability & Loss of DOF \\
-Wrench    & Desired wrench outside AWS & Capacity Margin, RAW & Desired wrench cannot be generated \\
-Tension   & Negative or zero cable tensions & Tension optimization & Cable slack \\
-Stiffness & Poor cable distribution & Simulation & Oscillations, rocking \\
-Dynamic   & Closed-loop instability & Simulation & Tracking failure \\
+Kinematic & $\text{rank}(J_p) < 6$ & Condition Number, Manipulability & Loss of platform Degrees of Freedom (DoF) \\
+Wrench    & Desired wrench outside AWS & Capacity Margin, RAW & Target wrench cannot be generated \\
+Tension   & Negative or zero cable tensions & Tension optimization & Cable slack / loss of constraint \\
+Stiffness & Poor cable distribution & Stiffness Matrix, Simulation & Unwanted oscillations and rocking \\
+Dynamic   & Closed-loop instability & Eigenvalues, Simulation & Trajectory tracking failure \\
 \bottomrule
 \end{tabularx}
+\caption{Classification of Singularity Types in Cable-Driven Parallel Systems}
+\label{tab:singularity_classification}
 \end{table}

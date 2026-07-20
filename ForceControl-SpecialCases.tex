@@ -1,7 +1,5 @@
-
 \section{Force Control on point-mass payload}
-\todo[inline]{Say this better}
-Before going in details on the full consideration, let's analyze some easier configurations.
+Before going into details on the full consideration, let's analyze some simpler configurations.
 
 \subsection{Case: one drone connected to the ground through a cable}
 \label{sec:forceControl1droneToGround}
@@ -10,7 +8,7 @@ The goal is to design the drone force $F_{prop}$ such as that the ground tension
     u = \frac{a-b}{\|a-b\|}
   \end{equation}
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.3\linewidth]{images/1drone1cableGroundAnchor.png}
     \caption{One drone system connected to the ground through a cable}
@@ -166,13 +164,14 @@ where $F_p = m_p (\ddot{p} + ge_3)$ and $F_{a, 2} = \tau_2u_2$.
 The desired variable to control a linear combination of the two $F_{a, 2} + \alpha F_{a, 3} \xrightarrow{} f^*$.
 
 \begin{equation}
-    F_{a, 1}=F_p - F_{a, 2} - F_{a, 3} \quad \xrightarrow{} \quad 
+    F_{a, 1} = F_p - F_{a, 2} - F_{a, 3} 
+    \qquad \implies \qquad 
     \begin{aligned}
-        F_{a,1}^* &= F_p -(f^* - \alpha F_{a, 3}^* + F_{a, 3}^*) \\
+        F_{a,1}^* &= F_p - (f^* - \alpha F_{a, 3}^* + F_{a, 3}^*) \\
         &= F_p - f^* - (1-\alpha)F_{a, 3}
     \end{aligned}
 \end{equation}
-In particular, we can analyze the case $F_{a, 2} - F_{a, 3} \xrightarrow{} f^*$.
+For the specific case where $F_{a, 2} - F_{a, 3} \to f^*$:
 \begin{equation}
-    F_{a,1}^*  = F_p - f^* - 2F_{a, 3}^* = F_p - f'^*
+    F_{a,1}^* = F_p - f^* - 2F_{a, 3}^* = F_p - f'^*
 \end{equation}

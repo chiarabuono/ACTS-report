@@ -29,12 +29,13 @@ F_p^* = m_p g + K_p(p^*-p)+K_d(\dot p^*-\dot p),
 where \(p^*\) and \(p\) denote the desired and current payload positions, respectively.
 
 For the rotational dynamics, the controller follows the geometric formulation on \(SE(3)\) \cite{lee_geometric_2010}. The attitude error and angular velocity error are defined as
-\begin{aligned}
 \begin{equation}
+    \begin{aligned}
 e_R &=\frac{1}{2}\left(R_d^TR-R^TR_d\right)^\vee \\
 e_\Omega &=\Omega-R^TR_d\Omega_d.
-\end{equation} 
 \end{aligned}
+\end{equation} 
+
 
 where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator.
 

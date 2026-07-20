@@ -6,7 +6,11 @@ The ACTS consists of at least one UAV, required as the payload needs to be lifte
 
 The configuration of the UAV connections is crucial as it directly affects how forces are applied to the payload.
 UAVs are responsible for generating the lifting force required to lift the payload. Consequently, the number of UAVs depends strongly on the payload mass. However, increasing the number of UAVs leads to higher power consumption and greater system complexity. So, adding more UAVs does not necessarily improve performance. 
-Additionally, each UAV can be connected to the payload using either a single cable or multiple cables. The choice of configuration affects controllability, wrench feasibility, robustness, and energy efficiency, and should be evaluated accordingly. A practical compromise is to use three UAVs connected to the payload at distinct attachment points, providing a balance between the metrics just mentioned (Figure \ref{fig:uav-possible-configuration}). \\
+Additionally, each UAV can be connected to the payload using either a single cable or multiple cables. The choice of configuration affects controllability, wrench feasibility, robustness, and energy efficiency, and should be evaluated accordingly. A practical compromise is to use three UAVs connected to the payload at distinct attachment points, providing a balance between the metrics just mentioned (Figure \ref{fig:uav-possible-configuration}). 
+
+In contrast, UGVs do not contribute to lifting the payload, meaning the same stability arguments do not apply. If we treat the UGVs as fixed anchor points, connecting a single UGV to multiple hook points on the payload simplifies to a standard fixed-anchor scenario. Because each actuator operates independently, this configuration adds no extra mathematical complexity. However, if the UGVs are actively moving, multi-cable connections require precise winch coordination to ensure all cables remain taut at all times. In Figure \ref{fig:UGV_configuration}, possible payload hook attachment can be found.
+
+Since the system is designed to be redundant, the overall number of UAVs and UGVs must be carefully selected.
 
 \begin{figure}
     \centering
@@ -15,16 +19,14 @@ Additionally, each UAV can be connected to the payload using either a single cab
     \label{fig:uav-possible-configuration}
 \end{figure}
 
-\todo[inline]{Not actually this the reason: especially in ourcase the hook are fixed in space so they are independent, look to what said for the ppt}
-In contrast, UGVs do not contribute to lifting the payload, and therefore do not require multiple cable connections for stability. In most cases, a single cable connection between each UGV and the payload is sufficient. Adding more cables would increase system complexity without significant benefits. Since the system is designed to be redundant, the overall number of UAVs and UGVs must be carefully selected.
-
 \begin{figure}
     \centering
     \includegraphics[width=0.58\linewidth]{images/ugv_config.jpeg}
     \caption{Possible UGVs connection to the payload}
     \label{fig:UGV_configuration}
 \end{figure}
-
+\raggedbottom
+\newpage
 \input{ForceControl-SpecialCases}
 
 \section{Performance Indices}
@@ -35,7 +37,7 @@ In the context of the ShieldBot project, we are working with two questions:
     \item Given the chosen architecture, where should the actuators (UAVs and anchor points in the ground) be positioned and what cable lengths should be used during operation?
 \end{enumerate}
 
-\noindent In both cases, we need an objective measurement that guides us in the selection. \\
+\noindent In both cases, we need an objective measurement that guides us in the selection.
 
 \noindent Every configuration to be eligible needs to satisfy feasibility metrics first, such as \cite{cheng_cable_2023}:
 \begin{itemize}
