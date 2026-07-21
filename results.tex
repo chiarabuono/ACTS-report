@@ -80,20 +80,20 @@ Before comparing different ACTS architectures, one representative Stewart config
 \subsubsection{Configuration}
 Payload dimensions $2.0 \times 2.0 \times 0.2$ \\
 Desired pose $p^*= [0.5, -0.5, 2.0]^\top $ \\
-Desired orotation $R^* = \mathbb{I}$
+Desired orientation $R^* = \mathbb{I}$ \\
+Desired payload wrench $W_p^* = $
 
 \begin{table}[h]
     \centering
 \begin{tabular}{lccc}
-    attachment        &  points  & hook points & \\ \hline
+    attachment        &    & hook points & \\ \hline
 $A_4 \equiv A_5$ &  $[0.0, 1.1, 0.0]^\top $         &   $B_4 \equiv B_9$ &  $[0.5, 0.05, 1.9]^\top $          \\
 $A_6 \equiv A_7$ &  $[-0.9526, -0.55, 0.0]^\top $   &   $B_5 \equiv B_6$ &  $[-0.0237, -0.775, 1.9]^\top $    \\
 $A_8 \equiv A_9$ &  $[0.9526, -0.55, 0.0]^\top $    &   $B_7 \equiv B_8$ &  $[0.9763, -0.775, 1.9]^\top $     \\ 
 
 \end{tabular}
 \end{table}
-\subsubsection{Cable directions $u_i$}
-Using Equation \ref{eq:cableVector}b  
+\noindent Using Equation \ref{eq:cableVector}b , the cable directions $u_i$ are: 
 
 \begin{table}[h]
     \centering
@@ -105,11 +105,41 @@ Using Equation \ref{eq:cableVector}b
 \end{tabular}
 \end{table}
 
-\todo[inline]{Ground jacobian}
+%% Ground jacobian
+\[
+J_{p, ground} = 
+\begin{bmatrix}
+-0,22445 & 0,47135 & -0,85291 & -0,42197 & 0,02245 & 0,12345 \\
+-0,00888 & 0,70238 & -0,71175 & 0,26597 & -0,33812 & 0,33656 \\
+-0,45452 & 0,10475 & -0,88456 & 0,25373 & -0,37586 & 0,29632 \\
+-0,70998 & 0,08282 & -0,69934 & 0,20060 & 0,40409 & -0,52834 \\
+-0,01239 & 0,11759 & -0,99298 & 0,28483 & 0,47420 & -0,47636 \\
+0,22151 & -0,29365 & -0,92989 & -0,54081 & -0,02215 & -0,12183
+\end{bmatrix}
+\]
 
-\todo[inline]{Cable tensions $\tau_i$}
+But I don't know where the drones may be, so what to do? 
+I can do the same and compute also the cable vector for the drone cable and its respective jacobian
+
+\[
+\begin{aligned}
+    u_1 = \\
+    u_2 = \\
+    u_3 = \\
+\end{aligned}
+\]
+
+%% drone jacobian
+\[
+J_{p, drones} = 
+\begin{bmatrix}
+
+\end{bmatrix}
+\]
 
 \todo[inline]{Payload wrench $W_p$}
+
+\todo[inline]{Cable tensions $\tau_i$}
 
 \todo[inline]{Required drone thrust}
 
@@ -200,9 +230,18 @@ Therefore, we will start considering the drone attachment configuration as fixed
 %% How the code work, how a given cable routing has been found
 Focusing on the gound cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarly chosen routing raise the question on how lucky the routing choise was and how good the architecture actually is.
 
-To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}, namely Wrench Closure, Wrench Feasibility, and Interference-Freedom. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment.
+To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment. Architectures are subsequently ranked against one another by worst-case conditioning index.
 
-\todo[inline]{Why conditioning index and not composite score?}
+% \begin{itemize}
+%     \item \textbf{Wrench Closure}, checked via the rank of $J_p$ (Section \ref{sec:performanceIndices});
+%     \item \textbf{Wrench Feasibility}, checked jointly over all nine cables (six ground cables and three drone cables), rather than on the ground cables alone. Since the live controller minimizes wrench mismatch rather than enforcing it exactly, feasibility here is likewise assessed as a bounded least-squares residual against a tolerance, instead of requiring exact equality. A two-stage verification is used: a routing is first checked against a cheap approximation that places each drone directly above its payload hook; if no routing passes this cheap check for a given architecture, the best candidates by manipulability that otherwise satisfy Wrench Closure and Interference-Freedom are re-evaluated with an explicit optimization over drone position, which can recover routings whose only shortcoming was a lateral-force or moment mismatch that a repositioned drone can resolve;
+%     \item \textbf{Interference-Freedom}, decomposed into two independent sub-conditions: pairwise cable-cable clearance (Equation \ref{eq:ifc}), and a minimum cable exit angle relative to the payload's attachment face, which replaces an earlier box-distance proxy for the same requirement.
+% \end{itemize}
+
+
+
+%% Why conditioning index and not composite score?
+The composite score N is not used for ranking routings during the exhaustive search because it requires information that is only available after solving the tension planner, such as the optimal cable tensions and the available wrench set. Computing its capacity-based terms is also computationally expensive and unreliable near singular configurations. Additionally, its weighting factors have not been experimentally validated, making it unsuitable for selecting the best routing. Instead, the search uses the conditioning index (with manipulability as a supporting metric), as it is a parameter-free, geometry-based measure that can be efficiently computed directly from the Jacobian. The composite score and capacity-based metrics are therefore evaluated later during closed-loop simulations, once a routing and tension solution are available.
 
 \begin{algorithm}[h]
 \caption{Cable Routing Optimization and Architecture Ranking}
@@ -266,6 +305,8 @@ This is exactly what your Rectangle-Same example demonstrates: the Jacobian is f
 \todo[inline]{line or diagonal results in not-feasible configurations, why? what does this mean? Geometric reasons?}
 
 The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
+
+\todo[inline]{talk about triangle-triangle combination}
 
 \todo[inline]{Other combinations that give interesting results?}
 
