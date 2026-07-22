@@ -81,7 +81,7 @@ Before comparing different ACTS architectures, one representative Stewart config
 Payload dimensions $2.0 \times 2.0 \times 0.2$ \\
 Desired pose $p^*= [0.5, -0.5, 2.0]^\top $ \\
 Desired orientation $R^* = \mathbb{I}$ \\
-Desired payload wrench $W_p^* = $
+Desired payload wrench $W_p^* = [0, 0, -9.21, 0, 0, 0]^\top$
 
 \begin{table}[h]
     \centering
@@ -153,53 +153,59 @@ J_{p, drones} =
 
 As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinct tension allocation strategies:
 \begin{itemize}
-    \item Minimal tension strategy, in which every cable tension is imposed such that $\|\tau_i \| = \tau_{min}$.
+    \item Minimal tension strategy, in which a minimum cable tension is imposed to each cable tension such that $\|\tau_i \| = \tau_{min}$.
     \item Optimal tension strategy, in which cable tensions are determined by the quadratic optimization problem in Equation \ref{eq:tension-planner-relax}
 \end{itemize}
 
 The performance indices and tracking errors under both strategies across three operational scenarios are summarized in Table \ref{tab:stewart_comparative}.
 
-Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. Pinning the tension vector to its lower limit $\tau_{\min}$ collapses the tension space from an $N$-orthotope $[\tau_{\min}, \tau_{\max}]^N$ to a single point, which linearly maps through the wrench matrix $W$ to degenerate the Available Wrench Set (AWS) into a single point \cite{yang_robust_2025}. As a result, any deviation of the desired payload wrench $W_p^*$ from this single point results in a negative capacity margin (as seen in Scenario A where $\gamma = -1.16757$). This indicates that the system is theoretically incapable of resisting external disturbances or maintaining equilibrium without violating the tension constraints.
+Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. By locking all cable tensions to their absolute lowest limit ($\tau_{\min}$), the range of available tension choices shrinks to a single point. As a result, the controller loses its ability to adjust forces, reducing the payload's Available Wrench Set (AWS) to just a single fixed outcome. \cite{yang_robust_2025}
+% Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. Fixing the tension vector to its lower limit $\tau_{\min}$ collapses the tension space from an $N$-orthotope $[\tau_{\min}, \tau_{\max}]^N$ to a single point, which linearly maps through the wrench matrix $W$ to degenerate the Available Wrench Set (AWS) into a single point \cite{yang_robust_2025}. 
+As a result, any deviation of the desired payload wrench $W_p^*$ from this single point results in a negative capacity margin (as seen in Scenario A where $\gamma = -0.65562$). This indicates that the system is theoretically incapable of resisting external disturbances or maintaining equilibrium without violating the tension constraints.
 
-Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. Hence, the radius of the Available Wrench increases and the capacity margin takes on a positive value ($\gamma = 5.20$). As a result, also the composite score increases.
+Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. As a result, the radius of the Available Wrench increases and the capacity margin takes on a positive value ($\gamma = 3.74947$). Thus, also the composite score increases. Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
 
-Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
+\todo[inline]{Give examples}
+Because this study focuses on offline structural and kinematic analysis rather than real-time control, the extra computation time does not compromise our findings. For future real-time applications, this hierarchical formulation can be mapped to more efficient schemes.
 
-Although the nested structure of this optimization problem inherently increases the overall computational complexity, the primary objective of this study is offline structural and kinematic analysis rather than real-time control execution. Consequently, the computational overhead does not limit the validity of the current framework. For future real-time applications, this hierarchical formulation can be mapped to more efficient schemes.
 
 \todo[inline]{show how position and orientation error changes overtime}
 On the other hand, it is worth to notice that, since the objective function does not contain any state-tracking terms, this optimizer does not directly minimize the payload's real-time position or orientation tracking errors. 
 Because of this, a spatial configuration that yields globally minimal propulsion effort does not guarantee a minimum in tracking error.
 
-\todo[inline]{update the table based on the changes made to the code}
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{lcccccc}
+\begin{tabular}{lcccc}
 \toprule
- & \multicolumn{2}{c}{\textbf{Scenario A} (Stable)} & \multicolumn{2}{c}{\textbf{Scenario B} (Oscillating)} & \multicolumn{2}{c}{\textbf{Scenario C} (Stable)} \\
-\cmidrule(lr){2-3} \cmidrule(lr){4-5} \cmidrule(lr){6-7}
-\textbf{Metric / Parameter} & $\tau_{min}$ & $\tau_{opt}$ & $\tau_{min}$ & $\tau_{opt}$ & $\tau_{min}$ & $\tau_{opt}$ \\ 
+ & \multicolumn{2}{c}{\textbf{Scenario A}} & \multicolumn{2}{c}{\textbf{Scenario B}} \\
+\cmidrule(lr){2-3} \cmidrule(lr){4-5}
+\textbf{Metric / Parameter} & $\tau_{\text{min}}$ & $\tau_{\text{opt}}$ & $\tau_{\text{min}}$ & $\tau_{\text{opt}}$ \\ 
 \midrule
-Desired Position & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} \\
-Desired Orientation & \multicolumn{2}{c}{$[1.0, 0.0, 0.0, 0.0]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, 0.1, 0.3]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, 0.1, 0.0]^\top$} \\
+Desired Position & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} \\
+Desired Orientation & \multicolumn{2}{c}{$[1.0, 0.0, 0.0, 0.0]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, 0.1, 0.1]^\top$} \\
 \midrule
-Conditioning Index & 0.10480 & 0.09573 & 0.04361 & 0.03986 & 0.10596 & 0.09451 \\
-Manipulability & 0.49089 & 0.42466 & 0.19713 & 0.17907 & 0.51002 & 0.42760 \\
-Radius Avail. Wrench & 13.65493 & 20.80839 & 19.70489 & 24.23539 & 13.41358 & 17.58092 \\
-Capacity Margin & -1.16757 & 5.20271 & 0.65833 & -1.70736 & -0.37528 & 4.27541 \\
-Worst-case CM & 0.86285 & 0.68944 & 0.86521 & 0.86435 & 0.86385 & 0.69290 \\
-Composite Score & 4.45007 & 8.90018 & 7.07614 & 7.79746 & 4.63405 & 7.51641 \\
+Conditioning Index & 0.10256 & 0.09621 & 0.07639 & 0.06621 \\
+Manipulability & 0.47759 & 0.43684 & 0.36192 & 0.30017 \\
+Radius Avail. Wrench & 16.46686 & 19.52504 & 18.66125 & 20.29844 \\
+Capacity Margin & -0.65562 & 3.74947 & -1.93639 & 2.28516 \\
+Worst-case CM & 0.86233 & 0.63971 & 0.86253 & 0.67165 \\
+Composite Score & 5.55786 & 7.97141 & 5.86246 & 7.75175 \\
 \midrule
-Position Error & 0.03150 & 0.05885 & 0.04953 & 0.05134 & 0.02904 & 0.05358 \\
-Orientation Error & 0.01769 & 0.02321 & 0.22120 & 0.18969 & 0.01036 & 0.02237 \\
+Position Error & 0.00209 & 0.00285 & 0.00183 & 0.00271 \\
+Orientation Error & 0.00125 & 0.00200 & 0.00127 & 0.00299 \\
 \bottomrule
 \end{tabular}
-\caption{Comparative performance indices and tracking errors for Stewart baseline configuration across Scenarios A, B, and C.}
+\caption{Comparative performance indices and tracking errors for Stewart baseline configuration across Scenarios A and B.}
 \label{tab:stewart_comparative}
 \end{table}
 
-\todo[inline]{show performance indices of one of the scenarios over time, which one?}
+\begin{figure}
+    \centering
+    \includegraphics[width=0.58\linewidth]{images/performanceIdxBTauOpt.png}
+    \caption{Performance indices for}
+    \label{fig:performanceIdxATauOpt}
+\end{figure}
 
 Although the Stewart configuration exhibits good overall performance and provides an excellent reference architecture, the proposed ACTS differs from a classical Stewart platform because the UAV cables can be connected to the payload in several different ways. Moreover, different ground cable routings may further improve specific performance aspects such as stability, wrench generation capability, or robustness. For these reasons, the Stewart configuration is adopted as a baseline against which all alternative architectures are compared. 
 

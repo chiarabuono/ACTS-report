@@ -75,6 +75,8 @@ Given the desired payload position $p^*$ and the rotation matrix $^0_pR^*$ that 
 \begin{equation}
     ^0\mathbf{l}_i^* = \, ^0\mathbf{a}_i - ^0\boldsymbol{r}_i = \, ^0\mathbf{a}_i- (\, ^0\mathbf{p}^* + \, ^0_pR^* \, ^p \mathbf{b}_i) 
 \end{equation}
+
+\todo[inline]{change this formula to go with the code or is it better change the code to go with this?}
 The target leg length is $\rho_i^* = \|l_i^*\|$. To ensure precise tracking of the ground cable lengths, we can either implement a PD controller at the winch level, where the velocity command $\dot{\rho}_i$ is given by:
 \begin{equation}
     \dot{\rho}_i = \dot{\rho}_i^* + K_i (\rho_i^* - \rho_i) + K_p (\dot{\rho}_i^* - \dot{\rho}_i)
