@@ -1,0 +1,42 @@
+\chapter{Simulation Environment and Experimental Setup}
+\section{Motivation for simulation environments}
+Why simulation is required
+Advantages and limitations
+Role of simulation in controller validation
+\section{Simulator selection}
+\subsection{Gazebo environment}
+Features
+Physics engine
+Advantages/disadvantages
+\subsection{MuJoCo environment}
+Features
+Physics engine
+Advantages/disadvantages
+
+\section{Software architecture (UML)}
+\section{Simulation setup}
+
+\section{Simulation methodology and evaluation framework}
+
+%% Experimental objectives
+The objective of this chapter is to evaluate how the architectural design of an ACTS influences its ability to accurately and robustly manipulate a payload. The focus is on how different cable routing strategies, UAV attachment configurations, and ground hook placements influence the overall system performance.
+
+In fact, a configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables remain under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations.
+
+In this chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
+
+%% Simulation setup.  Why simulate the controller instead of only computing the Jacobian?
+The geometric and static performance indices provided in Section \ref{sec:performanceIndices} describe the instantaneous ability of a given architecture to generate payload wrenches and identify configurations that are close to kinematic singularities. However, these indices are evaluated under static or quasi-static assumptions and therefore cannot fully characterize the behavior of the closed-loop system during motion. During motion, cable directions, tensions and payload dynamics continuously evolve. Consequently, a configuration that appears favorable according to static indices may still exhibit oscillations, poor tracking or instability. Closed-loop simulation is therefore necessary to verify whether the theoretical advantages translate into practical performance.
+
+All simulations are carried out using the MuJoCo (Multi-Joint Dynamics with Contact) physics extensions, allowing simulation of closed-loop systems, such as CDPRs and ACTSs, which is not possible in Gazebo. Another reason I switched from Gazebo to MuJoCo was the ability to model cables as tendons, which are minimum-path-length strings with wrapping and tracking, constraints \cite{mujoco_docs_237}. However, for the purpose of this thesis, the cables are treated as pure physical constraints, without stiffness or dumping.
+
+%% Variables
+The payload mass, UAV model, controller gains, drone cable lengths, simulation duration, and desired payload pose are kept constant throughout all experiments to ensure a fair comparison between diferent architectural configurations. The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points.
+
+%% Scenario A and B
+Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.
+
+%% Why did you choose Stewart as the reference?
+First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. In fact, if even Stewart-like performs poorly, the problem is likely the controller rather than the architecture. The remaining experiments then investigate how modifications to the ground cable routing, UAV attachment geometry, and hook placement affect both the theoretical performance indices and the closed-loop behavior of the system. This progressive analysis makes it possible to identify which geometric features have the greatest influence on payload manipulation performance.
+
+%%The attachment points are uniformly distributed, which generally leads to good isotropy.

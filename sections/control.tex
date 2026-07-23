@@ -1,5 +1,7 @@
-\newpage
-\section{High level architecture}
+\chapter{Control of the ACTS}
+\input{sections/ForceControl-SpecialCases}
+
+\section{Extension to the Complete ACTS Architecture}
 \label{sec:highlevelarchitecture}
 At high level, the architecture that enables the system to reach the goal is shown in Figure \ref{fig:control-high-level}.
 \begin{figure}[h]
@@ -76,7 +78,7 @@ Given the desired payload position $p^*$ and the rotation matrix $^0_pR^*$ that 
     ^0\mathbf{l}_i^* = \, ^0\mathbf{a}_i - ^0\boldsymbol{r}_i = \, ^0\mathbf{a}_i- (\, ^0\mathbf{p}^* + \, ^0_pR^* \, ^p \mathbf{b}_i) 
 \end{equation}
 
-\todo[inline]{change this formula to go with the code or is it better change the code to go with this?}
+\todo[inline]{At the end trusted pulley control, talk about it}
 The target leg length is $\rho_i^* = \|l_i^*\|$. To ensure precise tracking of the ground cable lengths, we can either implement a PD controller at the winch level, where the velocity command $\dot{\rho}_i$ is given by:
 \begin{equation}
     \dot{\rho}_i = \dot{\rho}_i^* + K_i (\rho_i^* - \rho_i) + K_p (\dot{\rho}_i^* - \dot{\rho}_i)
@@ -101,7 +103,7 @@ The tension planner is the layer responsible for guaranteeing that every cable s
     \end{aligned}
 \end{equation} 
 
-which is a Nonlinear optimization Problem (NLP) due to the Euclidean distance constraints. In Section \ref{sec:NLPtoQP}, we propose some ways to turn it into a Quadratic Programming problem (QP).
+which is a Nonlinear optimization Problem (NLP) due to the Euclidean distance constraints. % In Section \ref{sec:NLPtoQP}, we propose some ways to turn it into a Quadratic Programming problem (QP).
 
 This objective function aims to minimize the propulsion force of the drones while satisfying the wrench equilibrium equations on the payload. The parameter $K$ acts as a penality weight that prioritizes the tracking performance over energy efficiency; setting a high value (e.g., $K=1000$), heavily penalizes any mismatch between the generated wrench and the commanded target wrench $W_p^*$.
 
@@ -150,47 +152,47 @@ From the static equilibrium balance (Equation \ref{eq:uavbalance}) the required 
 \end{equation}
 which is then handed to the attitude controller, responsible for aligning the body $z$-axis with the commanded thrust vector.
 
-\subsection{Quadratic Approximation of the UAV Disposition Problem}
-\todo[inline]{delete it? We don't use it}
-\label{sec:NLPtoQP}
-The nonlinear optimization problem presented in the previous section:
-$$
-    \begin{aligned}
-        \min_{p_a} \quad & \sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\|\\
-        \text{subj. to} \quad 
-        & x_i^2 + y_i^2 + z_i^2 = l_i^2 \quad \forall i \in [1, n_a]\\
-        & \rho_{WCC}(\mathcal{U})\le 0\\
-        & \rho_{IFC}(\mathcal{U})\le 0
-    \end{aligned}
-$$
-can be rewritten as a quadratic problem where possible.
+% \subsection{Quadratic Approximation of the UAV Disposition Problem}
+% \todo[inline]{delete it? We don't use it}
+% \label{sec:NLPtoQP}
+% The nonlinear optimization problem presented in the previous section:
+% $$
+%     \begin{aligned}
+%         \min_{p_a} \quad & \sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\|\\
+%         \text{subj. to} \quad 
+%         & x_i^2 + y_i^2 + z_i^2 = l_i^2 \quad \forall i \in [1, n_a]\\
+%         & \rho_{WCC}(\mathcal{U})\le 0\\
+%         & \rho_{IFC}(\mathcal{U})\le 0
+%     \end{aligned}
+% $$
+% can be rewritten as a quadratic problem where possible.
 
-\subsubsection{Wrench closure condition}
-The rank condition $\text{rank}(J_p) = 6$ is not a smooth inequality. To overcome this problem, we could: 
+% \subsubsection{Wrench closure condition}
+% The rank condition $\text{rank}(J_p) = 6$ is not a smooth inequality. To overcome this problem, we could: 
 
-\begin{itemize}
-    \item Use the manipulability index squared $w^2=\det(J_p J_p^\top)\ge w_{\text{min}}^2>0$ in which $w=0$ indicates a singular configuration;
-    \item Impose positive value for the smaller singular value $\epsilon$: $\sigma_{\text{min}}(J_p) \ge \epsilon$
-\end{itemize}
+% \begin{itemize}
+%     \item Use the manipulability index squared $w^2=\det(J_p J_p^\top)\ge w_{\text{min}}^2>0$ in which $w=0$ indicates a singular configuration;
+%     \item Impose positive value for the smaller singular value $\epsilon$: $\sigma_{\text{min}}(J_p) \ge \epsilon$
+% \end{itemize}
 
 
-\subsubsection{The cost function}
-The objective function can be approximated by replacing the sum of Euclidean norms with the sum of squared Euclidean norms,
+% \subsubsection{The cost function}
+% The objective function can be approximated by replacing the sum of Euclidean norms with the sum of squared Euclidean norms,
 
-\begin{equation}
-    \min_{p_a}\sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\| \approx \min_{p_a}\sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\|_2 = \min_{p_a}\sum_{i=1}^{n_a}F_{prop}^\top F_{prop}
-\end{equation}
-as for definition $\|u\|_2 = \sqrt{u^\top u}$. This approximation penalizes large outliners more than small ones.
+% \begin{equation}
+%     \min_{p_a}\sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\| \approx \min_{p_a}\sum_{i=1}^{n_a}\|F_{prop}(p_{a, i}, \tau_{optimal})\|_2 = \min_{p_a}\sum_{i=1}^{n_a}F_{prop}^\top F_{prop}
+% \end{equation}
+% as for definition $\|u\|_2 = \sqrt{u^\top u}$. This approximation penalizes large outliners more than small ones.
 
-Therefore, the problem becomes:
+% Therefore, the problem becomes:
 
-\begin{equation}
-      \begin{aligned}
-        \min_{p_a} \quad & \sum_{i=1}^{n_a}F_{prop}^\top F_{prop}\\
-        \text{subj. to} \quad 
-        & x_i^2 + y_i^2 + z_i^2 = l_i^2 \quad \forall i \in [1, n_a]\\
-        & w_{\text{min}}^2 - w^2 \le 0\\
-        & d_{\text{safe}} - d_{ij} \le 0 \\
-        & d_{\text{safe}} - d_{i} \le 0 \\
-    \end{aligned}
-\end{equation}
+% \begin{equation}
+%       \begin{aligned}
+%         \min_{p_a} \quad & \sum_{i=1}^{n_a}F_{prop}^\top F_{prop}\\
+%         \text{subj. to} \quad 
+%         & x_i^2 + y_i^2 + z_i^2 = l_i^2 \quad \forall i \in [1, n_a]\\
+%         & w_{\text{min}}^2 - w^2 \le 0\\
+%         & d_{\text{safe}} - d_{ij} \le 0 \\
+%         & d_{\text{safe}} - d_{i} \le 0 \\
+%     \end{aligned}
+% \end{equation}
