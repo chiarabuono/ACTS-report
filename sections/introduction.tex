@@ -1,56 +1,94 @@
 \chapter{Introduction}
-\todo[inline]{Motivation and background}
-- shildbot project, what it is, 
+\label{chap:intro}
 
+This thesis work takes place in the context of the ShieldBot project, which aims to revolutionise the construction, renovation, and maintenance sectors by investigating and validating a new generation of robotic systems tailored to the industry's unique challenges \cite{shieldbot_project}. The Shieldbot project focuses on three complementary robotic solutions:
 
-ShieldBot focuses on three key robotic solutions:
-InnerShieldBot
+\begin{itemize}
+    \item InnerShieldBot is designed for internal construction works to enhance the thermal performance of walls and ceilings.
+    \item InspectionShieldBot is dedicated to identify structural or insulation needs, and ensure long-term building integrity.
+    \item FaçadeShieldBot is designed to operate on building façades and install thermal shielding in order to improve insulation and reduce energy consumption.
+\end{itemize}
 
-designed for internal construction works to enhance the thermal performance of walls and ceilings.
-InspectionShieldBot
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/ShieldBot_About_TheProject_Graph_01.png}
+    \caption{Robotic solutions developped by the ShieldBot project \cite{shieldbot_project}}
+    \label{fig:shieldbotGraph}
+\end{figure}
 
-equipped with advanced sensors to assess exteriors, identify structural or insulation needs, and ensure long-term building integrity.
-FaçadeShieldBot
+\noindent This thesis focuses on the robotic manipulation challenges inherent to the Façade\-Shield\-Bot scenario. The system must generate sufficient force to manipulate the payload while maintaining a stable pose, as the application requires transporting and accurately positioning a payload near a vertical surface. At the same time, it must operate across large façades without requiring complex or permanent infrastructure on the building.
 
-which installs thermal shielding on building façades to improve insulation and reduce energy consumption.
+The overall system employs a platform-mounted robotic arm to manipulate and position tools along the surface. However, the scope of this work is strictly centered on the aerial platform itself and its ability to maintain a controlled pose without relying on permanent building infrastructure.
 
-Effective insulation is essential for improving energy efficiency and reducing emissions. However, current manual methods are slow, labour-intensive, and prone to inconsistencies, making large-scale renovations costly and inaccessible. As a result, many buildings remain poorly insulated, leading to increased energy consumption and a need for scalable and cost-efficient renovation solutions.
-
-the goal
-The main objective of ShieldBot is to revolutionise the construction, renovation, and maintenance sectors by investigating and validating a new generation of robotic systems tailored to the industry’s unique challenges.
-
-\cite{shieldbot_project}
-
-
-\todo[inline]{Problem statement}
-what is the objective
-- installation
-
-State from before shieldbot and now
-
-titanbot \cite{cnrs_titanbot_2025}. 
-- before cdpr with hook on the payload
-
-They are mechanically simple, capable of moving heavy loads, and covering large areas. They can be controlled by an operator on-site or remotely, or operate autonomously. The goal of the Titanbot project is to build on these strengths to develop, based on two industrial use cases, robots that are easy to deploy, simple to use—even by people with no experience in robotics—and safe.
-
-“Today, on construction sites, loads are moved either manually or by elevators or machinery that only cover one or two dimensions,” notes Christian Roda, Pre-Sales Manager at VINCI Energies France Tertiaire Centre-Est Sud. A robot capable of unloading and reloading along three axes would reduce manual handling, which contributes to accidents and musculoskeletal disorders. “This issue is very important to us, as it is largely aimed at reducing the physical strain on our employees,” adds Roda, who began his career on the operational side.
+% Existing cable-driven robots provide high precision but rely on fixed environmental anchors
+Previous robotic developments have demonstrated the potential of cable-based systems for construction applications. For example, the Titanbot project investigates cable-driven parallel robotic (CDPR) systems capable of transporting loads over large areas and reducing the physical effort required from construction workers \cite{cnrs_titanbot_2025}. Such systems benefit from the mechanical simplicity and large workspace offered by cable-based actuation. Additionally, their actuators can be located away from the manipulated payload, which makes them particularly attractive for applications involving heavy loads. However, conventional configurations generally rely on fixed or ground-based cable attachment points, which can limit their flexibility when operating over complex or changing environments.
 
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/titanbot.png}
-    \caption{\cite{cnrs_titanbot_2025}}
+    \includegraphics[width=\linewidth]{images/titanbot.png}
+    \caption{Solution proposed by TitanBot project \cite{cnrs_titanbot_2025}}
     \label{fig:titanbot}
 \end{figure}
 
+% Aerial Cable-Towed Systems increase flexibility but suffer from reduced positioning accuracy.
+Aerial robotic systems are a promising approach to access tight and difficult-to-reach areas while reducing the need for traditional scaffolding. Additionally, the use of cables introduces distance between the UAVs and the building, removing direct contact between the two. This is advantageous from a safety and operational perspective, as it reduces the risk of unintended collisions and the impact of the airflow generated by the rotors, allowing the system to safely come into contact with vertical surface \cite{erskine_control_2019}.
 
-- acts good because they do not need to touch the building, why this is really important?
+Nonetheless, the position and orientation of the UAVs directly influence the forces and moments that can be generated through the cables. As a result, accurate positioning of the payload can become difficult, particularly when the system is required to perform precise manipulation close to a façade. These limits are especially critical in applications where the payload needs to be precisely positioned and then manipulated against a vertical surface.
 
-but bad because only using drones does not have precision
-- acts 2.0 has the advantages of both acts, but the hook on the ground better the performance
+% Hybrid aerial-ground systems attempt to combine the advantages of both approaches.
+The combination of aerial and ground-based actuation can improve the ability of the system to generate and control forces during interaction with the façade while retaining the flexibility of an aerial cable-towed system.
 
-\todo[inline]{Research objectives}
-- find best cables configuration and attachments
+% However, the influence of cable routing, attachment locations and architecture selection on system performance has received limited attention.
+The resulting system, however, is characterized by a large set of design parameters that need to be selected at the design stage and remain fixed during the operation. They strongly influence the workspace, wrench feasibility, controllability, robustness, and energy efficiency of the system. The main design degrees of freedom include:
+
+\begin{itemize}
+    \item The number of aerial and ground vehicles (UAVs and UGVs), which determines the level of actuation redundancy and force distribution capability;
+    \item The number of cables and their routing, which affect the achievable wrench set and the system's stability;
+    \item The cable length actuation strategy, such as fixed-length or winch-actuated cables;
+    \item The system architecture and graph rigidity, including centralized and decentralized control configurations.
+\end{itemize}
+
+As a result, architectural design cannot be isolated from control system development. A configuration that is mechanically feasible may nevertheless provide poor force distribution or positioning performance in the region of interest. Conversely, an appropriate choice of architecture and attachment locations can improve the controllability and robustness of the system without necessarily increasing its mechanical complexity.
+
+% This thesis addresses this gap by...
+The main objective of this thesis is to study the modelling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for payload manipulation. In particular, the thesis focuses on how the architecture and cable configuration influence the ability of the system to manipulate a payload and generate the required payload wrench. The work focuses on the selection of suitable cable routing and attachment configurations and on the development of a control approach based on the resulting system model. The proposed configurations are evaluated through simulation to assess their performance and identify the most suitable architecture for the considered application.
+
+% More specifically, this thesis addresses the following questions:
+
+% \begin{itemize}
+% \item How can a hybrid aerial-ground cable-driven system be modelled for payload manipulation?
+% \item How do the routing, and attachment locations of the cables influence the kinematic and static performance of the system?
+% \item Which architecture provides the most suitable compromise between controllability, force generation, and mechanical complexity?
+% \item How can the resulting system be controlled to generate the forces required for payload manipulation?
+% \item How does the selected configuration perform in simulation under the conditions relevant to façade applications?
+% \end{itemize}
 
 
-\todo[inline]{Thesis organization}
+% thesis organization
+The thesis is organized as follows. 
+
+Chapter \ref{chap:state_of_art}
+
+Chapter \ref{chap:design_modeling}
+
+Chapter \ref{chap:control}
+
+
+Chapter \ref{chap:simulation}
+
+Chapter \ref{chap:results}
+
+Chapter \ref{chap:conclusions}
+
+% Chapter \ref{chap:state_of_art} presents the state of the art in cooperative aerial manipulation and cable-driven robotic systems. It reviews existing Aerial Cable-Towed Systems, related cable-driven and flying parallel robots, their modelling and control approaches, and the challenges associated with physical interaction near façades. The chapter concludes by identifying the research gap addressed in this work.
+
+% Chapter \ref{chap:design_modeling} presents the design and modelling of the proposed ACTS. The system architecture is first introduced, followed by the kinematic, static, and kinemato-static models. The main mechanical design choices are then discussed, and candidate architectures are evaluated using appropriate performance indices before selecting the configuration used in the remainder of the thesis.
+
+% Chapter \ref{chap:control} focuses on the control of the ACTS. A force-control approach is first investigated using simplified configurations in order to analyse the relationship between cable tensions and the forces generated on the payload. The approach is then extended to the complete system architecture.
+
+% Chapter \ref{chap:simulation} describes the simulation environment and experimental methodology used to evaluate the proposed system. The simulator selection, software architecture, simulation setup, and evaluation framework are presented.
+
+% Chapter \ref{chap:results} presents and discusses the simulation results. The proposed implementation is first numerically verified using a Stewart platform baseline. The influence of ground cable routing, ground anchor placement, and UAV hook placement is then investigated to evaluate their effect on system performance.
+
+% Finally, Chapter \ref{chap:conclusions} summarizes the main findings of the thesis and discusses the limitations of the current work and possible directions for future research.

@@ -1,17 +1,36 @@
 
 \chapter{ACTS Design and Modeling}
+\label{chap:design_modeling}
+\section{System Architecture}
+% \subsection{Coordinate Frames and Generalized Coordinates}
+To formulate a general methodology, it is important to adopt a parameterization of the ACTS. We consider an ACTS with $n_q$ quadrotors, $n_g$ ground vehicles, $m$ cables, and a load with $d$ degrees of freedom.
+The i-th quadrotor is connected  to the load at point $B_i$ through a cable of length $l_i$, whose other end is fixed to the vehicle at point $A_i$, for $i = 1, \dots, n_q$. Similarly, the j-th ground vehicle is connected to the load at point $B_j$ via a cable of length $l_j$, attached to the vehicle at point $A_j$, for $j = 0, \dots, n_g$. To avoid ambiguity between aerial and ground actuators, alphabetical indeces may be used in the latter case to distinguish the two sets of vehicles \cite{erskine_wrench_2019}.
 
-\section{ACTS system overview}
-ShieldBot context
-overall concept
-UAVs
-UGVs
-payload
-why this architecture
+\noindent We can also define the following systems of reference:
+\begin{itemize}
+    \item $F_0(O, x_0, y_0, z_0)$ as the inertial reference world frame;
+    \item $F_p(P, x_p, y_p, z_p)$ as the frame attached to the platform at its center of mass;
+    \item $F_i(A_i, x_i, y_i, z_i)$ as the frame attached to the quadrotor at point $A_i$, with the z-axis normal to the plane of the rotors;
+    \item $F_{C_i}(A_{C_i}, x_{C_i}, y_{C_i}, z_{C_i})$ as the frame attached to the quadrotor at its center of mass $A_{C_i}$ with the x-axis pointing forward, the y-axis pointing left and the z-axis pointing upwards;
+    \item $F_k(A_k, x_k, y_k, z_k)$ as the frame attached to the ground vehicle at point $A_k$, with the z-axis normal to the ground;
+\end{itemize}
+In particular, since the ground vehicles are considered fixed in pose, also their reference frame is inertial and the fixed in time transformation matrix $T_k$ from the reference world frame to each ground vehicle is known.
 
-Watch out, do not repeat all the stuff you did in the bibliography
+% \subsection{Common modeling assumptions}
+In this thesis, the following assumptions are adopted:
+
+\begin{itemize}
+    \item The cables are modeled as massless, non-extensible and perfectly straight \cite{sanalitro_indirect_2022, erskine_wrench_2019, erskine_control_2019};
+    \item The cable attachment point coincides with the quadrotor's center of mass \cite{six_dynamic_2021, erskine_wrench_2019, liu_wrench_2022};
+    \item There are no aerodynamic disturbances, such as the rotor wash \cite{six_dynamic_2021, liu_wrench_2022, erskine_dynamic_2021};
+    \item The flight is quasi-stationary and the aerodynamic friction and resistance can be neglected in the dynamic model \cite{forte_impedance_2012, erskine_wrench_2019};
+\end{itemize}
+Lastly, the ground vehicles will be considered fixed anchoring points, as the ShieldBot project is still at its early stages.
 
 \section{Kinemato-static model}
+%What type of system are we modeling?
+As talked about in Section \ref{sec:Cable-DrivenParallelRobots}, it is possible to model cable-suspended UAV systems as reconfigurable cable-driven parallel robots (RCDPRs), where the traditional fixed actuators are replaced by mobile UAVs, possibly integrated with land-fixed winches to balance interaction forces at high altitudes.
+
 A kinematostatic model is a model that combines kinematics (motion and geometry) with statics (forces and equilibrium) to describe how a mechanical system moves and how forces are transmitted through it.
 
 \subsection{Kinematic model}
@@ -217,60 +236,74 @@ where $F_{prop,j} = 0$ for the UGVs and $F_{ground, i} = 0$ for the UAVs. Then $
     \end{bmatrix} = 0
 \end{equation}
 
-\section{Mechanical design choices}
-\subsection{Payload attachment strategy}
-The ACTS consists of at least one UAV, required as the payload needs to be lifted from the ground, and one UGV, included for safety and operational constraints. To fully control the payload in space, we need at least six cables
+\section{Architecture Design}
+\label{sec:architecture_design}
+
+The configuration of a cooperative aerial transportation system (ACTS) has a direct influence on its workspace, force-generation capabilities, controllability, and energy consumption. For a given payload pose, multiple equilibrium configurations may exist, corresponding to different distributions of internal cable forces that do not modify the resulting net wrench acting on the payload. Although these configurations satisfy the same static equilibrium conditions, they can require significantly different UAV positions and cable tensions, leading to different energy consumption and robustness properties \cite{tognon_aerial_2018}.
+
+Consequently, the architecture of the ACTS must be selected according to the requirements of the intended application. In this thesis, the architecture design is described through a set of configurable parameters that determine the number and arrangement of aerial and ground actuators, the cable attachment points, and the cable routing. These parameters define the architecture search space explored in the remainder of this chapter.
+
+The ACTS consists of at least one UAV, required as the payload needs to be lifted from the ground, and one UGV, included for safety and operational constraints. To fully control the payload in space, we need at least six cables.
+
+\subsection{Design Variables}
+\label{sec:design_variables}
+
+As it will be discussed better in detail later, in this work we suppose working with a fixed number of UAVs and ground cables. On the other hand, the main design variables considered are:
+
+\begin{itemize}
+\item the payload attachment point locations;
+\item the ground anchor locations; and
+\item the cable routing between the ground actuators and the payload.
+\end{itemize}
+
+
+\subsubsection{Aerial Actuators}
 
 The configuration of the UAV connections is crucial as it directly affects how forces are applied to the payload.
 UAVs are responsible for generating the lifting force required to lift the payload. Consequently, the number of UAVs depends strongly on the payload mass. However, increasing the number of UAVs leads to higher power consumption and greater system complexity. So, adding more UAVs does not necessarily improve performance. 
 Additionally, each UAV can be connected to the payload using either a single cable or multiple cables. The choice of configuration affects controllability, wrench feasibility, robustness, and energy efficiency, and should be evaluated accordingly. A practical compromise is to use three UAVs connected to the payload at distinct attachment points, providing a balance between the metrics just mentioned (Figure \ref{fig:uav-possible-configuration}). 
 
+The main alternatives considered in this work are illustrated in Figure \ref{fig:uav-possible-configuration}. 
+
+\subsubsection{Ground Actuators and Anchors}
+
 In contrast, UGVs do not contribute to lifting the payload, meaning the same stability arguments do not apply. If we treat the UGVs as fixed anchor points, connecting a single UGV to multiple hook points on the payload simplifies to a standard fixed-anchor scenario. Because each actuator operates independently, this configuration adds no extra mathematical complexity. However, if the UGVs are actively moving, multi-cable connections require precise winch coordination to ensure all cables remain taut at all times. In Figure \ref{fig:UGV_configuration}, possible payload hook attachment can be found.
 
-\todo[inline]{minimum number of cables, redundancy, one cable vs multiple cables}
-Since the system is designed to be redundant, the overall number of UAVs and UGVs must be carefully selected.
+The number and spatial distribution of these anchors affect the directions of the corresponding cable forces and therefore the wrench that can be generated at the payload. Different anchor layouts can consequently lead to different force and moment capabilities.
 
-\subsection{Cable and attachment configurations}
-Purpose: Which design variables can actually be changed?
+\subsubsection{Payload Attachment Points}
 
-For example: number of UAVs, number of UGVs, number of cables, attachment point locations, cable routing, anchor placement
+The locations of the cable attachment points on the payload directly affect the moments generated by cable tensions. Attachment points that are more widely separated can provide larger moment arms, whereas closely spaced attachment points result in different wrench and conditioning properties.
 
-These are all configuration variables.
-
-Then explain the main alternatives.
-
-UAV configurations
+The attachment geometry therefore influences:
 \begin{itemize}
-    \item one UAV, multiple cables vs multiple UAVs, one cable each
-    \item Pros and cons.
+\item the achievable payload wrench;
+\item the ability to generate moments;
+\item the conditioning of the wrench mapping; and
+\item the feasibility of maintaining positive cable tensions.
 \end{itemize}
 
+The attachment points are therefore treated as design variables in the architecture selection process.
 
-Ground attachment configurations
-\begin{itemize}
-    \item Stewart-like
-    \item distributed anchors
-    \item asymmetric layouts
-\end{itemize}
+\subsubsection{Ground Anchor Placement and Cable Routing}
 
-Payload hook placement
-\begin{itemize}
-    \item close hooks
-    \item spread hooks
-    \item influence on torque generation
-    \item influence on conditioning
-    \item influence on wrench feasibility
-\end{itemize}
+The positions of the ground anchors determine the directions of the ground cables for a given payload pose. Their arrangement consequently affects both the achievable wrench and the distribution of cable tensions.
 
-Cable routing
-\begin{itemize}
-    \item crossed cables
-    \item uncrossed cables
-    \item adjacent routing
-    \item diagonal routing
-\end{itemize}
+In addition to anchor placement, the routing of the cables between the ground anchors and the payload attachment points is considered as a design variable. Candidate routings include crossed and uncrossed arrangements, as well as adjacent and diagonal connections. These different routings can produce different cable directions and therefore different force-generation capabilities.
 
-"These choices define the architecture search space explored in the remainder of the thesis."
+% \subsection{Candidate Configurations}
+% \label{sec:candidate_configurations}
+
+\todo[inline]{integrate this}
+
+The design variables described above define the architecture search space considered in this thesis. Rather than evaluating every possible combination, a set of candidate configurations is selected to represent the main architectural alternatives.
+
+For the aerial part of the system, the candidates differ in the number of UAVs and in the number and arrangement of cables connecting the UAVs to the payload. For the ground part, different anchor distributions and cable routings are considered. Finally, the payload attachment geometry is varied to investigate its influence on the resulting wrench capabilities.
+
+
+The candidate architectures are subsequently evaluated using the performance indices introduced in Section \ref{sec:performanceIndices}. The selected architecture is then used for the detailed kinemato-static modeling and control development presented in the following sections.
+
+
 
 \begin{figure}
     \centering
@@ -286,14 +319,10 @@ Cable routing
     \label{fig:UGV_configuration}
 \end{figure}
 
-
-
 \newpage
 
 
-\section{Architecture selection}
-
-\subsection{Performance Indices}
+\subsection{Performance Metrics}
 \label{sec:performanceIndices}
 In the context of the ShieldBot project, we are working with two questions:
 \begin{enumerate}
@@ -349,6 +378,12 @@ Considering only quasi-static motion, this can be reduced to the following, wher
     t_{i, max} = m_igu_{iz} + \sqrt{f_{i, max}^2 + m_i^2 g^2 \left(u_{iz}^2 - 1 \right)}
 \end{equation}
 
+\todo[inline]{adapt, it is usufull here}
+According to \cite{erskine_control_2019}, the capacity margin index can be used as a measure of controllability for an ACTS, as it accurately estimates the feasibility region of the ACTS for quasi-static trajectories. The feasibility region is the set of all poses and geometric configurations in which the system can physically balance a required task wrench, such as gravity or external interaction forces, while satisfying the quadrotor's actuation limits and the physical constraints of the cables. In practice, the capacity margin quantifies how far the current operating point is from the boundary of what the system can physically achieve. These definitions lead to the following corollary: 
+\begin{quote}
+    The capacity margin can be used to determine the minimum set of external wrenches on the platform that the ACTS can compensate for solely with modifications to the attitude of the quadrotor \cite{erskine_wrench_2019}.
+\end{quote}
+
 \subsubsection{Radius of Available Wrench (rAw)}
 The radius of the available wrench (rAW) is the maximum magnitude of force that the system can generate uniformly in all directions while remaining within admissible tension limits \cite{jamshidifar_static_2020}. Its optimization helps identify arrangements that simultaneously maximize force robustness, geometric and collision-avoidance constraints, resulting into an enlargement of the static workspace \cite{jamshidifar_static_2020}.
 
@@ -363,6 +398,12 @@ being $u_{null, i} = \text{null}(M_i)$ with $M_i$ containing combinations of lin
     \end{aligned}
 \end{equation}
 However, since \cite{jamshidifar_static_2020} consider the case of a point-mass payload, it does not take in consideration the torques, we may compute separately rAW$_{force}$ and rAW$_{moment}$, the maximum pure force (resp. torque) the platform can exert in any direction while generating zero net moment (resp. linear force).
+
+\todo[inline]{Look at this}
+
+The radius of the available wrench (rAW) is the maximum magnitude of force that the system can generate uniformly in all directions while remaining within admissible tension limits. This metric is useful to quantify the robustness of a given configuration: the larger it is, the more robust it is to reject disturbances. As a consequence, the optimal arrangement of UAVs for a given payload pose is the configuration that maximizes rAW \cite{jamshidifar_static_2020}. By optimizing this force-based index over the set of admissible UAV configurations, it is possible to identify arrangements that simultaneously maximize force robustness while satisfying geometric and collision-avoidance constraints. This optimization process directly leads to an enlargement of the Static Workspace (SW), highlighting the intrinsic coupling between wrench feasibility and workspace size.
+
+The boundary of the static workspace SW corresponds to configurations where the rAW reduces to zero, indicating a loss of force feasibility in at least one direction. The static workspace is strongly influenced by UAV placement, cable routing, and thrust capabilities since UAV cable tension depend heavily on the geometry of the system. While multiple UAV arrangements may satisfy kinematic constraints for a given payload pose, only a subset of these configurations provide adequate force feasibility and robustness. Consequently, force-based workspace analysis plays a central role in system design and configuration optimization \cite{jamshidifar_static_2020}.
 
 
 \subsubsection{Conditioning index}
@@ -393,7 +434,7 @@ Our solution will finally be:
 We are interested in working with an over-actuated system. Therefore, we will start using six cables for fully control the payload pose and three drones acting as an anti-gravitational force. A schematic is shown in Figure \ref{fig:6cables3dronesSchem}. 
 
 
-\begin{figure}[h]
+\begin{figure}[ht]
     \centering
     \includegraphics[width=0.8\linewidth]{images/acts_stewart_mujoco.png}
     \caption{Over actuated ACTS with 6 ground cables and 3 UAVs}

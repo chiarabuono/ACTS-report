@@ -1,4 +1,5 @@
 \chapter{Simulation results}
+\label{chap:results}
 
 How to structure this chapter:
 \begin{enumerate}
@@ -121,7 +122,8 @@ J_{p, drones} =
 \todo[inline]{Does it correspond}
 
 
-\subsection{Comparison $\tau_{min}$ and $\tau_{opt}$}
+% \subsection{Comparison $\tau_{min}$ and $\tau_{opt}$}
+\subsection{\texorpdfstring{Comparison $\tau_{\min}$ and $\tau_{\text{opt}}$}{Comparison}}
 %% Do the theoretical indices suggest that Stewart is a good configuration?
 %% Does Stewart actually achieve the desired pose?
 %% Do theory and simulation agree?
@@ -228,6 +230,7 @@ To eliminate this source of bias, an exhaustive routing search is performed for 
 \begin{table}[htbp]
 \centering
 \small
+\resizebox{\linewidth}{!}{
 \begin{tabular}{llccccccccc}
 \toprule
 \textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{$N_{\text{rout}}$} & \textbf{$N_{\text{pos}}$} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} & \textbf{Best Routing} \\
@@ -239,6 +242,7 @@ hexagon & pyramid & 720 & 8 & \checkmark & 0.1343 & 0.1664 & 0.3180 & 2.3794 & \
 pentagon & pentagon & 168 & 8 & \checkmark & 0.1316 & 0.2494 & 0.2899 & 2.3420 & \checkmark & A-E|B-C|C-B|D-E|E-A|E-D \\
 \bottomrule
 \end{tabular}
+}
 \caption{Ground Cable Routing and Layout Performance Analysis}
 \label{tab:ground_routing_performance}
 \end{table}
