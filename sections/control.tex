@@ -19,9 +19,10 @@ The trajectory planner is able to compute the payload trajectory $x(t)$ and its 
     \item Bring the payload at the right height and orientation;
     \item Approach the façade.
 \end{enumerate}
-and/or the initial and final position of the payload.
+And/or the initial and final position of the payload.
 
 \subsubsection{Payload Controller}
+\todo[inline]{Check this}
 Then, the desired payload wrench $W_p^*$ is computed for each point in the trajectory based on the previous state of the system. 
 The desired payload wrench is computed from a geometric PD controller. The translational component is given by
 
@@ -40,9 +41,9 @@ e_\Omega &=\Omega-R^TR_d\Omega_d.
 \end{equation} 
 
 
-where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator.
+Where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator.
 
-Since the controller performs setpoint regulation,
+Since the controller performs set point regulation,
 \(\Omega_d=\mathbf{0}\), yielding $e_\Omega=\Omega$.
 
 
@@ -104,9 +105,9 @@ The tension planner is the layer responsible for guaranteeing that every cable s
     \end{aligned}
 \end{equation} 
 
-which is a Nonlinear optimization Problem (NLP) due to the Euclidean distance constraints. % In Section \ref{sec:NLPtoQP}, we propose some ways to turn it into a Quadratic Programming problem (QP).
+Which is a Nonlinear optimization Problem (NLP) due to the Euclidean distance constraints. % In Section \ref{sec:NLPtoQP}, we propose some ways to turn it into a Quadratic Programming problem (QP).
 
-This objective function aims to minimize the propulsion force of the drones while satisfying the wrench equilibrium equations on the payload. The parameter $K$ acts as a penality weight that prioritizes the tracking performance over energy efficiency; setting a high value (e.g., $K=1000$), heavily penalizes any mismatch between the generated wrench and the commanded target wrench $W_p^*$.
+This objective function aims to minimize the propulsion force of the drones while satisfying the wrench equilibrium equations on the payload. The parameter $K$ acts as a penalty weight that prioritizes the tracking performance over energy efficiency; setting a high value (e.g., $K=1000$), heavily penalizes any mismatch between the generated wrench and the commanded target wrench $W_p^*$.
 
 For whatever positions $p_a$, the cable tensions $\tau$ are determined by a second inner loop
 \begin{equation}

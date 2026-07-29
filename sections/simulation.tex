@@ -1,19 +1,31 @@
 \chapter{Simulation Environment and Experimental Setup}
-\label{chap:simulation}
-\section{Motivation for simulation environments}
-Why simulation is required
-Advantages and limitations
-Role of simulation in controller validation
-Simulation environment to avoid write dynamic equations
-\section{Simulator selection}
-\subsection{Gazebo environment}
-Features
-Physics engine
-Advantages/disadvantages
-\subsection{MuJoCo environment}
-Features
-Physics engine
-Advantages/disadvantages
+\section{Role of Simulation in the Thesis}
+The development of the ACTS requires the interaction of several coupled mechanical and control components. A physics-based simulation environment is therefore used to evaluate the proposed architectures and control strategies before physical implementation.
+
+Simulation provides a controlled environment in which the system can be tested under repeatable conditions. It also enables the evaluation of the controller without the risks and practical constraints associated with experiments on a physical system.
+
+An additional advantage of using a physics engine is that the complete coupled equations of motion do not need to be explicitly derived and numerically integrated for each configuration. Instead, the mechanical bodies, joints, constraints, actuators, and contact properties are defined in the simulation model, while the physics engine performs the corresponding numerical integration. Nevertheless, the validity of the simulation remains dependent on the assumptions and simplifications made in the model.
+
+\section{Simulator Selection}
+
+Two simulation environments were investigated during the development of the thesis: Gazebo and MuJoCo. Gazebo was initially considered because of its integration with ROS2 and the availability of existing UAV models and visualization tools. However, difficulties were encountered when attempting to represent the closed cable-constrained structure of the ACTS. MuJoCo was therefore selected for the final simulation environment.
+
+\subsection{Gazebo Environment}
+Gazebo Harmonic \cite{gazebo_harmonic_getstarted} was initially selected as a potential simulation environment because of its established use in robotics and its integration with ROS2. However, the ACTS architecture presents a particular modeling challenge. Unlike a conventional articulated robot, the system contains cables connecting bodies at both ends, resulting in closed kinematic constraints. Representing these constraints directly in the considered Gazebo setup proved difficult. An alternative approach based on rigid links and pulley mechanisms was investigated, including an implementation developed from previous work. While individual components of the system could be simulated, extending this approach to the complete ACTS resulted in a more complex and computationally demanding model.
+
+Several preliminary simulations were nevertheless successfully implemented in Gazebo, including a pulley mechanism, a UAV connected to the ground through a cable, and a UAV connected to a payload. These experiments were useful for validating the initial modeling approach and identifying the main limitations before transitioning to another simulation environment.
+
+Given the additional modeling effort required to represent the complete ACTS architecture and the limited time available for the thesis, continuing the Gazebo implementation was not considered the most effective approach for obtaining the required simulation results.
+
+\subsection{MuJoCo Environment}
+
+MuJoCo (Multi-Joint dynamics with Contact) was selected as the final simulation environment because it provides native support for constrained mechanical systems and is well suited to the closed-loop structure of cable-driven robots. In particular, MuJoCo provides tendon elements that can be used to represent cable-like connections between bodies, including constraints associated with their geometric configuration \cite{mujoco_docs_237}.
+
+This capability significantly simplifies the representation of the ACTS compared with the rigid-link approximation investigated in Gazebo. The complete system can therefore be represented using the payload, UAVs, ground anchors, and cables while maintaining the closed-loop constraints required by the architecture.
+
+For the simulations presented in this thesis, the cables are modeled as ideal geometric constraints. Their stiffness and damping are neglected, such that the cables transmit tensile forces without introducing additional elastic dynamics. This simplification is consistent with the quasi-static and geometric analysis used for the architecture evaluation, while allowing the simulation to focus on the influence of cable configuration, attachment geometry, and actuator placement.
+
+% All simulations are carried out using the MuJoCo (Multi-Joint Dynamics with Contact) physics extensions, allowing simulation of closed-loop systems, such as CDPRs and ACTSs, which is not possible in Gazebo. Another reason I switched from Gazebo to MuJoCo was the ability to model cables as tendons, which are minimum-path-length strings with wrapping and tracking, constraints \cite{mujoco_docs_237}. However, for the purpose of this thesis, the cables are treated as pure physical constraints, without stiffness or dumping.
 
 \section{Software architecture (UML)}
 \section{Simulation setup}
@@ -25,15 +37,14 @@ The objective of this chapter is to evaluate how the architectural design of an 
 
 In fact, a configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables remain under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations.
 
-In this chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
+In the following chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
 
 %% Simulation setup.  Why simulate the controller instead of only computing the Jacobian?
 The geometric and static performance indices provided in Section \ref{sec:performanceIndices} describe the instantaneous ability of a given architecture to generate payload wrenches and identify configurations that are close to kinematic singularities. However, these indices are evaluated under static or quasi-static assumptions and therefore cannot fully characterize the behavior of the closed-loop system during motion. During motion, cable directions, tensions and payload dynamics continuously evolve. Consequently, a configuration that appears favorable according to static indices may still exhibit oscillations, poor tracking or instability. Closed-loop simulation is therefore necessary to verify whether the theoretical advantages translate into practical performance.
 
-All simulations are carried out using the MuJoCo (Multi-Joint Dynamics with Contact) physics extensions, allowing simulation of closed-loop systems, such as CDPRs and ACTSs, which is not possible in Gazebo. Another reason I switched from Gazebo to MuJoCo was the ability to model cables as tendons, which are minimum-path-length strings with wrapping and tracking, constraints \cite{mujoco_docs_237}. However, for the purpose of this thesis, the cables are treated as pure physical constraints, without stiffness or dumping.
 
 %% Variables
-The payload mass, UAV model, controller gains, drone cable lengths, simulation duration, and desired payload pose are kept constant throughout all experiments to ensure a fair comparison between diferent architectural configurations. The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points.
+The payload mass, UAV model, controller gains, drone cable lengths, simulation duration, and desired payload pose are kept constant throughout all experiments to ensure a fair comparison between different architectural configurations. The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points.
 
 %% Scenario A and B
 Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.

@@ -3,7 +3,7 @@
 
 How to structure this chapter:
 \begin{enumerate}
-    \item Why did we chose to go for the method: controller and see if that pose is reacheable? [DONE] 
+    \item Why did we choose to go for the method: controller and see if that pose is reachable? [DONE] 
     \item Talk about Stewart configurations, 
     \begin{itemize}
         \item which are the indices values [DONE]
@@ -19,24 +19,24 @@ How to structure this chapter:
         \item How the results before simulation and after simulation differ?
         \item Why we need to test it dynamically and not just trust the results we obtain before? [DONE, add table]
         \item Rectangle-same really unstable configuration
-        \item line or diagonal results in not-feasible configurations, why? what does this mean? Add geometric reasons
+        \item line or diagonal results in not-feasible configurations, why? What does this mean? Add geometric reasons
     \end{itemize}
-    \item Given the results of the previous step, lets analyze the first 3/5 configurations with all 6 possible uav configurations
+    \item Given the results of the previous step, let's analyze the first 3/5 configurations with all 6 possible UAV configurations
     \begin{itemize}
-        \item Expetation: triangle being the best one, if not, which one is best? Rerun step 2 and see how things change
+        \item Expectation: triangle being the best one, if not, which one is best? Rerun step 2 and see how things change
         \item How drone attachment influences reaching the goal? Show evolution graph
     \end{itemize}
-    \item Can a more spread-out hook configuration on the ground better the performance or it is irrelevant? 
+    \item Can a more spread-out hook configuration on the ground better the performance, or it is irrelevant? 
     \begin{itemize}
-        \item Does the answer change when the desired position is If so, it opens results to the moving hook point.further away?
-        \item Show example on the top configuration and a really bad one.
-        \item Is there any papers/theorem that says so?
+        \item Does the answer change when the desired position is If so, it opens results to the moving hook point. Further away?
+        \item Show example on the top configuration and a terrible one.
+        \item Are there any papers/theorem that says so?
         \item Show evolution graph
     \end{itemize}  
     \item How a configuration far away from the hook point on the ground performs?
     \begin{enumerate}
         \item What Stewart does and what top configuration does
-        \item The hook position should cover more space on the ground. Does this better the result stewart vs top configuration?
+        \item The hook position should cover more space on the ground. Does this better the result Stewart vs top configuration?
         \item Is there a geometric reason/ theory for that?
     \end{enumerate} 
 \end{enumerate}
@@ -69,7 +69,7 @@ $A_8 \equiv A_9$ &  $[0.9526, -0.55, 0.0]^\top $    &   $B_7 \equiv B_8$ &  $[0.
 
 \end{tabular}
 \end{table}
-\noindent Using Equation \ref{eq:cableVector}b , the cable directions $u_i$ are: 
+\noindent Using Equation \ref{eq:cableVector}b, the cable directions $u_i$ are: 
 
 \begin{table}[h]
     \centering
@@ -95,7 +95,7 @@ J_{p, ground} =
 \]
 
 But I don't know where the drones may be, so what to do? 
-I can do the same and compute also the cable vector for the drone cable and its respective jacobian
+I can do the same and compute also the cable vector for the drone cable and its respective Jacobian
 
 \[
 \begin{aligned}
@@ -123,7 +123,7 @@ J_{p, drones} =
 
 
 % \subsection{Comparison $\tau_{min}$ and $\tau_{opt}$}
-\subsection{\texorpdfstring{Comparison $\tau_{\min}$ and $\tau_{\text{opt}}$}{Comparison}}
+\subsection{\texorpdfstring{Comparison $\tau_{\min}$ and $\tau_{\text{opt}}$}{ Comparison}}
 %% Do the theoretical indices suggest that Stewart is a good configuration?
 %% Does Stewart actually achieve the desired pose?
 %% Do theory and simulation agree?
@@ -222,11 +222,11 @@ Once the controller has been validated using the Stewart baseline, we can procee
 Therefore, we will start considering the drone attachment configuration as fixed to the triangular arrangement and vary only the routing of the six ground cables. This specific UAV configuration is chosen because it provides a symmetric distribution of the three drones around the payload. This approach allows one to isolate the influence of the ground cable routing and attribute differences in performance solely to the ground architecture. Finally, in Section \ref{sec:dronehook}, the impact of various UAV attachment geometries is examined independently.
 
 %% How the code work, how a given cable routing has been found
-Focusing on the gound cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarly chosen routing raise the question on how lucky the routing choise was and how good the architecture actually is.
+Focusing on the ground cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarily chosen routing raise the question on how lucky the routing choice was and how good the architecture actually is.
 
 To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment. Architectures are subsequently ranked against one another by worst-case conditioning index.
 
-\todo[inline]{Update with correct datas}
+\todo[inline]{Update with correct data}
 \begin{table}[htbp]
 \centering
 \small
@@ -279,9 +279,9 @@ The composite score N is not used for ranking routings during the exhaustive sea
 \end{algorithmic}
 \end{algorithm}
 
-\todo[inline]{Come posso sapere se una configurazione è più suscettibile a singolarità ad occhio?}
+\todo[inline]{How can I see if a configuration is more inclined to singularity only by looking at it?}
 
-\todo[inline]{line or diagonal results in not-feasible configurations, why? what does this mean? Geometric reasons?}
+\todo[inline]{Line or diagonal results in not-feasible configurations, why? What does this mean? Geometric reasons?}
 
 The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
 
@@ -298,7 +298,7 @@ The theoretical indices evaluate the geometric and static properties of a cable 
 The Jacobian is full rank and the static indices are acceptable, yet the payload rocks because of an uneven load distribution and poor torsional stiffness. That example provides strong evidence that the theoretical indices are necessary but not sufficient for predicting closed-loop behavior.
 
 
-\todo[inline]{talk about triangle-triangle combination}
+\todo[inline]{Talk about triangle-triangle combination}
 
 \todo[inline]{Other combinations that give interesting results?}
 
