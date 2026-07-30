@@ -11,24 +11,85 @@ An additional advantage of using a physics engine is that the complete coupled e
 Two simulation environments were investigated during the development of the thesis: Gazebo and MuJoCo. Gazebo was initially considered because of its integration with ROS2 and the availability of existing UAV models and visualization tools. However, difficulties were encountered when attempting to represent the closed cable-constrained structure of the ACTS. MuJoCo was therefore selected for the final simulation environment.
 
 \subsection{Gazebo Environment}
-Gazebo Harmonic \cite{gazebo_harmonic_getstarted} was initially selected as a potential simulation environment because of its established use in robotics and its integration with ROS2. However, the ACTS architecture presents a particular modeling challenge. Unlike a conventional articulated robot, the system contains cables connecting bodies at both ends, resulting in closed kinematic constraints. Representing these constraints directly in the considered Gazebo setup proved difficult. An alternative approach based on rigid links and pulley mechanisms was investigated, including an implementation developed from previous work. While individual components of the system could be simulated, extending this approach to the complete ACTS resulted in a more complex and computationally demanding model.
+Gazebo Harmonic \cite{gazebo_harmonic_getstarted} was initially selected as a potential simulation environment because of its established use in robotics and its integration with ROS2. However, the ACTS architecture presents a particular modeling challenge. Indeed, Gazebo assigns each physical element in the simulation a parent, generating a tree-like structure. While this does not constitute a problem for conventional articulated robot, ACTS contains ground cables constrained at both ends (resp. on the payload and on a point fixed on the ground), resulting in closed kinematic constraints. 
 
-Several preliminary simulations were nevertheless successfully implemented in Gazebo, including a pulley mechanism, a UAV connected to the ground through a cable, and a UAV connected to a payload. These experiments were useful for validating the initial modeling approach and identifying the main limitations before transitioning to another simulation environment.
+Additionally, cables as soft body cannot be modelled in Gazebo, as it only manage rigid object. To go around the problem, they are modelled using multiple rigid links connected using universal joints. Although it solved the problem, implementing it resulted into an impracticable slow-down simulation.
+
+Several preliminary simulations were nevertheless successfully implemented in Gazebo, including a pulley mechanism, a UAV connected to the ground through a cable, and a UAV connected to a payload. While individual components of the system could be simulated, such as pulley mechanism and single drone-cable simulation, extending this approach to the complete ACTS resulted in a more complex and computationally demanding model.
+
+These experiments were useful for validating the initial modeling approach and identifying the main limitations before transitioning to another simulation environment.
+
+\todo[inline]{Add photos?}
 
 Given the additional modeling effort required to represent the complete ACTS architecture and the limited time available for the thesis, continuing the Gazebo implementation was not considered the most effective approach for obtaining the required simulation results.
 
 \subsection{MuJoCo Environment}
 
-MuJoCo (Multi-Joint dynamics with Contact) was selected as the final simulation environment because it provides native support for constrained mechanical systems and is well suited to the closed-loop structure of cable-driven robots. In particular, MuJoCo provides tendon elements that can be used to represent cable-like connections between bodies, including constraints associated with their geometric configuration \cite{mujoco_docs_237}.
+MuJoCo (Multi-Joint dynamics with Contact) was selected as the final simulation environment because it is well suited to the closed-loop structure of cable-driven robots. In particular, MuJoCo provides tendon elements that can be used to represent cable-like connections between bodies, including constraints associated with their geometric configuration \cite{mujoco_docs_237}.
 
 This capability significantly simplifies the representation of the ACTS compared with the rigid-link approximation investigated in Gazebo. The complete system can therefore be represented using the payload, UAVs, ground anchors, and cables while maintaining the closed-loop constraints required by the architecture.
 
 For the simulations presented in this thesis, the cables are modeled as ideal geometric constraints. Their stiffness and damping are neglected, such that the cables transmit tensile forces without introducing additional elastic dynamics. This simplification is consistent with the quasi-static and geometric analysis used for the architecture evaluation, while allowing the simulation to focus on the influence of cable configuration, attachment geometry, and actuator placement.
 
-% All simulations are carried out using the MuJoCo (Multi-Joint Dynamics with Contact) physics extensions, allowing simulation of closed-loop systems, such as CDPRs and ACTSs, which is not possible in Gazebo. Another reason I switched from Gazebo to MuJoCo was the ability to model cables as tendons, which are minimum-path-length strings with wrapping and tracking, constraints \cite{mujoco_docs_237}. However, for the purpose of this thesis, the cables are treated as pure physical constraints, without stiffness or dumping.
-
 \section{Software architecture (UML)}
+"How did I implement the simulator?"
+Figure: UML/software architecture.
+
+Overall Software Architecture \\
+Drone Controller Class Hierarchy
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/class_diagram.png}
+    \caption{Class Diagram}
+    \label{fig:classDiagram}
+\end{figure}
+
+Simulation and Data Processing Pipeline
+
+
+Python packages/modules
+UML architecture
+how the XML-generation code interacts with the simulator
+how the MuJoCo API is interfaced with
+controller classes
+simulation loop
+optimization
+data collection
+performance evaluation software
+
 \section{Simulation setup}
+"This is what the simulator contains."
+
+Figures/tables: MuJoCo model + simulation parameters + representative configurations.
+
+Parameter	Value
+Number of UAVs	3
+Payload mass	...
+UAV mass	...
+Cable length	...
+Simulation timestep	...
+Maximum UAV thrust	...
+Position tolerance	...
+Orientation tolerance	...
+Initial payload pose	...
+Target payload pose
+
+5.4.1 Simulation model
+Describe the actual ACTS instance used in MuJoCo.
+
+For example:
+The simulation consists of three UAVs connected to a rigid payload through aerial cables, with additional ground cables connected to fixed anchor points...
+
+You're not explaining how the Python code implements it. You're describing the model itself.
+
+5.4.2 Simulation parameters
+Put your numerical parameters in a table.
+
+5.4.3 Initial and target conditions
+Initial payload pose, target pose, UAV positions, etc.
+
+5.4.4 Configurations considered
+Stewart baseline, different ground routings, hook placements, etc.
 
 \section{Simulation methodology and evaluation framework}
 

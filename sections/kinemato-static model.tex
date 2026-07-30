@@ -419,19 +419,32 @@ Or either choosing the solution that maximizes the radius of available wrench be
 
 The architecture search involves a potentially large number of candidate ground-cable routings. Evaluating the complete nonlinear ACTS model for every candidate would be computationally expensive, particularly because the UAV positions and cable directions depend on the selected architecture. Therefore, a two-tier selection strategy is adopted to progressively eliminate unsuitable configurations before performing the more expensive full-system analysis.
 
-In the first tier, candidate ground-cable routings are screened using the ground-cable subsystem alone. For each routing, the ground-only payload Jacobian ($J_{p,\mathrm{ground}}$) is constructed from the six ground cables. The routing is then evaluated according to three criteria: the Wrench Closure Condition (WCC),
+In the first tier, candidate ground-cable routings are screened using the ground-cable subsystem alone. For each routing, the ground-only payload Jacobian ($J_{p,\mathrm{ground}}$) is constructed from the six ground cables and evaluated against the Wrench Closure Condition (WCC),
 
 \begin{equation}
 \operatorname{rank}(J_{p,\mathrm{ground}})=6,
+\label{eq:wcc}
 \end{equation}
 
-the Wrench Feasible Condition (WFC), formulated as a bounded tension feasibility problem and solved using linear programming, and the Interference-Free Condition (IFC), restricted to the ground-cable geometry. These tests are performed over a representative set of payload poses. A routing is discarded if it violates any of these criteria at any tested pose.
+(implemented in practice as a singular-value threshold, $\sigma_{\min} > \varepsilon_{\mathrm{rank}}$, rather than an exact rank test) and the Interference-Free Condition (IFC), restricted to ground-cable pairs. A routing is discarded immediately if it violates either criterion at any tested pose.
 
-The WCC applied at this stage should be interpreted as a conservative pre-screening criterion rather than as a requirement on the final ACTS. Since the ground subsystem is considered independently, it must be capable of generating a full six-dimensional wrench by itself. The UAV cables are not yet included in this first-tier analysis.
+Within this same pass, a nominal-position joint Wrench Feasible Condition is also evaluated: the UAV cables are included using a cheap, non-optimized placement directly above each payload hook, and the resulting nine-cable Jacobian is checked via the bounded least-squares residual of Eq.~\ref{eq:jointWFC}. Under the default configuration, this WFC outcome does not by itself eliminate a routing; it is recorded alongside the WCC/IFC result and used to rank the surviving candidates. A dedicated rescue stage is triggered only if no routing passes all three criteria cleanly: the top candidates by manipulability are then re-evaluated using an actuator-repositioning search (Nelder--Mead over each UAV's angular position on its cable sphere, minimizing the joint WFC residual), promoting the first candidate whose repositioned configuration satisfies the residual tolerance. This differs from the SLSQP-based drone-disposition optimizer used at runtime, since the two solve distinct objectives under distinct constraint sets and are not interchangeable.
 
-The remaining routings are then ranked according to their worst-case performance over the representative workspace. In particular, the conditioning index and wrench-generation metrics introduced in Section \ref{sec:performanceIndices} can be used to identify routings that maintain a favorable geometric configuration throughout the workspace.
+In the second tier, the complete ACTS architecture is evaluated for the most promising ground routings and UAV attachment geometries using the full payload Jacobian ($J_{p,\mathrm{full}}$), assembled from the ground and aerial cables. The wrench feasibility of the complete system is verified by solving the bounded optimization problem
 
-In the second tier, the complete ACTS architecture is evaluated for the most promising ground routings and UAV attachment geometries. The full payload Jacobian ($J_{p,\mathrm{full}}$) is assembled from the ground and aerial cables. The UAV positions are determined from the selected architecture and, where applicable, from the actuator-position optimization described in Section 4.2. The complete system is then evaluated using the combined cable-tension limits, including the maximum admissible tension imposed by the UAV thrust capabilities.
+\begin{equation}
+\min_{\boldsymbol{\tau}} \left\| J_{p,\mathrm{full}}^\top \boldsymbol{\tau} - \mathbf{w}^{*} \right\|_2
+\label{eq:jointWFC}
+\end{equation}
+
+subject to
+
+\begin{equation}
+\boldsymbol{\tau}_{\min} \leq \boldsymbol{\tau} \leq \boldsymbol{\tau}_{\max},
+\label{eq:jointWFCbounds}
+\end{equation}
+
+where the bounds include the maximum admissible tension imposed by the UAV thrust capabilities. A configuration is considered feasible when the resulting wrench residual falls below a prescribed tolerance.
 
 The wrench feasibility of the complete system is verified by solving the bounded optimization problem
 
@@ -447,11 +460,11 @@ J_{p,\mathrm{full}}\boldsymbol{\tau}
 subject to
 
 \begin{equation}
-\boldsymbol{\tau}*{\min}
+\boldsymbol{\tau}*_{\min}
 \leq
 \boldsymbol{\tau}
 \leq
-\boldsymbol{\tau}*{\max}.
+\boldsymbol{\tau}*_{\max}.
 \end{equation}
 
 A configuration is considered feasible when the resulting wrench residual is below a prescribed tolerance. The surviving configurations are subsequently compared using the performance metrics defined in Section \ref{sec:performanceIndices}, including the capacity margin, force and moment radius of available wrench, and actuator margin.

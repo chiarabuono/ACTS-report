@@ -22,7 +22,7 @@ The trajectory planner is able to compute the payload trajectory $x(t)$ and its 
 And/or the initial and final position of the payload.
 
 \subsubsection{Payload Controller}
-\todo[inline]{Check this}
+\todo[inline]{It is right - write it better}
 Then, the desired payload wrench $W_p^*$ is computed for each point in the trajectory based on the previous state of the system. 
 The desired payload wrench is computed from a geometric PD controller. The translational component is given by
 
@@ -63,10 +63,14 @@ M_p^*
 \end{bmatrix}.
 \end{equation}
 
-\subsubsection{Cable length controller (winch level control)}
-When transitioning from a desired payload pose to the next along the planned trajectory, the operational priority is given to the ground actuators, as they can be controllable with significantly higher precision than UAVs.
+\subsubsection{Winch-Level Cable Length Controller}
+When transitioning the payload to a target pose along the planned trajectory, operational priority is given to the ground actuators due to their significantly higher mechanical stiffness and positioning precision compared to UAVs.
 
-As the starting ACTS configuration consists of six ground cables, the ground subsystem can be modeled as a Gough-Stewart parallel platform (Figure \ref{fig:stewartplatform}), where the required positive cable tensions are guaranteed by the drones.
+The ground subsystem is modeled as a 6-DOF Gough-Stewart parallel mechanism where the six ground cables act as active legs. Given the target payload position $\mathbf{p}^*$ and target orientation matrix $\mathbf{R}^*$, the ideal length $\rho_i^*$ for the $i$-th ground cable is defined geometrically by:
+\begin{equation}
+    \rho_i^* = \| \mathbf{a}_i - (\mathbf{p}^* + \mathbf{R}^* \,^p \mathbf{b}_i) \|
+\end{equation}
+where $\mathbf{a}_i$ represents the fixed ground anchor (pulley exit point) and $^p\mathbf{b}_i$ is the hook location in the payload body frame.
 
  \begin{figure}
      \centering
@@ -75,20 +79,16 @@ As the starting ACTS configuration consists of six ground cables, the ground sub
      \label{fig:stewartplatform}
  \end{figure}
 
-Given the desired payload position $p^*$ and the rotation matrix $^0_pR^*$ that defines the desired orientation of the payload relative to the fixed world frame, the desired i-th ground cable vector $^0\mathbf{l}_i^*$ is geometrically defined as:
+To account for the physical velocity limits of the winch motors, the target length is tracked using a velocity-saturated kinematic controller. At each control step $\Delta t$, the commanded cable length extension is constrained by the maximum winch speed $v_{\text{max}}$:
 \begin{equation}
-    ^0\mathbf{l}_i^* = \, ^0\mathbf{a}_i - ^0\boldsymbol{r}_i = \, ^0\mathbf{a}_i- (\, ^0\mathbf{p}^* + \, ^0_pR^* \, ^p \mathbf{b}_i) 
+    \rho_i(t + \Delta t) = \rho_i(t) + \text{sat}_{\Delta \rho_{\text{max}}} \left( \rho_i^* - \rho_i(t) \right)
+\end{equation}
+where the saturation bounds are given by $\Delta \rho_{\text{max}} = v_{\text{max}} \cdot \Delta t$, defined as:
+\begin{equation}
+    \text{sat}_{\Delta \rho_{\text{max}}}(e) = \max \left(-\Delta \rho_{\text{max}}, \, \min \left(e, \, \Delta \rho_{\text{max}}\right) \right)
 \end{equation}
 
-\todo[inline]{At the end trusted pulley control, talk about it}
-The target leg length is $\rho_i^* = \|l_i^*\|$. To ensure precise tracking of the ground cable lengths, we can either implement a PD controller at the winch level, where the velocity command $\dot{\rho}_i$ is given by:
-\begin{equation}
-    \dot{\rho}_i = \dot{\rho}_i^* + K_i (\rho_i^* - \rho_i) + K_p (\dot{\rho}_i^* - \dot{\rho}_i)
-\end{equation}
-Under the assumption of stationary winches ($\dot{a} = 0$), $\dot{\rho}^*_{ground} = -J_{p, ground} \xi^*$ (Equation \ref{eq:kinematic_model}), where $\xi^*$ is the desired payload twist and $J_{p, ground} \in \mathbb{R}^{6\times 6}$ is the Jacobian matrix mapping the payload twist to the ground cable length variation. In simulation, we implement a control directly on the cable length:
-\begin{equation}
-    l_i = l_i^* + K_p (l_i^*-l_i) + K_d (\dot{l}_i^* - \dot{l}_i)
-\end{equation}
+This commanded position reference $\rho_i(t + \Delta t)$ is directly fed to the actuator position servo. This ensures smooth, bounded rate transitions toward the target setpoint without demanding unrealistic acceleration or spooling speeds from the ground winches.
 
 
 
