@@ -1,0 +1,86 @@
+<mxfile host="65bd71144e">
+    <diagram id="cls1" name="Class Diagram - Drone Control Hierarchy">
+        <mxGraphModel dx="1149" dy="631" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="950" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="BaseDrone" value="BaseDrone" style="swimlane;fontStyle=1;align=center;verticalAlign=top;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="480" y="60" width="260" height="260" as="geometry">
+                        <mxRectangle x="480" y="40" width="110" height="30" as="alternateBounds"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="BD_attrs" value="GRAVITY: float = 9.81&lt;br&gt;MAX_ROTOR_VELOCITY: float&lt;br&gt;arm_length: float = 0.17&lt;br&gt;kt, kd: float&lt;br&gt;drone_mass: float&lt;br&gt;drone_id: int&lt;br&gt;qvel_offset: int&lt;br&gt;gains: dict {Kp_pos, Kd_pos, Kp_att, Kd_att}&lt;br&gt;inv_mixer: ndarray[4x4]" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="BaseDrone" vertex="1">
+                    <mxGeometry y="20" width="260" height="152" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rounded=0;html=1;" parent="BaseDrone" vertex="1">
+                    <mxGeometry y="152" width="260" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="BD_methods" value="+ build_inverse_mixer_matrix(l, kt, kd)&lt;br&gt;+ build_forward_mixer(l, kt, kd)&lt;br&gt;+ calculate_orientation_frame(f)&lt;br&gt;+ attitude_controller(q_des, q, w)&lt;br&gt;+ compute_motor_wrenches(pd,p,vd,v,q,w)&lt;br&gt;+ position_controller(pd,p,vd,v)  &lt;i&gt;{abstract}&lt;/i&gt;" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="BaseDrone" vertex="1">
+                    <mxGeometry y="160" width="260" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="FreeFlight" value="FreeFlightDrone" style="swimlane;fontStyle=1;align=center;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="290" width="180" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="FF_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rounded=0;html=1;" parent="FreeFlight" vertex="1">
+                    <mxGeometry y="32" width="180" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="FF_methods" value="+ position_controller(pd,p,vd,v)" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="FreeFlight" vertex="1">
+                    <mxGeometry y="40" width="180" height="40" as="geometry"/>
+                </mxCell>
+                <mxCell id="CableTethered" value="CableTetheredDrone" style="swimlane;fontStyle=1;align=center;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="270" y="430" width="200" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="CT_attrs" value="cable_length: float&lt;br&gt;anchor_b: ndarray&lt;br&gt;tau_star: float = ||f_star||" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="CableTethered" vertex="1">
+                    <mxGeometry y="14" width="200" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="CT_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rounded=0;html=1;" parent="CableTethered" vertex="1">
+                    <mxGeometry y="60" width="200" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="CT_methods" value="+ position_controller(pd,p,vd,v)" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="CableTethered" vertex="1">
+                    <mxGeometry y="68" width="170" height="42" as="geometry"/>
+                </mxCell>
+                <mxCell id="PayloadControl" value="PayloadControlDrone" style="swimlane;fontStyle=1;align=center;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="495" y="410" width="230" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="PC_attrs" value="m_payload: float&lt;br&gt;gains_platform: dict {Kp_pl, Kd_pl}&lt;br&gt;e3: ndarray = [0,0,1]&lt;br&gt;p_star_ddot, Fa_2: ndarray&lt;br&gt;p_payload_des, v_payload_des: ndarray&lt;br&gt;p_payload, v_payload: ndarray" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="PayloadControl" vertex="1">
+                    <mxGeometry y="15" width="230" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="PC_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rounded=0;html=1;" parent="PayloadControl" vertex="1">
+                    <mxGeometry y="105" width="230" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="PC_methods" value="+ set_payload_states(p_ddot*, Fa2, p*, v*)&lt;br&gt;+ update_payload_pose(p, v)&lt;br&gt;+ compute_Fp_star()&lt;br&gt;+ position_controller(pd,p,vd,v)" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="PayloadControl" vertex="1">
+                    <mxGeometry y="113" width="230" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="ACTSControl" value="ACTScontrolDrone" style="swimlane;fontStyle=1;align=center;verticalAlign=top;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="740" y="400" width="220" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="ACTS_attrs" value="m_payload: float&lt;br&gt;data: mujoco.MjData&lt;br&gt;tau_star: float&lt;br&gt;p_hook: ndarray&lt;br&gt;thrust_id, roll_id, pitch_id, yaw_id: int" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="ACTSControl" vertex="1">
+                    <mxGeometry y="23" width="220" height="105" as="geometry"/>
+                </mxCell>
+                <mxCell id="ACTS_sep" value="" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rounded=0;html=1;" parent="ACTSControl" vertex="1">
+                    <mxGeometry y="102" width="220" height="8" as="geometry"/>
+                </mxCell>
+                <mxCell id="ACTS_methods" value="+ update_data(data)&lt;br&gt;+ set_cable_target(tau_star, p_hook)&lt;br&gt;+ apply_wrench(a_star)&lt;br&gt;&amp;nbsp;&amp;nbsp;— writes ctrl[thrust/roll/pitch/yaw]&lt;br&gt;+ position_controller(pd,p,vd,v)&lt;br&gt;&lt;i&gt;used live in acts.py control loop&lt;/i&gt;" style="text;align=left;verticalAlign=top;spacingLeft=8;spacingTop=4;overflow=hidden;whiteSpace=wrap;html=1;fontSize=11;" parent="ACTSControl" vertex="1">
+                    <mxGeometry y="105" width="220" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="inh1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;endSize=18;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="FreeFlight" target="BD_methods" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="inh2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;endSize=18;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.25;entryY=1;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="CableTethered" target="BD_methods" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="370" y="390"/>
+                            <mxPoint x="545" y="390"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="inh3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;endSize=18;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="PayloadControl" target="BD_methods" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="inh4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=0;endSize=18;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;fontSize=10;" parent="1" source="ACTSControl" target="BD_methods" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

@@ -1,0 +1,163 @@
+<mxfile host="65bd71144e">
+    <diagram id="pkg2" name="Figure 1b - acts_simulator Internal Architecture">
+        <mxGraphModel dx="1149" dy="631" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="826" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="Mujoco" value="MuJoCo&#xa;(external physics engine)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;fontStyle=1;fontSize=13;" parent="1" vertex="1">
+                    <mxGeometry x="690" y="320" width="190" height="63" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.25;exitY=1;entryX=0.5;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" parent="1" source="Orch" target="Eval" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="308" y="130"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0;exitY=0.25;entryX=0.25;entryY=0;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" parent="1" source="Orch_sub" target="Control" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.5;exitY=1;entryX=0;entryY=0.25;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" parent="1" source="Control_sub" target="Config_sub" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.4;exitY=1;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" parent="1" source="Kine" target="Config_sub" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="600" y="292"/>
+                            <mxPoint x="600" y="496"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e8" value="mujoco API" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;dashed=1;fontSize=10;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="Control" target="Mujoco" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="140" y="413"/>
+                            <mxPoint x="140" y="560"/>
+                            <mxPoint x="620" y="560"/>
+                            <mxPoint x="620" y="351"/>
+                        </Array>
+                        <mxPoint x="778" y="433" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e9" value="mujoco API" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;dashed=1;fontSize=10;exitX=1;exitY=0.75;exitDx=0;exitDy=0;" parent="1" source="Orch_sub" target="Mujoco" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e10" value="&lt;div&gt;offline: produces&amp;nbsp;&lt;/div&gt;&lt;div&gt;MuJoCo XML model&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;dashed=1;fontSize=10;entryX=1;entryY=0;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" parent="1" source="OfflineGen_sub" target="Orch_sub" edge="1">
+                    <mxGeometry x="0.48" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="760" y="68"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e11" value="runtime: p_drone_targets,&amp;nbsp;&lt;div&gt;optimal_tensions&lt;br&gt;(passed via acts.py,&amp;nbsp;&lt;/div&gt;&lt;div&gt;no direct import)&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;dashed=1;strokeColor=#9673a6;fontColor=#9673a6;fontSize=10;exitX=0.25;exitY=1;entryX=1;entryY=0.75;entryDx=0;entryDy=0;exitDx=0;exitDy=0;" parent="1" source="Kine_sub" target="Control_sub" edge="1">
+                    <mxGeometry x="0.1363" y="-5" relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                        <Array as="points">
+                            <mxPoint x="582" y="395"/>
+                        </Array>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-1" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="670" y="10" width="210" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="OfflineGen" value="Offline Architecture&#xa;Generation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="4zUDWwyYj_FXTnBnqqvt-1" vertex="1">
+                    <mxGeometry width="210" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="OfflineGen_sub" value="create_xml/xml_config_builder.py&#xa;UGVUAVConfig, build_xml, save_xml" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="4zUDWwyYj_FXTnBnqqvt-1" vertex="1">
+                    <mxGeometry y="36.81818181818182" width="210" height="53.18181818181819" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-2" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="230" y="43" width="280" height="87" as="geometry"/>
+                </mxCell>
+                <mxCell id="Orch" value="Setup &amp;amp; Main Control Loop" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="4zUDWwyYj_FXTnBnqqvt-2" vertex="1">
+                    <mxGeometry width="280" height="87" as="geometry"/>
+                </mxCell>
+                <mxCell id="Orch_sub" value="params_acts.py — load MuJoCo model, ctrl_params&lt;br&gt;acts.py — main control loop" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="4zUDWwyYj_FXTnBnqqvt-2" vertex="1">
+                    <mxGeometry y="25.30909090909091" width="280" height="55.36363636363636" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-3" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="520" y="194.5" width="250" height="97" as="geometry"/>
+                </mxCell>
+                <mxCell id="Kine" value="Kinematostatic Model" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="4zUDWwyYj_FXTnBnqqvt-3" vertex="1">
+                    <mxGeometry width="250" height="97" as="geometry"/>
+                </mxCell>
+                <mxCell id="Kine_sub" value="utils_optimization.py — payload Jacobian,&#xa;drone-layout optimization (SLSQP),&#xa;interference-free / cable-rubbing checks" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="4zUDWwyYj_FXTnBnqqvt-3" vertex="1">
+                    <mxGeometry y="28.291666666666668" width="250" height="64.66666666666667" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-5" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="173" y="197.46" width="270" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="Eval" value="Evaluation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="4zUDWwyYj_FXTnBnqqvt-5" vertex="1">
+                    <mxGeometry width="270" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="Eval_sub" value="utils_performance_indices.py — AWS vertices,&amp;nbsp;&lt;div&gt;capacity margin,&amp;nbsp;conditioning index, manipulability,&amp;nbsp;&lt;/div&gt;&lt;div&gt;rAW, composite score&lt;/div&gt;" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="4zUDWwyYj_FXTnBnqqvt-5" vertex="1">
+                    <mxGeometry y="30" width="270" height="55" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-7" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="630" y="460" width="250" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="Legend" value="Legend" style="rounded=0;whiteSpace=wrap;html=1;fillColor=none;strokeColor=#999999;fontStyle=1;fontSize=11;verticalAlign=top;align=left;spacingLeft=8;spacingTop=4;dashed=1;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry width="250" height="120" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendImport" style="edgeStyle=none;html=1;endArrow=open;endFill=1;fontSize=10;" parent="4zUDWwyYj_FXTnBnqqvt-7" source="LegendA1" target="LegendA2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendA1" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=none;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="12" y="30" width="4" height="4" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendA2" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#999999;strokeColor=none;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="62" y="30" width="4" height="4" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendImportLbl" value="solid = import dependency" style="text;align=left;verticalAlign=middle;fontSize=10;html=1;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="77" y="21" width="165" height="20" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendDataflow" style="edgeStyle=none;html=1;endArrow=open;endFill=1;dashed=1;strokeColor=#9673a6;fontSize=10;" parent="4zUDWwyYj_FXTnBnqqvt-7" source="LegendB1" target="LegendB2" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendB1" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#9673a6;strokeColor=none;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="12" y="60" width="4" height="4" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendB2" value="" style="ellipse;whiteSpace=wrap;html=1;fillColor=#9673a6;strokeColor=none;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="62" y="60" width="4" height="4" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendDataflowLbl" value="dashed (purple) = runtime data flow,&#xa;no direct import" style="text;align=left;verticalAlign=top;fontSize=10;html=1;whiteSpace=wrap;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="77" y="48" width="165" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="LegendExtLbl" value="dashed (black) = external library /&#xa;build-time (offline) coupling" style="text;align=left;verticalAlign=top;fontSize=10;html=1;whiteSpace=wrap;" parent="4zUDWwyYj_FXTnBnqqvt-7" vertex="1">
+                    <mxGeometry x="12" y="85" width="230" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-9" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="255" y="460" width="240" height="73" as="geometry"/>
+                </mxCell>
+                <mxCell id="Config" value="Configuration" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="4zUDWwyYj_FXTnBnqqvt-9" vertex="1">
+                    <mxGeometry width="240" height="73" as="geometry"/>
+                </mxCell>
+                <mxCell id="Config_sub" value="__init__.py — global simulation parameters&#xa;&amp; control constants" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="4zUDWwyYj_FXTnBnqqvt-9" vertex="1">
+                    <mxGeometry y="24.333333333333332" width="240" height="44.611111111111114" as="geometry"/>
+                </mxCell>
+                <mxCell id="4zUDWwyYj_FXTnBnqqvt-6" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="108" y="326" width="210" height="87" as="geometry"/>
+                </mxCell>
+                <mxCell id="2" value="" style="group" vertex="1" connectable="0" parent="4zUDWwyYj_FXTnBnqqvt-6">
+                    <mxGeometry width="210" height="87" as="geometry"/>
+                </mxCell>
+                <mxCell id="Control" value="Control Law" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=14;verticalAlign=top;spacingTop=8;" parent="2" vertex="1">
+                    <mxGeometry width="210" height="87" as="geometry"/>
+                </mxCell>
+                <mxCell id="Control_sub" value="utils_control.py — ACTScontrolDrone&lt;br&gt;— see Class Diagram" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=10;fontStyle=2;" parent="2" vertex="1">
+                    <mxGeometry y="25.375000000000004" width="210" height="58.00000000000001" as="geometry"/>
+                </mxCell>
+                <mxCell id="5" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="Orch" target="Kine">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="6" style="edgeStyle=orthogonalEdgeStyle;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="Eval_sub" target="Kine_sub">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="8" style="edgeStyle=orthogonalEdgeStyle;html=1;exitX=0.75;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;rounded=0;curved=0;" edge="1" parent="1" source="Eval" target="Config">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

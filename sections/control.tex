@@ -7,7 +7,7 @@
 At high level, the architecture that enables the system to reach the goal is shown in Figure \ref{fig:control-high-level}.
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.6\linewidth]{images/control_scheme.png}
+    \includegraphics[width=0.6\linewidth]{images/diagrams/control_scheme.png}
     \caption{High level control scheme}
     \label{fig:control-high-level}
 \end{figure}
@@ -22,45 +22,30 @@ The trajectory planner is able to compute the payload trajectory $x(t)$ and its 
 And/or the initial and final position of the payload.
 
 \subsubsection{Payload Controller}
-\todo[inline]{It is right - write it better}
 Then, the desired payload wrench $W_p^*$ is computed for each point in the trajectory based on the previous state of the system. 
 The desired payload wrench is computed from a geometric PD controller. The translational component is given by
 
 \begin{equation}
 F_p^* = m_p g + K_p(p^*-p)+K_d(\dot p^*-\dot p),
 \end{equation}
-
-where \(p^*\) and \(p\) denote the desired and current payload positions, respectively.
-
-For the rotational dynamics, the controller follows the geometric formulation on \(SE(3)\) \cite{lee_geometric_2010}. The attitude error and angular velocity error are defined as
+where \(p^*\) and \(p\) are the desired and current payload positions, respectively. For the rotational dynamics, the controller follows the geometric formulation on \(SE(3)\) \cite{lee_geometric_2010}. The attitude error and angular velocity error are defined as
 \begin{equation}
     \begin{aligned}
 e_R &=\frac{1}{2}\left(R_d^TR-R^TR_d\right)^\vee \\
 e_\Omega &=\Omega-R^TR_d\Omega_d.
 \end{aligned}
 \end{equation} 
-
-
-Where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator.
-
-Since the controller performs set point regulation,
-\(\Omega_d=\mathbf{0}\), yielding $e_\Omega=\Omega$.
-
-
-The desired control moment in the world frame is then
-
+Where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator. Since the controller performs set point regulation, the desired angular velocity is zero: \(\Omega_d=\mathbf{0}\), yielding $e_\Omega=\Omega$. The desired control moment in the world frame is then
 \begin{equation}
-M_p^*=R(-K_Re_R + K_\Omega e_\Omega)
+    M_p^*=R(-K_Re_R - K_\Omega e_\Omega)
 \end{equation}
-
 and the desired payload wrench becomes
-
 \begin{equation}
-W_p^*=
-\begin{bmatrix}
-F_p^*\\
-M_p^*
-\end{bmatrix}.
+    W_p^*=
+    \begin{bmatrix}
+        F_p^*\\
+        M_p^*
+    \end{bmatrix}.
 \end{equation}
 
 \subsubsection{Winch-Level Cable Length Controller}

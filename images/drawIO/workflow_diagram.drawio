@@ -1,0 +1,91 @@
+<mxfile host="app.diagrams.net" agent="claude">
+  <diagram id="wf1" name="Figure 3 - Execution Workflow">
+    <mxGraphModel dx="1078" dy="638" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="960" pageHeight="1050" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="l0CD0-XdxuyHBKaSoQ1S-2" edge="1" parent="1" source="configDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" target="l0CD0-XdxuyHBKaSoQ1S-1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="configDB" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" value="Configuration database&#xa;(poses_to_analyze.csv,&#xa;UGV/UAV JSON DB)" vertex="1">
+          <mxGeometry height="60" width="200" x="392" y="50" as="geometry" />
+        </mxCell>
+        <mxCell id="groundScreen" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" value="Ground-cable routing screening&#xa;(analytical_ground_screening.py)" vertex="1">
+          <mxGeometry height="60" width="260" x="632" y="145" as="geometry" />
+        </mxCell>
+        <mxCell id="xmlGen" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" value="MuJoCo XML model generation&#xa;(xml_config_builder.py)" vertex="1">
+          <mxGeometry height="60" width="260" x="350" y="240" as="geometry" />
+        </mxCell>
+        <mxCell id="actsEntry" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;" value="acts.py&#xa;interactive, single model,&#xa;single target pose (live GUI)" vertex="1">
+          <mxGeometry height="70" width="260" x="80" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="batchEntry" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;fontStyle=1;" value="batch_run.py&#xa;headless, all XML models ×&#xa;all poses in batch_run.xlsx" vertex="1">
+          <mxGeometry height="70" width="260" x="620" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="sharedCore" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Per control step:&#xa;Optimization (utils_optimization.py)  +  Control (utils_control.py)&#xa;— same modules for both entry points —" vertex="1">
+          <mxGeometry height="65" width="400" x="280" y="460" as="geometry" />
+        </mxCell>
+        <mxCell id="perfEval" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="Performance evaluation&#xa;(utils_performance_indices.py)" vertex="1">
+          <mxGeometry height="60" width="300" x="330" y="565" as="geometry" />
+        </mxCell>
+        <mxCell id="collectedData" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" value="collected_data&#xa;video / live plots /&#xa;single-run indices.xlsx row" vertex="1">
+          <mxGeometry height="60" width="230" x="80" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="resultsRow" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="results.xlsx&#xa;row appended per&#xa;(model, pose) — at convergence&#xa;or MAX_ITERATIONS" vertex="1">
+          <mxGeometry height="70" width="230" x="650" y="670" as="geometry" />
+        </mxCell>
+        <mxCell id="ch611" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" value="Chapter 6.1.1 — qualitative&#xa;verification (Fig. 6.1 plots, video)" vertex="1">
+          <mxGeometry height="60" width="230" x="80" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="statsNode" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=11;fontStyle=1;" value="stats_test_suit.py&#xa;statistical analysis" vertex="1">
+          <mxGeometry height="60" width="230" x="650" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="ch6" parent="1" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" value="Chapter 6 comparative&#xa;statistical tables" vertex="1">
+          <mxGeometry height="60" width="230" x="650" y="880" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="configDB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" target="groundScreen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="groundScreen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" target="xmlGen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="xmlGen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.3;exitY=1;entryX=0.5;entryY=0;" target="actsEntry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="xmlGen" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.7;exitY=1;entryX=0.5;entryY=0;" target="batchEntry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="actsEntry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.5;exitY=1;entryX=0.15;entryY=0;" target="sharedCore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="batchEntry" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.5;exitY=1;entryX=0.85;entryY=0;" target="sharedCore">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="sharedCore" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" target="perfEval">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="perfEval" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.15;exitY=1;entryX=0.5;entryY=0;" target="collectedData" value="acts.py path">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="perfEval" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.85;exitY=1;entryX=0.5;entryY=0;" target="resultsRow" value="batch_run.py path,&#xa;on exit condition">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="collectedData" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" target="ch611">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="resultsRow" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" target="statsNode" value="repeats for every&#xa;(model, pose) pair">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e12" edge="1" parent="1" source="statsNode" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" target="ch6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0CD0-XdxuyHBKaSoQ1S-4" edge="1" parent="1" source="l0CD0-XdxuyHBKaSoQ1S-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.25;entryY=0;entryDx=0;entryDy=0;" target="xmlGen">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="l0CD0-XdxuyHBKaSoQ1S-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;fontStyle=1;" value="Costume made xml file&lt;br&gt;(xml_generator.py)" vertex="1">
+          <mxGeometry height="60" width="260" x="70" y="145" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -356,14 +356,14 @@ Additionally, we can define the worst-case capacity margin as to how far the sys
     \zeta = \min \left(1 - \max_i \frac{\tau_i}{\tau_{i, max}} \right)
 \end{equation}
 
-For each drone, the maximum available cable tension $t_{i, max}$ is based on its maximum thrust $f_{i, max}$ and its current orientation relative to the cable \cite{erskine_wrench_2019}
-\begin{equation}
-t_{i, max} = m_i \boldsymbol{u}_i^T (\boldsymbol{g} - \ddot{\boldsymbol{x}}_i) + \sqrt{f_{i, max}^2 + m_i^2 \left( \left( \boldsymbol{u}_i^T (\ddot{\boldsymbol{x}}_i - \boldsymbol{g}) \right)^2 - \ddot{\boldsymbol{x}}_i^T \ddot{\boldsymbol{x}}_i - \boldsymbol{g}^T \boldsymbol{g} \right)}
-\end{equation}
-Considering only quasi-static motion, this can be reduced to the following, where $u_{iz} = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{u}_i$ and $g = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{g}$.
-\begin{equation}
-    t_{i, max} = m_igu_{iz} + \sqrt{f_{i, max}^2 + m_i^2 g^2 \left(u_{iz}^2 - 1 \right)}
-\end{equation}
+% For each drone, the maximum available cable tension $t_{i, max}$ is based on its maximum thrust $f_{i, max}$ and its current orientation relative to the cable \cite{erskine_wrench_2019}
+% \begin{equation}
+% t_{i, max} = m_i \boldsymbol{u}_i^T (\boldsymbol{g} - \ddot{\boldsymbol{x}}_i) + \sqrt{f_{i, max}^2 + m_i^2 \left( \left( \boldsymbol{u}_i^T (\ddot{\boldsymbol{x}}_i - \boldsymbol{g}) \right)^2 - \ddot{\boldsymbol{x}}_i^T \ddot{\boldsymbol{x}}_i - \boldsymbol{g}^T \boldsymbol{g} \right)}
+% \end{equation}
+% Considering only quasi-static motion, this can be reduced to the following, where $u_{iz} = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{u}_i$ and $g = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{g}$.
+% \begin{equation}
+%     t_{i, max} = m_igu_{iz} + \sqrt{f_{i, max}^2 + m_i^2 g^2 \left(u_{iz}^2 - 1 \right)}
+% \end{equation}
 
 \subsubsection{Radius of Available Wrench (rAW)}
 The radius of the available wrench (rAW) is the maximum magnitude of force that the system can generate uniformly in all directions while remaining within admissible tension limits \cite{jamshidifar_static_2020}. Its optimization helps identify arrangements that simultaneously maximize force robustness, geometric and collision-avoidance constraints, resulting into an enlargement of the static workspace \cite{jamshidifar_static_2020}.
@@ -415,58 +415,34 @@ Or either choosing the solution that maximizes the radius of available wrench be
 
 % When the weighted-sum formulation of Eq. 3.27 is used instead of the $\gamma$ > $\gamma$min selection rule, each of the four metrics — capacity margin $\gamma$, radius of available wrench in force (rAW$_{force}$) and in moment (rAW$_{moment}$), and worst-case capacity margin $\zeta$ — is first normalized to a common reference scale before being combined. For this study, the weights are set to w$\gamma$ = 0.20, wforce = 0.35, wmoment = 0.30, w$\zeta$ = 0.15, reflecting a design preference that prioritizes force- and moment-generation capability (rAW$_{force}$ and rAW$_{moment}$ together account for 65\% of the score) over robustness margins ($\gamma$ and $\zeta$ together account for the remaining 35\%). This weighting was chosen empirically for the FaçadeShieldBot use case, where the ability to generate a sufficiently large wrench in all directions was judged more critical than operating with a wide safety margin from actuator saturation; a different application with tighter disturbance-rejection requirements might instead favor higher weights on $\gamma$ and $\zeta$.
 
+\newpage
 \subsection{Selection Strategy}
 
 The architecture search involves a potentially large number of candidate ground-cable routings. Evaluating the complete nonlinear ACTS model for every candidate would be computationally expensive, particularly because the UAV positions and cable directions depend on the selected architecture. Therefore, a two-tier selection strategy is adopted to progressively eliminate unsuitable configurations before performing the more expensive full-system analysis.
 
-In the first tier, candidate ground-cable routings are screened using the ground-cable subsystem alone. For each routing, the ground-only payload Jacobian ($J_{p,\mathrm{ground}}$) is constructed from the six ground cables and evaluated against the Wrench Closure Condition (WCC),
+Initially, candidate ground-cable routings are screened using the ground-cable subsystem alone. For each routing, the ground-only payload Jacobian ($J_{p,\mathrm{ground}}$) is constructed from the six ground cables and evaluated against the Wrench Closure Condition (WCC), $\operatorname{rank}(J_{p,\mathrm{ground}})=6$, and the Interference-Free Condition (IFC), restricted to ground-cable pairs. A routing is discarded immediately if it violates either criterion at any tested pose.
 
+% A dedicated rescue stage is triggered only if no routing passes all three criteria cleanly: the top candidates by manipulability are then re-evaluated using an actuator-repositioning search (Nelder--Mead over each UAV's angular position on its cable sphere, minimizing the joint WFC residual), promoting the first candidate whose repositioned configuration satisfies the residual tolerance. 
+
+The surviving ground routings are subsequently combined with candidate UAV attachment geometries. For each resulting complete ACTS configuration, the full payload Jacobian, $J_{p,\mathrm{full}}$, is assembled from the ground and aerial cables. Wrench feasibility is then evaluated by solving the bounded optimization problem
 \begin{equation}
-\operatorname{rank}(J_{p,\mathrm{ground}})=6,
-\label{eq:wcc}
+    \min_{\boldsymbol{\tau}}
+    \left\|
+    J_{p,\mathrm{full}}\boldsymbol{\tau}
+    -\mathbf{W}^{*}
+    \right\|^2,
+    \qquad
+    \text{subject to}
+    \qquad
+    \boldsymbol{\tau}_{\min}^{*}
+    \leq
+    \boldsymbol{\tau}
+    \leq
+    \boldsymbol{\tau}_{\max}^{*},
+    \label{eq:jointWFC}
 \end{equation}
+where $\mathbf{W}^{*}$ denotes the desired payload wrench and the tension bounds account for the admissible cable tensions, including the maximum tension imposed by the UAV thrust capabilities.
 
-(implemented in practice as a singular-value threshold, $\sigma_{\min} > \varepsilon_{\mathrm{rank}}$, rather than an exact rank test) and the Interference-Free Condition (IFC), restricted to ground-cable pairs. A routing is discarded immediately if it violates either criterion at any tested pose.
+A configuration is considered wrench-feasible when the minimum residual of Eq.~\ref{eq:jointWFC} is below a prescribed tolerance. The surviving configurations are subsequently compared using the performance metrics defined in Section \ref{sec:performanceIndices}.
 
-Within this same pass, a nominal-position joint Wrench Feasible Condition is also evaluated: the UAV cables are included using a cheap, non-optimized placement directly above each payload hook, and the resulting nine-cable Jacobian is checked via the bounded least-squares residual of Eq.~\ref{eq:jointWFC}. Under the default configuration, this WFC outcome does not by itself eliminate a routing; it is recorded alongside the WCC/IFC result and used to rank the surviving candidates. A dedicated rescue stage is triggered only if no routing passes all three criteria cleanly: the top candidates by manipulability are then re-evaluated using an actuator-repositioning search (Nelder--Mead over each UAV's angular position on its cable sphere, minimizing the joint WFC residual), promoting the first candidate whose repositioned configuration satisfies the residual tolerance. This differs from the SLSQP-based drone-disposition optimizer used at runtime, since the two solve distinct objectives under distinct constraint sets and are not interchangeable.
-
-In the second tier, the complete ACTS architecture is evaluated for the most promising ground routings and UAV attachment geometries using the full payload Jacobian ($J_{p,\mathrm{full}}$), assembled from the ground and aerial cables. The wrench feasibility of the complete system is verified by solving the bounded optimization problem
-
-\begin{equation}
-\min_{\boldsymbol{\tau}} \left\| J_{p,\mathrm{full}}^\top \boldsymbol{\tau} - \mathbf{w}^{*} \right\|_2
-\label{eq:jointWFC}
-\end{equation}
-
-subject to
-
-\begin{equation}
-\boldsymbol{\tau}_{\min} \leq \boldsymbol{\tau} \leq \boldsymbol{\tau}_{\max},
-\label{eq:jointWFCbounds}
-\end{equation}
-
-where the bounds include the maximum admissible tension imposed by the UAV thrust capabilities. A configuration is considered feasible when the resulting wrench residual falls below a prescribed tolerance.
-
-The wrench feasibility of the complete system is verified by solving the bounded optimization problem
-
-\begin{equation}
-\min_{\boldsymbol{\tau}}
-\left|
-J_{p,\mathrm{full}}\boldsymbol{\tau}
--
-\mathbf{w}^{*}
-\right|_2
-\end{equation}
-
-subject to
-
-\begin{equation}
-\boldsymbol{\tau}*_{\min}
-\leq
-\boldsymbol{\tau}
-\leq
-\boldsymbol{\tau}*_{\max}.
-\end{equation}
-
-A configuration is considered feasible when the resulting wrench residual is below a prescribed tolerance. The surviving configurations are subsequently compared using the performance metrics defined in Section \ref{sec:performanceIndices}, including the capacity margin, force and moment radius of available wrench, and actuator margin.
-
-This two-tier strategy separates the inexpensive combinatorial screening of ground-cable routings from the more computationally demanding analysis of the complete aerial-ground system. It therefore reduces the number of configurations requiring full nonlinear evaluation while retaining the relevant UAV-dependent constraints for the final architecture selection.
+This strategy separates the inexpensive combinatorial screening of ground-cable routings from the more computationally demanding analysis of the complete aerial-ground system. It therefore reduces the number of configurations requiring full nonlinear evaluation while retaining the relevant UAV-dependent constraints for the final architecture selection.

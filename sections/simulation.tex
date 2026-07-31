@@ -32,64 +32,113 @@ This capability significantly simplifies the representation of the ACTS compared
 For the simulations presented in this thesis, the cables are modeled as ideal geometric constraints. Their stiffness and damping are neglected, such that the cables transmit tensile forces without introducing additional elastic dynamics. This simplification is consistent with the quasi-static and geometric analysis used for the architecture evaluation, while allowing the simulation to focus on the influence of cable configuration, attachment geometry, and actuator placement.
 
 \section{Software architecture (UML)}
-"How did I implement the simulator?"
-Figure: UML/software architecture.
+All implementation code\footnote{\url{https://github.com/chiarabuono/acts_simulator.git}} is available on
+GitHub~\cite{my_thesis_repo}. The repository is organized into three functional groupings:
+\begin{itemize}
+    \item a \texttt{create\_xml} package, an offline configuration and model-generation stage;
+    \item an \texttt{acts\_simulator} package, a runtime simulation stage;
+    \item a \texttt{simulation\_run} package, a mass-evaluation stage.
+\end{itemize}
 
-Overall Software Architecture \\
-Drone Controller Class Hierarchy
+The \texttt{create\_xml} package handles architecture search and MuJoCo model generation offline, producing XML files that are loaded at startup. 
+
+A visual interface (\texttt{xml\_generator.py}) is also provided to build a custom XML model interactively, ready to be tested without going through the automated architecture search.
+
+The resulting models can be run by two independent codes: \texttt{acts.py}, a single-model, single-pose driver used for qualitative verification; and \texttt{batch\_run.py}, a headless driver that iterates over every candidate XML model and every target pose in a batch pose list. 
+
+Both codes are meaningful for different reasons.
+\texttt{acts.py} runs one simulation at a time with a live visual interface; this makes it slower, but well suited to the qualitative verification of the controller, which is what it was used for in the early stages of development. Each run saves a single indices row to \texttt{collected\_data}, together with a video recording and live plots of the tracking performance. \texttt{batch\_run.py} executes the same underlying pipeline without the visual interface, which makes it considerably faster over many configurations: it accumulates one results row per (model, pose) combination directly into \texttt{results.xlsx}. This is the driver used to collect performance data across architectures and poses, from which the conclusions of Chapter \ref{chap:results} are drawn. This overall process is summarized in Figure \ref{fig:architectureDiagram}.
+
 \begin{figure}[h]
     \centering
-    \includegraphics[width=\linewidth]{images/class_diagram.png}
-    \caption{Class Diagram}
+    \includegraphics[width=\linewidth]{images/diagrams/architecture_overview.png}
+    \caption{Architecture overview}
+    \label{fig:architectureDiagram}
+\end{figure}
+
+Figure \ref{fig:packageDiagram} details the internal organization of \texttt{acts\_simulator}. \texttt{acts.py} runs the simulation, calling into three modules at each control step: 
+
+\begin{itemize}
+    \item the control-law layer (\texttt{utils\_control.py}), which is described in Figure \ref{fig:classDiagram}
+    \item the kinematostatic/optimization layer (\texttt{utils\_optimization.py}), which solves for the drone positions and cable tensions that best realize the desired payload wrench
+    \item and the evaluation layer (\texttt{utils\_performance\_indices.py}), which compute the performance indices described in Section \ref{sec:performanceIndices} and saves them to file.
+\end{itemize}
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/diagrams/package_diagram.png}
+    \caption{Package Diagram}
+    \label{fig:packageDiagram}
+\end{figure}
+
+The drone control-law layer introduced above is implemented as a small class hierarchy, as shown in Figure \ref{fig:classDiagram}. In fact, a shared base class, \texttt{BaseDrone}, computes everything common to every configuration, such as the motor-mixing matrices, the attitude controller and the necessary rotor speeds. Each subclass replaces only \texttt{position\_controller()}, providing the force law appropriate to what that drone is physically attached to.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=\linewidth]{images/diagrams/class_diagram.png}
+    \caption{Drone Controller Class Diagram}
     \label{fig:classDiagram}
 \end{figure}
 
-Simulation and Data Processing Pipeline
+The four subclasses correspond directly to the successive force-control cases developed in
+Chapter \ref{chap:control}, and to the order in which the controller was actually developed and tested:
+\begin{itemize}
+    \item \texttt{FreeFlightDrone} implements the unconstrained case and was the first to be tested, to verify that a single drone could reach a desired position with no cable constraint at all;
+    \item \texttt{CableTetheredDrone} extends this to a drone tethered directly to a fixed ground anchor by a cable described in Section \ref{sec:forceControl1droneToGround}
+    \item \texttt{PayloadControlDrone} extends the cable case further to include a payload described in Section \ref{sec:payload1drone1groundCable};
+    \item \texttt{ACTScontrolDrone} is the controller ultimately used in the full ACTS architecture, driven directly by \texttt{acts.py}.
+\end{itemize}
 
+This progressive structure allowed each force-control case to be validated in isolation before being combined into the final system, and it keeps \texttt{position\_controller()} as the single, well-defined extension point where a new case could be added without touching the shared attitude and motor-mixing logic.
 
-Python packages/modules
-UML architecture
-how the XML-generation code interacts with the simulator
-how the MuJoCo API is interfaced with
-controller classes
-simulation loop
-optimization
-data collection
-performance evaluation software
-
+\newpage
 \section{Simulation setup}
-"This is what the simulator contains."
+The simulations use the same payload, UAV model, cable properties, controller parameters, and numerical settings to ensure a fair comparison between different architectural configurations. These values are shown in Table \ref{tab:simulation_parameters}. Additionally, the simulation time is equal to 0.002 seconds.
 
-Figures/tables: MuJoCo model + simulation parameters + representative configurations.
+The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points. At the start of the simulation, the payload is on the ground along with the drones, which are resting on its top surface.
 
-Parameter	Value
-Number of UAVs	3
-Payload mass	...
-UAV mass	...
-Cable length	...
-Simulation timestep	...
-Maximum UAV thrust	...
-Position tolerance	...
-Orientation tolerance	...
-Initial payload pose	...
-Target payload pose
-
-5.4.1 Simulation model
-Describe the actual ACTS instance used in MuJoCo.
-
-For example:
-The simulation consists of three UAVs connected to a rigid payload through aerial cables, with additional ground cables connected to fixed anchor points...
-
-You're not explaining how the Python code implements it. You're describing the model itself.
-
-5.4.2 Simulation parameters
-Put your numerical parameters in a table.
-
-5.4.3 Initial and target conditions
-Initial payload pose, target pose, UAV positions, etc.
-
-5.4.4 Configurations considered
-Stewart baseline, different ground routings, hook placements, etc.
+\begin{table}
+\centering
+\small
+\renewcommand{\arraystretch}{0.85}
+\begin{tabular}{ll}
+\toprule
+\textbf{Simulation parameter} & \textbf{Value} \\
+\midrule
+\multicolumn{2}{l}{\textbf{Payload and initial conditions}} \\
+\midrule
+Payload mass & $1~\mathrm{kg}$ \\
+Initial payload position & $[0.0,\,0.0,\,0.0]^\top~\mathrm{m}$ \\
+Initial payload orientation & $\mathbb{I}$ \\
+\midrule
+\multicolumn{2}{l}{\textbf{Cable and winch parameters}} \\
+\midrule
+Minimum cable tension $\tau_{\min}$ & $5.5~\mathrm{N}$ \\
+Maximum cable tension $\tau_{\max}$ & $150~\mathrm{N}$ \\
+Maximum winch speed $v_{\mathrm{winch,max}}$ & $1.5~\mathrm{m/s}$ \\
+\midrule
+\multicolumn{2}{l}{\textbf{UAV actuation parameters}} \\
+\midrule
+Maximum rotor velocity $\omega_{\max}$ & $1666~\mathrm{rad/s}$ \\
+Thrust coefficient $k_t$ & $5.5\times10^{-6}$ \\
+Drag coefficient $k_d$ & $3.299\times10^{-7}$ \\
+Minimum thrust $T_{\min}$ & $1.0~\mathrm{N}$ \\
+Maximum thrust $T_{\max}$ & $4k_t\omega_{\max}^2$ \\
+\midrule
+\multicolumn{2}{l}{\textbf{Safety constraints}} \\
+\midrule
+Minimum UAV--UAV distance & $0.4~\mathrm{m}$ \\
+Minimum cable--cable distance & $0.05~\mathrm{m}$ \\
+\midrule
+\multicolumn{2}{l}{\textbf{Evaluation parameters}} \\
+\midrule
+Position tolerance & $0.1~\mathrm{m}$ \\
+Orientation tolerance & $3^\circ$ \\
+\bottomrule
+\end{tabular}
+\caption{Fixed parameters used in the numerical experiments.}
+\label{tab:simulation_parameters}
+\end{table}
 
 \section{Simulation methodology and evaluation framework}
 
@@ -98,19 +147,13 @@ The objective of this chapter is to evaluate how the architectural design of an 
 
 In fact, a configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables remain under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations.
 
-In the following chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
+In the next chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
 
 %% Simulation setup.  Why simulate the controller instead of only computing the Jacobian?
 The geometric and static performance indices provided in Section \ref{sec:performanceIndices} describe the instantaneous ability of a given architecture to generate payload wrenches and identify configurations that are close to kinematic singularities. However, these indices are evaluated under static or quasi-static assumptions and therefore cannot fully characterize the behavior of the closed-loop system during motion. During motion, cable directions, tensions and payload dynamics continuously evolve. Consequently, a configuration that appears favorable according to static indices may still exhibit oscillations, poor tracking or instability. Closed-loop simulation is therefore necessary to verify whether the theoretical advantages translate into practical performance.
-
-
-%% Variables
-The payload mass, UAV model, controller gains, drone cable lengths, simulation duration, and desired payload pose are kept constant throughout all experiments to ensure a fair comparison between different architectural configurations. The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points.
 
 %% Scenario A and B
 Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.
 
 %% Why did you choose Stewart as the reference?
 First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. In fact, if even Stewart-like performs poorly, the problem is likely the controller rather than the architecture. The remaining experiments then investigate how modifications to the ground cable routing, UAV attachment geometry, and hook placement affect both the theoretical performance indices and the closed-loop behavior of the system. This progressive analysis makes it possible to identify which geometric features have the greatest influence on payload manipulation performance.
-
-%%The attachment points are uniformly distributed, which generally leads to good isotropy.

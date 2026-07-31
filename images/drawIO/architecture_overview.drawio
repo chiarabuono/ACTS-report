@@ -1,0 +1,72 @@
+<mxfile host="65bd71144e">
+    <diagram id="arch1" name="Figure 1 - Software Architecture (Top Level)">
+        <mxGraphModel dx="1149" dy="631" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1500" pageHeight="480" math="0" shadow="0">
+            <root>
+                <mxCell id="0"/>
+                <mxCell id="1" parent="0"/>
+                <mxCell id="xmlModels" value="MuJoCo XML&#xa;model configs" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" parent="1" vertex="1">
+                    <mxGeometry x="590" y="198" width="120" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="collectedData" value="collected_data&#xa;video / live plots /&#xa;single-run indices row" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" parent="1" vertex="1">
+                    <mxGeometry x="1010" y="95" width="160" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="resultsXlsx" value="results.xlsx&#xa;(per batch folder)" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;darkOpacity=0.05;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=center;verticalAlign=middle;size=10;" parent="1" vertex="1">
+                    <mxGeometry x="1010" y="293" width="150" height="50" as="geometry"/>
+                </mxCell>
+                <mxCell id="e1" value="generates" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" parent="1" source="pkgXML" target="xmlModels" edge="1">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e2" value="loaded by acts.py" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0;exitY=0;entryX=0;entryY=0.5;exitDx=70;exitDy=0;exitPerimeter=0;" parent="1" source="xmlModels" target="pkgSim" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e3" value="loaded by&amp;nbsp;&lt;div&gt;batch_run.py&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.5;exitY=1;entryX=0;entryY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="xmlModels" target="pkgEval" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e4" value="imports Control Law,&#xa;Optimization, Evaluation directly" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;exitX=0.5;exitY=0;entryX=0.5;entryY=1;exitDx=0;exitDy=0;entryDx=0;entryDy=0;" parent="1" source="pkgEval" target="pkgSim_sub" edge="1">
+                    <mxGeometry x="0.0769" relative="1" as="geometry">
+                        <Array as="points">
+                            <mxPoint x="810" y="280"/>
+                            <mxPoint x="810" y="280"/>
+                        </Array>
+                        <mxPoint as="offset"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="e7" value="produces&amp;nbsp;&lt;div&gt;(acts.py)&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" parent="1" source="pkgSim" target="collectedData" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="e8" value="produces&amp;nbsp;&lt;div&gt;(batch_run.py)&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=open;endFill=1;fontSize=10;" parent="1" source="pkgEval" target="resultsXlsx" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="RbJWcCNFLzANkwOP6hL_-1" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="380" y="168" width="140" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgXML" value="create_xml" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontStyle=1;fontSize=15;verticalAlign=top;spacingTop=8;" parent="RbJWcCNFLzANkwOP6hL_-1" vertex="1">
+                    <mxGeometry y="10" width="140" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgXML_sub" value="Configuration &amp;&#xa;model generation&#xa;(architecture search,&#xa;offline)" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=11;fontStyle=2;" parent="RbJWcCNFLzANkwOP6hL_-1" vertex="1">
+                    <mxGeometry y="32" width="140" height="68" as="geometry"/>
+                </mxCell>
+                <mxCell id="RbJWcCNFLzANkwOP6hL_-2" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="700" y="70" width="220" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgSim" value="acts_simulator" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontStyle=1;fontSize=15;verticalAlign=top;spacingTop=8;" parent="RbJWcCNFLzANkwOP6hL_-2" vertex="1">
+                    <mxGeometry width="220" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgSim_sub" value="Core: Configuration, Control Law,&#xa;Kinematostatic Model, Evaluation&#xa;+ acts.py — interactive orchestrator&#xa;(single model, single pose, live GUI)" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=11;fontStyle=2;" parent="RbJWcCNFLzANkwOP6hL_-2" vertex="1">
+                    <mxGeometry y="25.142857142857142" width="220" height="84.85714285714285" as="geometry"/>
+                </mxCell>
+                <mxCell id="RbJWcCNFLzANkwOP6hL_-3" value="" style="group" parent="1" connectable="0" vertex="1">
+                    <mxGeometry x="697.5" y="268" width="225" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgEval" value="simulation_run" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;fontSize=15;verticalAlign=top;spacingTop=8;" parent="RbJWcCNFLzANkwOP6hL_-3" vertex="1">
+                    <mxGeometry width="225" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="pkgEval_sub" value="batch_run.py — headless orchestrator&#xa;(all XML models × all target poses,&#xa;imports core modules directly)&#xa;+ stats_test_suit.py — statistics" style="text;align=center;verticalAlign=top;spacingTop=6;whiteSpace=wrap;html=1;fontSize=11;fontStyle=2;" parent="RbJWcCNFLzANkwOP6hL_-3" vertex="1">
+                    <mxGeometry y="22.857142857142858" width="225" height="77.14285714285714" as="geometry"/>
+                </mxCell>
+            </root>
+        </mxGraphModel>
+    </diagram>
+</mxfile>

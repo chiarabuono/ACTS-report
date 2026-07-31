@@ -134,16 +134,14 @@ As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinc
     \item Optimal tension strategy, in which cable tensions are determined by the quadratic optimization problem in Equation \ref{eq:tension-planner-relax}
 \end{itemize}
 
-The performance indices and tracking errors under both strategies across three operational scenarios are summarized in Table \ref{tab:stewart_comparative}.
+The performance indices and tracking errors under both strategies across two operational scenarios are summarized in Table \ref{tab:stewart_comparative}.
 
-Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. By locking all cable tensions to their absolute lowest limit ($\tau_{\min}$), the range of available tension choices shrinks to a single point. As a result, the controller loses its ability to adjust forces, reducing the payload's Available Wrench Set (AWS) to just a single fixed outcome. \cite{yang_robust_2025}
+The minimal tension strategy has negative consequences on the system's robustness. By locking all cable tensions to their absolute lowest limit ($\tau_{\min}$), the range of available tension choices shrinks to a single point. As a result, the controller loses its ability to adjust forces, reducing the payload's Available Wrench Set (AWS) to just a single fixed outcome. \cite{yang_robust_2025}
 % Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. Fixing the tension vector to its lower limit $\tau_{\min}$ collapses the tension space from an $N$-orthotope $[\tau_{\min}, \tau_{\max}]^N$ to a single point, which linearly maps through the wrench matrix $W$ to degenerate the Available Wrench Set (AWS) into a single point \cite{yang_robust_2025}. 
-As a result, any deviation of the desired payload wrench $W_p^*$ from this single point results in a negative capacity margin (as seen in Scenario A where $\gamma = -0.65562$). This indicates that the system is theoretically incapable of resisting external disturbances or maintaining equilibrium without violating the tension constraints.
+As a result, any deviation of the desired payload wrench $W_p^*$ from this single point results in a negative capacity margin (as seen in Scenario A where $\gamma = -0.19343$). This indicates that the system is theoretically incapable of resisting external disturbances or maintaining equilibrium without violating the tension constraints.
 
-Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. As a result, the radius of the Available Wrench increases and the capacity margin takes on a positive value ($\gamma = 3.74947$). Thus, also the composite score increases. Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
+Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. As a result, the radius of the Available Wrench increases and the capacity margin takes on a positive value ($\gamma = 10.46403$). Thus, also the composite score increases. Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
 
-\todo[inline]{Give examples}
-Because this study focuses on offline structural and kinematic analysis rather than real-time control, the extra computation time does not compromise our findings. For future real-time applications, this hierarchical formulation can be mapped to more efficient schemes.
 
 On the other hand, it is worth to notice that, since the objective function does not contain any state-tracking terms, this optimizer does not directly minimize the payload's real-time position or orientation tracking errors. 
 Because of this, a spatial configuration that yields globally minimal propulsion effort does not guarantee a minimum in tracking error.
@@ -159,17 +157,17 @@ Because of this, a spatial configuration that yields globally minimal propulsion
 \textbf{Metric / Parameter} & $\tau_{\text{min}}$ & $\tau_{\text{opt}}$ & $\tau_{\text{min}}$ & $\tau_{\text{opt}}$ \\ 
 \midrule
 Desired Position & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} \\
-Desired Orientation & \multicolumn{2}{c}{$[1.0, 0.0, 0.0, 0.0]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, 0.1, 0.1]^\top$} \\
+Desired Orientation & \multicolumn{2}{c}{$[1.0, 0.0, 0.0, 0.0]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, -0.1, 0.1]^\top$} \\
 \midrule
-Conditioning Index & 0.10256 & 0.09621 & 0.07639 & 0.06621 \\
-Manipulability & 0.47759 & 0.43684 & 0.36192 & 0.30017 \\
-Radius Avail. Wrench & 16.46686 & 19.52504 & 18.66125 & 20.29844 \\
-Capacity Margin & -0.65562 & 3.74947 & -1.93639 & 2.28516 \\
-Worst-case CM & 0.86233 & 0.63971 & 0.86253 & 0.67165 \\
-Composite Score & 5.55786 & 7.97141 & 5.86246 & 7.75175 \\
+Conditioning Index & 0.10259 & 0.09617 & 0.07052 & 0.05550 \\
+Manipulability & 0.47775 & 0.43700 & 0.31471 & 0.24108 \\
+Radius Avail. Wrench & 49.29711 & 47.90399 & 52.21278 & 53.22707 \\
+Capacity Margin & -0.19343 & 10.46403 & -3.83256 & 2.65386 \\
+Worst-case CM & 0.90998 & 0.76401 & 0.90998 & 0.75072 \\
+Composite Score & 17.35180 & 20.62849 & 17.64446 & 19.42488 \\
 \midrule
-Position Error & 0.00209 & 0.00285 & 0.00183 & 0.00271 \\
-Orientation Error & 0.00125 & 0.00200 & 0.00127 & 0.00299 \\
+Position Error & 0.00201 & 0.00284 & 0.00187 & 0.00262 \\
+Orientation Error & 0.00121 & 0.00209 & 0.00379 & 0.00385 \\
 \bottomrule
 \end{tabular}
 \caption{Comparative performance indices and tracking errors for Stewart baseline configuration across Scenarios A and B.}
@@ -216,6 +214,8 @@ The considerations from now on will be done using the optimal tension strategy.
 \end{figure}
 
 \section{Ground cable routing}
+
+\todo[inline]{We have already talk about it in the previous sections, how to do it?}
 
 Once the controller has been validated using the Stewart baseline, we can proceed to consider different ways to connect six ground cables to the platform (Figure \ref{fig:6ugvsConnections}) and the drone (Figure \ref{fig:3uavsConnections}). The same ground configuration hook-anchor can change the system's stability based on which hook is connected to which anchor point on the ground.
 %% Why we choose the triangle for the UAVs configuration?
@@ -309,5 +309,3 @@ Increasing the spacing between the ground hooks enlarges the available wrench se
 
 \section{Drone hook placement}
 \label{sec:dronehook}
-
-\todo[inline]{Add link to the repository}
