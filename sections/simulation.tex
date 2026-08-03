@@ -1,4 +1,5 @@
 \chapter{Simulation Environment and Experimental Setup}
+\label{chap:simulation}
 \section{Role of Simulation in the Thesis}
 The development of the ACTS requires the interaction of several coupled mechanical and control components. A physics-based simulation environment is therefore used to evaluate the proposed architectures and control strategies before physical implementation.
 
@@ -19,7 +20,7 @@ Several preliminary simulations were nevertheless successfully implemented in Ga
 
 These experiments were useful for validating the initial modeling approach and identifying the main limitations before transitioning to another simulation environment.
 
-\todo[inline]{Add photos?}
+\todo[inline]{Add photos}
 
 Given the additional modeling effort required to represent the complete ACTS architecture and the limited time available for the thesis, continuing the Gazebo implementation was not considered the most effective approach for obtaining the required simulation results.
 
@@ -95,7 +96,8 @@ This progressive structure allowed each force-control case to be validated in is
 \section{Simulation setup}
 The simulations use the same payload, UAV model, cable properties, controller parameters, and numerical settings to ensure a fair comparison between different architectural configurations. These values are shown in Table \ref{tab:simulation_parameters}. Additionally, the simulation time is equal to 0.002 seconds.
 
-The only variables that change from one experiment to another are the cable routing, the UAV attachment geometry, and the placement of the ground hook points. At the start of the simulation, the payload is on the ground along with the drones, which are resting on its top surface.
+
+The architectural variables investigated in Chapter \ref{chap:results} are the ground-cable routing, ground-anchor placement, and UAV attachment geometry. At the start of the simulation, the payload is on the ground along with the drones, which are resting on its top surface.
 
 \begin{table}
 \centering
@@ -142,18 +144,7 @@ Orientation tolerance & $3^\circ$ \\
 
 \section{Simulation methodology and evaluation framework}
 
-%% Experimental objectives
-The objective of this chapter is to evaluate how the architectural design of an ACTS influences its ability to accurately and robustly manipulate a payload. The focus is on how different cable routing strategies, UAV attachment configurations, and ground hook placements influence the overall system performance.
+The geometric and static performance indices provided during the model generation stage, describe the instantaneous ability of a given architecture to generate payload wrenches and identify configurations that are close to kinematic singularities. However, these indices are evaluated under static or quasi-static assumptions and therefore cannot fully characterize the behavior of the closed-loop system during motion. In the latter case, cable directions, tensions and payload dynamics continuously evolve. Consequently, a configuration that appears favorable according to static indices may still exhibit oscillations, poor tracking or instability. Closed-loop simulation is therefore necessary to verify whether the theoretical advantages translate into practical performance.
 
-In fact, a configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables remain under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations.
+The resulting analysis distinguishes between architectures that are favorable according to the analytical performance indices and those that provide favorable closed-loop behavior in simulation.
 
-In the next chapter we will answer questions like "Which configuration gives the best payload control performance according to the theoretical indices?" and "Which configuration would I actually choose for the robot?"
-
-%% Simulation setup.  Why simulate the controller instead of only computing the Jacobian?
-The geometric and static performance indices provided in Section \ref{sec:performanceIndices} describe the instantaneous ability of a given architecture to generate payload wrenches and identify configurations that are close to kinematic singularities. However, these indices are evaluated under static or quasi-static assumptions and therefore cannot fully characterize the behavior of the closed-loop system during motion. During motion, cable directions, tensions and payload dynamics continuously evolve. Consequently, a configuration that appears favorable according to static indices may still exhibit oscillations, poor tracking or instability. Closed-loop simulation is therefore necessary to verify whether the theoretical advantages translate into practical performance.
-
-%% Scenario A and B
-Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.
-
-%% Why did you choose Stewart as the reference?
-First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. In fact, if even Stewart-like performs poorly, the problem is likely the controller rather than the architecture. The remaining experiments then investigate how modifications to the ground cable routing, UAV attachment geometry, and hook placement affect both the theoretical performance indices and the closed-loop behavior of the system. This progressive analysis makes it possible to identify which geometric features have the greatest influence on payload manipulation performance.

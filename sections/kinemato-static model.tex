@@ -125,9 +125,9 @@ u_m^\top & \left( \, _pR\, ^pb_m \times u_m \right)^\top \\
 \end{bmatrix}
 \label{eq:jp}
 \end{equation}
-\begin{note}
-    Equation \ref{eq:cablelengthrate} contains $m$ equations in 6 unknown. I need at least six independent cable directions ($\text{rank}(J_p) = 6$).
-\end{note}
+% \begin{note}
+%     Equation \ref{eq:cablelengthrate} contains $m$ equations in 6 unknown. I need at least six independent cable directions ($\text{rank}(J_p) = 6$).
+% \end{note}
 
 \noindent The control allocation matrix maps the actuator inputs (cable tension vector) to the system (payload) wrench. For this definition $J_p^\top$ is the allocation matrix.
 \begin{equation}
@@ -410,8 +410,8 @@ where all the metrics are scaled to $[0, 1]$,
     U^* =\arg \max_U \left(N(U) \right)
 \end{equation}
 
-\todo[inline]{Do this?}
-Or either choosing the solution that maximizes the radius of available wrench between all the solutions that satisfy $\gamma > \gamma_{\text{min}}$ and using the worst-case capacity margin as a tiebreaker.
+% \todo[inline]{Do this?}
+% Or either choosing the solution that maximizes the radius of available wrench between all the solutions that satisfy $\gamma > \gamma_{\text{min}}$ and using the worst-case capacity margin as a tiebreaker.
 
 % When the weighted-sum formulation of Eq. 3.27 is used instead of the $\gamma$ > $\gamma$min selection rule, each of the four metrics — capacity margin $\gamma$, radius of available wrench in force (rAW$_{force}$) and in moment (rAW$_{moment}$), and worst-case capacity margin $\zeta$ — is first normalized to a common reference scale before being combined. For this study, the weights are set to w$\gamma$ = 0.20, wforce = 0.35, wmoment = 0.30, w$\zeta$ = 0.15, reflecting a design preference that prioritizes force- and moment-generation capability (rAW$_{force}$ and rAW$_{moment}$ together account for 65\% of the score) over robustness margins ($\gamma$ and $\zeta$ together account for the remaining 35\%). This weighting was chosen empirically for the FaçadeShieldBot use case, where the ability to generate a sufficiently large wrench in all directions was judged more critical than operating with a wide safety margin from actuator saturation; a different application with tighter disturbance-rejection requirements might instead favor higher weights on $\gamma$ and $\zeta$.
 

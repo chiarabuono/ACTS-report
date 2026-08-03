@@ -31,8 +31,8 @@ F_p^* = m_p g + K_p(p^*-p)+K_d(\dot p^*-\dot p),
 where \(p^*\) and \(p\) are the desired and current payload positions, respectively. For the rotational dynamics, the controller follows the geometric formulation on \(SE(3)\) \cite{lee_geometric_2010}. The attitude error and angular velocity error are defined as
 \begin{equation}
     \begin{aligned}
-e_R &=\frac{1}{2}\left(R_d^TR-R^TR_d\right)^\vee \\
-e_\Omega &=\Omega-R^TR_d\Omega_d.
+e_R &=\frac{1}{2}\left(R^{*\top}R-R^{\top}R^*\right)^\vee \\
+e_\Omega &=\Omega-R^\top R^* \Omega^*
 \end{aligned}
 \end{equation} 
 Where \((\cdot)^\vee\) denotes the inverse of the skew-symmetric (hat) operator. Since the controller performs set point regulation, the desired angular velocity is zero: \(\Omega_d=\mathbf{0}\), yielding $e_\Omega=\Omega$. The desired control moment in the world frame is then
@@ -51,11 +51,10 @@ and the desired payload wrench becomes
 \subsubsection{Winch-Level Cable Length Controller}
 When transitioning the payload to a target pose along the planned trajectory, operational priority is given to the ground actuators due to their significantly higher mechanical stiffness and positioning precision compared to UAVs.
 
-The ground subsystem is modeled as a 6-DOF Gough-Stewart parallel mechanism where the six ground cables act as active legs. Given the target payload position $\mathbf{p}^*$ and target orientation matrix $\mathbf{R}^*$, the ideal length $\rho_i^*$ for the $i$-th ground cable is defined geometrically by:
+The ground subsystem is modeled as a 6-DOF Gough-Stewart parallel mechanism where the six ground cables act as active legs. Given the target payload position $p^*$ and target orientation matrix $R^*$, the ideal length $\rho_i^*$ for the $i$-th ground cable is defined geometrically by:
 \begin{equation}
-    \rho_i^* = \| \mathbf{a}_i - (\mathbf{p}^* + \mathbf{R}^* \,^p \mathbf{b}_i) \|
+    \rho_i^* = \| a_i - (p^* + R^* \,^p b_i) \|
 \end{equation}
-where $\mathbf{a}_i$ represents the fixed ground anchor (pulley exit point) and $^p\mathbf{b}_i$ is the hook location in the payload body frame.
 
  \begin{figure}
      \centering
@@ -64,20 +63,16 @@ where $\mathbf{a}_i$ represents the fixed ground anchor (pulley exit point) and 
      \label{fig:stewartplatform}
  \end{figure}
 
-To account for the physical velocity limits of the winch motors, the target length is tracked using a velocity-saturated kinematic controller. At each control step $\Delta t$, the commanded cable length extension is constrained by the maximum winch speed $v_{\text{max}}$:
+To account for the finite velocity of the winch motors, the desired cable length is not applied instantaneously. Instead, the cable-length reference is updated incrementally at each control step according to
+
 \begin{equation}
-    \rho_i(t + \Delta t) = \rho_i(t) + \text{sat}_{\Delta \rho_{\text{max}}} \left( \rho_i^* - \rho_i(t) \right)
-\end{equation}
-where the saturation bounds are given by $\Delta \rho_{\text{max}} = v_{\text{max}} \cdot \Delta t$, defined as:
-\begin{equation}
-    \text{sat}_{\Delta \rho_{\text{max}}}(e) = \max \left(-\Delta \rho_{\text{max}}, \, \min \left(e, \, \Delta \rho_{\text{max}}\right) \right)
+    \rho_i(t+\Delta t)=\rho_i(t)+\Delta\rho_i,
 \end{equation}
 
-This commanded position reference $\rho_i(t + \Delta t)$ is directly fed to the actuator position servo. This ensures smooth, bounded rate transitions toward the target setpoint without demanding unrealistic acceleration or spooling speeds from the ground winches.
-
-
+where the increment $\Delta\rho_i$ is limited such that $|\Delta\rho_i| = v_{\max}\Delta t$, with $v_{\max}$ being the maximum winch speed. The resulting cable-length reference is then sent to the actuator position controller. Consequently, the commanded cable length converges toward the desired value while respecting the physical velocity limits of the winch motors and avoiding unrealistically fast spool motions.
 
 \subsubsection{Tension planner}
+\label{sec:tensionPlanner}
 The tension planner is the layer responsible for guaranteeing that every cable stays taut throughout the motion. In fact, when working with ACTS, a payload wrench configuration is statically admissible if and only if there exists a set of strictly positive cable tensions ($\tau_i \ge \tau_{min} > 0$) that balance the target operational wrench. This is due to the fact that cables can only pull and not push. Mathematically, this layout optimization is formulated as:
 
  \begin{equation}
@@ -92,7 +87,7 @@ The tension planner is the layer responsible for guaranteeing that every cable s
 
 Which is a Nonlinear optimization Problem (NLP) due to the Euclidean distance constraints. % In Section \ref{sec:NLPtoQP}, we propose some ways to turn it into a Quadratic Programming problem (QP).
 
-This objective function aims to minimize the propulsion force of the drones while satisfying the wrench equilibrium equations on the payload. The parameter $K$ acts as a penalty weight that prioritizes the tracking performance over energy efficiency; setting a high value (e.g., $K=1000$), heavily penalizes any mismatch between the generated wrench and the commanded target wrench $W_p^*$.
+This objective function aims to minimize the propulsion force of the drones while satisfying the wrench equilibrium equations on the payload. The parameter $K$ acts as a penalty weight that prioritizes the tracking performance over energy efficiency; setting a high value (e.g., $K=100$), heavily penalizes any mismatch between the generated wrench and the commanded target wrench $W_p^*$.
 
 For whatever positions $p_a$, the cable tensions $\tau$ are determined by a second inner loop
 \begin{equation}
@@ -140,7 +135,6 @@ From the static equilibrium balance (Equation \ref{eq:uavbalance}) the required 
 which is then handed to the attitude controller, responsible for aligning the body $z$-axis with the commanded thrust vector.
 
 % \subsection{Quadratic Approximation of the UAV Disposition Problem}
-% \todo[inline]{delete it? We don't use it}
 % \label{sec:NLPtoQP}
 % The nonlinear optimization problem presented in the previous section:
 % $$
