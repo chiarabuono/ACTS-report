@@ -230,31 +230,26 @@ The considerations from now on will be done using the optimal tension strategy.
 
 \section{Ground cable routing}
 
-\todo[inline]{We have already talken about it in the previous sections, how to do it?}
-
 Once the controller has been validated using the Stewart baseline, we can proceed to consider different ways to connect six ground cables to the platform (Figure \ref{fig:6ugvsConnections}) and the drone (Figure \ref{fig:3uavsConnections}). The same ground configuration hook-anchor can change the system's stability based on which hook is connected to which anchor point on the ground.
 %% Why we choose the triangle for the UAVs configuration?
 Therefore, we will start considering the drone attachment configuration as fixed to the triangular arrangement and vary only the routing of the six ground cables. This specific UAV configuration is chosen because it provides a symmetric distribution of the three drones around the payload. This approach allows one to isolate the influence of the ground cable routing and attribute differences in performance solely to the ground architecture. Finally, in Section \ref{sec:dronehook}, the impact of various UAV attachment geometries is examined independently.
 
 %% How the code work, how a given cable routing has been found
-Focusing on the ground cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarily chosen routing raise the question on how lucky the routing choice was and how good the architecture actually is.
+Focusing on the ground cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarily chosen routing raise the question on how lucky the routing choice was and how good the architecture actually is. Therefore, implementing the selection strategy explained in Section \ref{sec:selection_strategy} is essential to make a guided choice and conclusions on the results.
 
-To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment. Architectures are subsequently ranked against one another by worst-case conditioning index.
-
-\todo[inline]{Update with correct data}
 \begin{table}[htbp]
 \centering
 \small
 \resizebox{\linewidth}{!}{
-\begin{tabular}{llccccccccc}
+\begin{tabular}{llcccccc}
 \toprule
-\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{$N_{\text{rout}}$} & \textbf{$N_{\text{pos}}$} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} & \textbf{Best Routing} \\
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
 \midrule
-2X3 & pentagon & 360 & 8 & \checkmark & 0.1402 & 0.3680 & 0.3275 & 2.3452 & \checkmark & A-E|B-A|C-D|D-C|E-B|F-E \\
-two-triangles & pentagon & 360 & 8 & \checkmark & 0.1383 & 0.2169 & 0.3241 & 2.3566 & \checkmark & A-E|B-A|C-C|D-D|E-B|F-E \\
-pentagon & 2X3 & 360 & 8 & \checkmark & 0.1354 & 0.3773 & 0.3169 & 2.3401 & \checkmark & A-A|B-F|C-E|D-B|E-C|E-D \\
-hexagon & pyramid & 720 & 8 & \checkmark & 0.1343 & 0.1664 & 0.3180 & 2.3794 & \checkmark & A-D|B-A|C-B|D-E|E-F|F-C \\
-pentagon & pentagon & 168 & 8 & \checkmark & 0.1316 & 0.2494 & 0.2899 & 2.3420 & \checkmark & A-E|B-C|C-B|D-E|E-A|E-D \\
+two-triangles & 2X3 & \checkmark & 0.0853 & 0.0622 & 0.2043 & 2.3949 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0797 & 0.0450 & 0.1911 & 2.3977 & \checkmark \\
+rhombus-ext & 2X3 & \checkmark & 0.0793 & 0.0406 & 0.1925 & 2.4261 & \checkmark \\
+rectangle-opposite & 2X3 & \checkmark & 0.0786 & 0.0957 & 0.1875 & 2.3861 & \checkmark \\
+parallelepiped-int & 2X3 & \checkmark & 0.0784 & 0.0344 & 0.1892 & 2.4128 & \checkmark \\
 \bottomrule
 \end{tabular}
 }
@@ -262,68 +257,217 @@ pentagon & pentagon & 168 & 8 & \checkmark & 0.1316 & 0.2494 & 0.2899 & 2.3420 &
 \label{tab:ground_routing_performance}
 \end{table}
 
-% \begin{itemize}
-%     \item \textbf{Wrench Closure}, checked via the rank of $J_p$ (Section \ref{sec:performanceIndices});
-%     \item \textbf{Wrench Feasibility}, checked jointly over all nine cables (six ground cables and three drone cables), rather than on the ground cables alone. Since the live controller minimizes wrench mismatch rather than enforcing it exactly, feasibility here is likewise assessed as a bounded least-squares residual against a tolerance, instead of requiring exact equality. A two-stage verification is used: a routing is first checked against a cheap approximation that places each drone directly above its payload hook; if no routing passes this cheap check for a given architecture, the best candidates by manipulability that otherwise satisfy Wrench Closure and Interference-Freedom are re-evaluated with an explicit optimization over drone position, which can recover routings whose only shortcoming was a lateral-force or moment mismatch that a repositioned drone can resolve;
-%     \item \textbf{Interference-Freedom}, decomposed into two independent sub-conditions: pairwise cable-cable clearance (Equation \ref{eq:ifc}), and a minimum cable exit angle relative to the payload's attachment face, which replaces an earlier box-distance proxy for the same requirement.
-% \end{itemize}
 
-%% Why conditioning index and not composite score?
-The composite score N is not used for ranking routings during the exhaustive search because it requires information that is only available after solving the tension planner, such as the optimal cable tensions and the available wrench set. Computing its capacity-based terms is also computationally expensive and unreliable near singular configurations. Additionally, its weighting factors have not been experimentally validated, making it unsuitable for selecting the best routing. Instead, the search uses the conditioning index (with manipulability as a supporting metric), as it is a parameter-free, geometry-based measure that can be efficiently computed directly from the Jacobian. The composite score and capacity-based metrics are therefore evaluated later during closed-loop simulations, once a routing and tension solution are available.
 
-\begin{algorithm}[h]
-\caption{Cable Routing Optimization and Architecture Ranking}
-\label{alg:cable_optimization}
-\begin{algorithmic}[1]
 
-\ForAll{$(\text{payload\_layout}, \text{ground\_layout}) \text{ pairs}$}
-    \State Enumerate every valid 6-cable routing
-    
-    \ForAll{routing}
-        \ForAll{pose $\in$ test-pose set}
-            \State Build $J_p$  \Comment{Eq. \ref{eq:jp}}
-            \State Check Wrench Closure \Comment{$\text{rank}(J_p) = 6$}
-            \State Check Wrench Feasibility \Comment{$0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$}
-            \State Check Interference-Freedom \Comment{Eq. \ref{eq:IFCconstraint}}
-        \EndFor
-        \State Record this routing's \textbf{worst-case} score across all poses
-    \EndFor
-    \State Keep the \textbf{best} surviving routing for this architecture
-\EndFor
-
-\end{algorithmic}
-\end{algorithm}
-
-\todo[inline]{How can I see if a configuration is more inclined to singularity only by looking at it?}
-
-\todo[inline]{Line or diagonal results in not-feasible configurations, why? What does this mean? Geometric reasons?}
-
-The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
+\todo[inline]{How the results before simulation and after simulation differ? Is the order best-worst configuration from the previous step respected?}
 
 %% How and why the results before simulation and after simulation differ?
-
-% The theoretical indices assume: static equilibrium, ideal cables, no inertia, no controller dynamics. The simulation includes: payload inertia, controller dynamics, coupling, transient motion, oscillations.
-
 The theoretical indices evaluate the geometric and static properties of a cable routing. They identify configurations that are close to kinematic or wrench singularities and rank architectures according to their ability to generate payload wrenches. However, they cannot predict the transient response of the closed-loop system. Dynamic effects such as payload inertia, controller gains and load redistribution are only captured by simulation. Consequently, while poor theoretical indices almost always indicate poor dynamic performance, the opposite is not necessarily true: a routing with good static indices may still exhibit oscillations or poor tracking.
 
-\todo[inline]{Insert table comparing the two}
+\todo[inline]{Line or diagonal in the ground cables results in not-feasible configurations, why? What does this mean? Geometric reasons? I run some manual ones, what I observed?}
+The line and diagonal configurations approach kinematic or wrench singularities, where the cable arrangement cannot generate the desired six-dimensional wrench while maintaining positive tensions. 
 
-\todo[inline]{Rectangle-same really unstable configuration}
+
+
+\todo[inline]{Insert table comparing the two - Should I compare the result on the same pose I am training?}
+
+\todo[inline]{Rectangle-same really unstable configuration?}
 
 The Jacobian is full rank and the static indices are acceptable, yet the payload rocks because of an uneven load distribution and poor torsional stiffness. That example provides strong evidence that the theoretical indices are necessary but not sufficient for predicting closed-loop behavior.
+
+Conversely, the Rectangle-Same configuration remains kinematically feasible but exhibits poor rotational stiffness due to its asymmetric cable pairing. As a result, although the Jacobian remains full rank, the payload develops a rocking motion that cannot be predicted by the geometric performance indices alone.
+
+A second discrepancy worth noting concerns the static indices themselves. \texttt{RECTANGLE-SAME-RECTANGLE-OPPOSITE-TRIANGLE} achieves the highest manipulability ($1.269$) and radius of available force ($22.1$) of any triangle-UAV configuration, and is statistically indistinguishable from \texttt{HEXAGON-HEXAGON-TRIANGLE} on composite score ($p=0.18$). Yet its worst-case capacity margin is strongly negative ($-2.27$, against $+0.74$ for \texttt{HEXAGON-HEXAGON-TRIANGLE}), and it reaches the target pose significantly less often ($61.7\%$ vs.\ $85\%$, McNemar Holm-adjusted $p=0.039$). This reproduces, on this specific pair of configurations, the general caution raised: static, quasi-steady indices such as manipulability can favor a configuration that the closed-loop dynamic simulation shows to be measurably worse at actually reaching the commanded pose.
+
 
 
 \todo[inline]{Talk about triangle-triangle combination}
 
 \todo[inline]{Other combinations that give interesting results?}
 
+\todo[options]{Are there points not reacheable for any configurations?}
+
+\newpage
+The exploratory results discussed in this section come from a manually curated batch of candidate architectures, selected by hand rather than through exhaustive or systematic search. This batch is not the central contribution of this thesis --- the automated architecture-search procedure described in is --- but it is large enough (48 configurations, $n=60$ poses each) to support statistically-tested trends that motivate and cross-check the automated search's findings. Where relevant, results are restricted to the subset of configurations using a triangular UAV attachment, which was also the fixed choice adopted for the ground-routing screening, so that ground-side effects are not confounded with UAV attachment.
+
+
+
 
 
 \section{Ground anchor placement}
+Can a more spread-out hook configuration on the ground better the performance, or it is irrelevant? 
+    \begin{itemize}
+        \item Does the answer change when the desired position is If so, it opens results to the moving hook point. Further away?
+        \item Show example on the top configuration and a terrible one.
+        \item Are there any papers/theorem that says so?
+        \item Show evolution graph
+    \end{itemize}
+
+
 Increasing the spacing between the ground hooks enlarges the available wrench set and moves the system farther from wrench singularities, explaining the observed improvement in tracking performance.
+
+
+\todo[inline]{BEST RESULTS Run the simulation of the triangle but everything is first 2 times more spaced out and 2 times less spaced out}
+\subsection{Results with ground attachment 2 times closer}
+
+\subsection{Results with ground attachment 2 times farther}
+
+
+\todo[inline]{all the others}
+Among the ones hand made, the best-performing configuration by composite score is \texttt{HEXAGON-HEXAGON-TRIANGLE} (composite score $10.58$, pose reached in $85\%$ of trials, orientation reached in $85\%$), significantly ahead of nearly every other triangle-UAV configuration tested (Holm-adjusted $p<0.05$ against all but \texttt{RECTANGLE-SAME-RECTANGLE-OPPOSITE-TRIANGLE}, $p=0.18$). 
+
+The worst-performing triangle-UAV configurations, \texttt{small3X2-2X3-TRIANGLE} (composite score $1.04$) and \texttt{LINE-LINE-TRIANGLE} (composite score $1.54$), both use degenerate or compact ground routings, consistent with the singularity risk of near-collinear cable arrangements.
+
+However, task performance and interference are not aligned. \texttt{HEXAGON-HEXAGON-TRIANGLE}, the best performer by composite score, rubs cables in $88.3\%$ of trials, among the worst interference rates recorded in the triangle-UAV subset; while \texttt{3X2-2X3-TRIANGLE} ($21.7\%$ rubbing) and \texttt{LINE-HEXAGON-TRIANGLE} ($26.7\%$ rubbing) achieve markedly lower interference at the cost of a substantially lower composite score ($2.65$ and $2.54$, respectively). This is a direct, quantified instance of the tension anticipated between the geometric performance indices, which reward well-conditioned, high-force-capacity routings, and the interference-free condition, which these same routings tend to violate more often. No single routing in this exploratory batch dominates on both axes simultaneously, which is itself informative for the automated search: the objective used there should weight interference risk explicitly rather than relying on composite score alone.
+
+Comparing ground-anchor layouts of differing spatial extent, while again restricting to the triangle-UAV subset, supports the expectation that a wider anchor spread improves performance. \texttt{HEXAGON-HEXAGON-TRIANGLE}, whose six ground anchors span the widest area among the tested hexagonal layouts, achieves the highest composite score and capacity margin of the entire triangle-UAV subset. Conversely, the compact variant \texttt{small3X2-2X3-TRIANGLE} --- the same underlying $3{\times}2$ anchor pattern reduced in scale --- is the worst-performing configuration by composite score among the triangle-UAV subset ($1.04$, against $10.58$ for the wide hexagonal layout), with correspondingly lower radius of available force. This is consistent with the geometric argument of: larger moment arms between the payload center and its attachment points directly increase the achievable moment capacity, and this dataset provides a concrete, if non-exhaustive, confirmation of that relationship. A systematic sweep over anchor spread at fixed topology, rather than a comparison across the handful of manually chosen layouts available here, is left to the automated search.
 
 \section{Drone hook placement}
 \label{sec:dronehook}
+
+\todo[inline]{Aim of this section}
+This section does not restrict to a single UAV attachment type --- UAV attachment is precisely the variable under study here. The dataset contains one payload/ground pair, \texttt{TRIANGLE-TRIANGLE}, tested with five of the six UAV attachment topologies of Figure (point, line, aligned, disaligned, and diagonal), holding every other design variable fixed. This provides a controlled comparison of UAV attachment topology in isolation.
+
+\begin{shaded} 
+    For each analyze
+\begin{itemize} 
+    \item what are the results for the pre-screening?
+    \item Are there results?
+    \item if something pass through, how are the results compared to the ones with triangle?
+    \item which could be the reason why no results in the pre-screning/no good results in the simulations?
+\end{itemize}
+\end{shaded}
+
+
+\todo[inline]{point}
+
+[for the hand-made] the point attachment reaches it in \emph{zero} trials out of sixty. This pattern is not specific to the triangle payload/ground pair: \texttt{HEXAGON-HEXAGON-POINT} and \texttt{LINE-LINE-POINT} independently show the same $0\%$ pose-reached and orientation-reached rate, corroborating that a single shared UAV attachment point is a poor design choice largely independent of the ground routing paired with it.
+
+TODO: check also the not-hand made, different results?
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
+\midrule
+two-triangles & 2X3 & \checkmark & 0.0820 & 0.0628 & 0.1965 & 2.3975 & \checkmark \\
+two-triangles & pentagon & \checkmark & 0.0818 & 0.0429 & 0.1979 & 2.4182 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0797 & 0.0450 & 0.1911 & 2.3977 & \checkmark \\
+rhombus-ext & 2X3 & \checkmark & 0.0793 & 0.0406 & 0.1925 & 2.4261 & \checkmark \\
+rectangle-opposite & pyramid & \checkmark & 0.0723 & 0.0599 & 0.1730 & 2.3919 & \checkmark \\
+\bottomrule
+\end{tabular}
+}
+\caption{Ground Cable Routing and Layout Performance Analysis (POINT)}
+\label{tab:ground_routing_performance_point}
+\end{table}
+
+\todo[inline]{aligned}
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
+\midrule
+two-triangles & 2X3 & \checkmark & 0.0820 & 0.0628 & 0.1965 & 2.3975 & \checkmark \\
+two-triangles & pentagon & \checkmark & 0.0818 & 0.0429 & 0.1979 & 2.4182 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0797 & 0.0450 & 0.1911 & 2.3977 & \checkmark \\
+rectangle-opposite & 2X3 & \checkmark & 0.0786 & 0.0957 & 0.1875 & 2.3861 & \checkmark \\
+rhombus-ext & 2X3 & \checkmark & 0.0764 & 0.0405 & 0.1854 & 2.4258 & \checkmark \\
+\bottomrule
+\end{tabular}
+}
+\caption{Ground Cable Routing and Layout Performance Analysis (ALIGNED)}
+\label{tab:ground_routing_performance_aligned}
+\end{table}
+
+
+\todo[inline]{disaligned}
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
+\midrule
+two-triangles & 2X3 & \checkmark & 0.0820 & 0.0628 & 0.1965 & 2.3975 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0781 & 0.0446 & 0.1871 & 2.3951 & \checkmark \\
+parallelepiped-int & rectangle-opposite & \checkmark & 0.0755 & 0.0324 & 0.1672 & 2.3922 & \checkmark \\
+vertical-parallelepiped & central-parallelepiped & \checkmark & 0.0704 & 0.0489 & 0.1695 & 2.4088 & \checkmark \\
+rectangle-opposite & pyramid & \checkmark & 0.0695 & 0.0626 & 0.1673 & 2.4073 & \checkmark \\
+\bottomrule
+\end{tabular}
+}
+\caption{Ground Cable Routing and Layout Performance Analysis (DISALIGNED)}
+\label{tab:ground_routing_performance_disaligned}
+\end{table}
+
+\todo[inline]{line}
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
+\midrule
+two-triangles & 2X3 & \checkmark & 0.0820 & 0.0628 & 0.1965 & 2.3975 & \checkmark \\
+two-triangles & pentagon & \checkmark & 0.0818 & 0.0429 & 0.1979 & 2.4182 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0797 & 0.0450 & 0.1911 & 2.3977 & \checkmark \\
+rhombus-ext & 2X3 & \checkmark & 0.0793 & 0.0406 & 0.1925 & 2.4261 & \checkmark \\
+parallelepiped-int & 2X3 & \checkmark & 0.0756 & 0.0342 & 0.1824 & 2.4123 & \checkmark \\
+\bottomrule
+\end{tabular}
+}
+\caption{Ground Cable Routing and Layout Performance Analysis (LINE)}
+\label{tab:ground_routing_performance_line}
+\end{table}
+
+\todo[inline]{diagonal}
+
+[hand-made] Among the tested alternatives to a fully triangular attachment, diagonal is the least poor: best capacity margin ($-0.63$), best position error ($0.79$~m) and orientation error ($0.69$~rad) of the five, and joint-best pose-reached rate ($11.7\%$). This is consistent with diagonal being the topology structurally closest to triangular among the non-triangular options in Figure, offering the most independent moment arms of the alternatives. Nonetheless, the gap to the fully triangular attachment used throughout  (up to $85\%$ pose-reached) is large enough that this exploratory comparison offers no evidence to prefer any tested alternative to the triangular UAV attachment adopted as the fixed baseline for this thesis.
+
+TODO test also the ones resulted
+
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Pay. Layout} & \textbf{Gnd. Layout} & \textbf{Feas.} & $\nu$ & $w$ & \textbf{$\sigma_{\min}$} & \textbf{$\sigma_{\max}$} & \textbf{Rank} \\
+\midrule
+two-triangles & 2X3 & \checkmark & 0.0820 & 0.0628 & 0.1965 & 2.3975 & \checkmark \\
+two-triangles & pentagon & \checkmark & 0.0818 & 0.0429 & 0.1979 & 2.4182 & \checkmark \\
+rhombus-ext & 2X3 & \checkmark & 0.0793 & 0.0406 & 0.1925 & 2.4261 & \checkmark \\
+two-triangles & vertical-parallelepiped & \checkmark & 0.0781 & 0.0446 & 0.1871 & 2.3951 & \checkmark \\
+parallelepiped-int & 2X3 & \checkmark & 0.0756 & 0.0342 & 0.1824 & 2.4123 & \checkmark \\
+\bottomrule
+\end{tabular}
+}
+\caption{Ground Cable Routing and Layout Performance Analysis (DIAGONAL)}
+\label{tab:ground_routing_performance_diagonal}
+\end{table}
+
+\todo[inline]{If one of those give better results, analise also the two previous section}
+
+\todo[inline]{comparison with triangle}
+
+Across all tested ground layouts, the two-triangle UAV attachment consistently exhibits the highest conditioning index while satisfying the feasibility constraints. This indicates that the triangular topology provides a well-conditioned wrench mapping independently of the particular ground anchor arrangement, supporting its use as the reference configuration throughout the remainder of the thesis.
+
+
+This makes composite score an actively misleading selection criterion for UAV attachment topology. Within the \texttt{TRIANGLE-TRIANGLE} family, the point attachment achieves the \emph{highest} composite score of the five non-triangular options ($3.08$, ahead of line at $2.36$ and diagonal at $1.95$), driven by its radius of available force ($14.3$, the highest of the five) --- yet it is the single worst performer on every task-level metric: worst position error ($3.61$~m, roughly $4$--$5 \times$ the error of the other attachments), worst capacity margin ($-10.57$), and $0\%$ pose reached. A composite score built from static, quasi-steady indices rewards the point attachment's large theoretical force envelope without penalizing the fact that a single shared attachment point gives the controller far less independent authority over the payload's six degrees of freedom in practice. This is the most severe instance found in this exploratory batch of the static/dynamic disagreement discussed in , and it argues for excluding point-type UAV attachment from the automated search's candidate set on physical grounds, independent of whatever score the search's objective function would assign it.
+
+
+
+
 
 
 How to structure this chapter:

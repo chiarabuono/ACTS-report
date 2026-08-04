@@ -33,6 +33,7 @@ A fundamental difference between CDPRs and ACTSs lies in the available tension s
 
 \subsection{Flying Parallel Robots}
 
+\todo[inline]{Professor question: How is that different from ACTS? Make it more explicit}
 Flying Parallel Robots (FPRs) changes from the previous two designs in that they connect the UAVs to the manipulated platform by rigid connections rather than cables, allowing both pushing and pull forces to be transmitted. Thus, the payload can be moved more freely since it has extra passive degrees of freedom inside its legs, also known as kinematic chains. These can be reoriented without actuation, resulting  into a platform that isn't over-constrained \cite{liu_wrench_2022}. While this property can be helpful in interaction tasks, rigid links significantly increases the system's weight and the mechanical complexity \cite{six_dynamic_2021}.
 Introducing UGVs in ACTSs as ground anchor points allows pulling forces, expanding the force applicable during interaction tasks. Lastly, even though cables cannot transmit compressive forces, the coordinated control of multiple cable tensions allows the system to counteract reaction forces arising during contact with vertical surfaces, achieving similar objectives without the need for rigid mechanical connections.
 \begin{figure}[h]
@@ -44,8 +45,10 @@ Introducing UGVs in ACTSs as ground anchor points allows pulling forces, expandi
 
 
 \section{Interaction with the Environment}
+\todo[inline]{How is it different from any robot?}
+Physical interaction is particularly challenging for aerial robotic systems because the motion of an aerial vehicle directly affects the forces it generates. 
 
-Physical interaction is particularly challenging for aerial robotic systems because the motion of an aerial vehicle directly affects the forces it generates. Aerodynamic disturbances and modelling uncertainties further complicate the control of the system \cite{liu_wrench_2022}. In a cable-suspended system, these effects are coupled: a change in the position of one UAV or of the payload modifies the cable directions and consequently the forces experienced by the other agents \cite{sun_agile_2025}.
+Aerodynamic disturbances and modelling uncertainties further complicate the control of the system \cite{liu_wrench_2022}. In a cable-suspended system, these effects are coupled: a change in the position of one UAV or of the payload modifies the cable directions and consequently the forces experienced by the other agents \cite{sun_agile_2025}.
 
 These challenges become particularly important when the payload operates close to a vertical surface. Accuracy is a critical requirement in such applications, and interaction with the environment introduces additional force constraints that are not present during free-space motion \cite{jamshidifar_static_2020}.
 
@@ -71,8 +74,8 @@ In \cite{masone_cooperative_2016}, the design of a centralized trajectory tracki
     \item A joint-space control loop that converts the required cable forces into thrust and attitude commands for each quadrotor.
 \end{itemize}
 
+\todo[inline]{The difference is not clear to me}
 Differently, in distributed control systems, each agent computes its control action based on locally accessible information, which may be integrated with data resulting from the physical interaction with the shared payload. In this context, consensus algorithms allow individual robots to estimate global properties, such as formation parameters \cite{erskine_dynamic_2021}.
-
 Lastly, in decentralized approaches, it is crucial that the ACTS maintains bearing rigidity in order to ensure that the system can reconstruct and preserve the formation geometry using only local measurements, avoiding uncontrolled motions and degenerate configurations.
 
 The system considered here is assumed to operate under centralized control, for which the states and configuration of the relevant agents are available to a common controller.
@@ -87,3 +90,6 @@ In redundant cable-driven systems, several sets of cable tensions can generate t
 For ACTSs, tension feasibility is further constrained by the UAVs' actuation limits. Each UAV must allocate part of its available thrust to compensate for its own weight and maintain its attitude, leaving only a limited portion of its actuation capability for payload manipulation \cite{erskine_wrench_2019}. A valid control solution must therefore consider both the desired payload wrench and the available actuation capabilities.
 
 More recent approaches incorporate cable tension constraints directly into trajectory optimization, allowing future trajectories to be evaluated according to their feasibility with respect to cable tension and actuator limits \cite{sun_agile_2025}. Such approaches demonstrate the importance of considering cable forces explicitly when planning or controlling cooperative aerial systems.
+
+\section{My work in the current state of the art}
+Where does this work position in the current state of the art? What are the scientific challenges?

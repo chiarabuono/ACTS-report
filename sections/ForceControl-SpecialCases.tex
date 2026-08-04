@@ -1,3 +1,6 @@
+\todo[inline]{Add intro}
+Drone control the magnitude and direction of thrust, winches control cable length for bottom cables.
+
 \section{Force control with a point-mass payload}
 Before going into details on the full consideration, let's analyze some simpler configurations.
 
@@ -42,7 +45,7 @@ where $l$ is the cable length. Equation \ref{eq:geometricContraintOnUAV} is then
 \end{equation}
 
 \subsubsection{Option 2}
-Given the drone Newton's Second Law described in Equation \ref{eq:uavbalance}, we are able to estimate the cable force $\hat{f} = F_{a, i}^{est}$
+Given Newton's Second Law applied to the drone described in Equation \ref{eq:uavbalance}, we are able to estimate the cable force $\hat{f} = F_{a, i}^{est}$
 \begin{equation}
     m_i \ddot{a}_i = F_{prop, i} - \hat{f} + F_{g, i} \qquad \xrightarrow[]{} \qquad \hat{f} = F_{prop, i} + F_{g, i} - m_i \ddot{a}_i
     \label{eq:uavNewton2law}

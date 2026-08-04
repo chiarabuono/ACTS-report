@@ -14,7 +14,7 @@ Two simulation environments were investigated during the development of the thes
 \subsection{Gazebo Environment}
 Gazebo Harmonic \cite{gazebo_harmonic_getstarted} was initially selected as a potential simulation environment because of its established use in robotics and its integration with ROS2. However, the ACTS architecture presents a particular modeling challenge. Indeed, Gazebo assigns each physical element in the simulation a parent, generating a tree-like structure. While this does not constitute a problem for conventional articulated robot, ACTS contains ground cables constrained at both ends (resp. on the payload and on a point fixed on the ground), resulting in closed kinematic constraints. 
 
-Additionally, cables as soft body cannot be modelled in Gazebo, as it only manage rigid object. To go around the problem, they are modelled using multiple rigid links connected using universal joints. Although it solved the problem, implementing it resulted into an impracticable slow-down simulation.
+Additionally, cables as soft body cannot be modelled in Gazebo, as it only manages rigid object. To go around the problem, they are modelled using multiple rigid links connected using universal joints. Although it solved the problem, implementing it resulted into an impracticable slow-down simulation.
 
 Several preliminary simulations were nevertheless successfully implemented in Gazebo, including a pulley mechanism, a UAV connected to the ground through a cable, and a UAV connected to a payload. While individual components of the system could be simulated, such as pulley mechanism and single drone-cable simulation, extending this approach to the complete ACTS resulted in a more complex and computationally demanding model.
 

@@ -26,6 +26,8 @@ In this thesis, the following assumptions are adopted:
     \item There are no aerodynamic disturbances, such as the rotor wash \cite{six_dynamic_2021, liu_wrench_2022, erskine_dynamic_2021};
     \item The flight is quasi-stationary and the aerodynamic friction and resistance can be neglected in the dynamic model \cite{forte_impedance_2012, erskine_wrench_2019};
 \end{itemize}
+\todo[inline]{If the flight is quasi-stationary, do we really have a dynamic model or just a static model?}
+
 Lastly, the ground vehicles will be considered fixed anchoring points, as the ShieldBot project is still at its early stages.
 
 \section{Kinematostatic model}
@@ -35,6 +37,8 @@ As talked about in Section \ref{sec:Cable-DrivenParallelRobots}, it is possible 
 A kinematostatic model is a model that combines kinematics (motion and geometry) with statics (forces and equilibrium) to describe how a mechanical system moves and how forces are transmitted through it.
 
 \subsection{Kinematic model}
+
+\todo[inline]{What is the convention for bold vs normal characters?}
 
 \begin{figure}
     \centering
@@ -94,7 +98,7 @@ This gives us the kinematic model that relates the variation of cable length vec
     \label{eq:kinematic_model}
 \end{equation}
 
-Let's $m = n_a + n_g$ be the total number of winches (or cables) and $u_i = l_i/\|l_i\|$ the unit cable direction, then:
+Let $m = n_a + n_g$ be the total number of winches (or cables) and $u_i = l_i/\|l_i\|$ the unit cable direction, then:
 \begin{itemize}
     \item $\dot{\rho} = \begin{bmatrix}
         \dot{l}_1 & \dot{l}_2 & \dots & \dot{l}_m
@@ -133,13 +137,13 @@ u_m^\top & \left( \, _pR\, ^pb_m \times u_m \right)^\top \\
 \begin{equation}
     W_p = J_p^\top \tau
 \end{equation}
-Let's $W_p^*$ being the desired payload wrench, the control allocation problem to solve is
+Let $W_p^*$ be the desired payload wrench, the control allocation problem to solve is
 \begin{equation}
     J_p^\top \tau = W_p^*, \qquad \text{s.t}. \tau_i > 0
 \end{equation}
 
 \subsection{Static model}
-Let $\tau=[\tau_{uav}^\top, \tau_{ugv}^\top]^\top\in \mathbb{R}^{m\times 1}$ the cable tension vector, then
+Let $\tau=[\tau_{uav}^\top, \tau_{ugv}^\top]^\top\in \mathbb{R}^{m\times 1}$ be the cable tension vector, then
 \begin{equation} 
 \begin{aligned}
     \underbrace{\tau^\top\dot{\rho}}_{\text{total cable power}} &= \underbrace{\tau^\top J_a\dot{a}}_{\text{UAVs and UGVs mechanical power}} - \underbrace{\tau^\top J_p \, \xi}_{\text{payload power}} \\
@@ -240,7 +244,7 @@ where $F_{prop,j} = 0$ for the UGVs and $F_{ground, i} = 0$ for the UAVs. Then $
 \section{Architecture Design}
 \label{sec:architecture_design}
 
-The configuration of a cooperative aerial transportation system (ACTS) has a direct influence on its workspace, force-generation capabilities, controllability, and energy consumption. For a given payload pose, multiple equilibrium configurations may exist, corresponding to different distributions of internal cable forces that do not modify the resulting net wrench acting on the payload. Although these configurations satisfy the same static equilibrium conditions, they can require significantly different UAV positions and cable tensions, leading to different energy consumption and robustness properties \cite{tognon_aerial_2018}.
+The configuration of a Aerial Cable Towed System (ACTS) has a direct influence on its workspace, force-generation capabilities, controllability, and energy consumption. For a given payload pose, multiple equilibrium configurations may exist, corresponding to different distributions of internal cable forces that do not modify the resulting net wrench acting on the payload. Although these configurations satisfy the same static equilibrium conditions, they can require significantly different UAV positions and cable tensions, leading to different energy consumption and robustness properties \cite{tognon_aerial_2018}.
 Consequently, the architecture of the ACTS must be selected according to the requirements of the intended application. 
 
 \subsection{Design Variables}
@@ -260,7 +264,7 @@ Each configuration is characterized by parameters such as the number and arrange
 
 \subsubsection{Aerial Actuators}
 
-The configuration of the UAV connections is crucial, as it directly affects how forces are applied to the payload: UAVs are responsible for generating the lifting force required to lift the payload. Consequently, their number depends strongly on the payload mass. However, an increased number of UAVs does not necessarily improve the performance of the system, as this increase can lead to higher power consumption and greater system complexity. Additionally, each UAV can be connected to the payload using either a single cable or multiple cables. The choice of configuration affects controllability, wrench feasibility, robustness, and energy efficiency and should be evaluated accordingly. A practical compromise is to use three UAVs connected to the payload at distinct attachment points, providing a balance between the metrics just mentioned (Figure \ref{fig:uav-possible-configuration}). 
+The configuration of the UAV connections is crucial, as it directly affects how forces are applied to the payload: UAVs are responsible for generating the lifting force required to lift the payload. Consequently, their number depends strongly on the payload mass. However, an increased number of UAVs does not necessarily improve the performance of the system. Additionally, each UAV can be connected to the payload using either a single cable or multiple cables. The choice of configuration affects controllability, wrench feasibility, robustness, and energy efficiency and should be evaluated accordingly. A practical compromise is to use three UAVs connected to the payload at distinct attachment points, providing a balance between the metrics just mentioned (Figure \ref{fig:uav-possible-configuration}). 
 
 As we will see in later discussions, the main alternatives considered in this work are illustrated in Figure \ref{fig:3uavsConnections}. 
 
@@ -397,6 +401,8 @@ The conditioning index measures how uniformly the system can generate forces and
 \end{equation}
 $\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values of the Jacobian matrix, obtained via Singular Value Decomposition (SVD) \cite{erskine_dynamic_2021}. A small conditioning number indicates a well-conditioned system, far-away from singular configuration.
 
+\todo[inline]{Isn't it the opposite? Not small but big}
+
 \subsubsection{Manipulability}
 The manipulability index, defined as $w = \sqrt{\text{det}(J_pJ_p^\top)}$, measures the volume of the wrench ellipsoid. A value close to 0 means that the system hit a kinematic singularity, while large value means a large overall wrench generation capability.
 
@@ -417,6 +423,7 @@ where all the metrics are scaled to $[0, 1]$,
 
 \newpage
 \subsection{Selection Strategy}
+\label{sec:selection_strategy}
 
 The architecture search involves a potentially large number of candidate ground-cable routings. Evaluating the complete nonlinear ACTS model for every candidate would be computationally expensive, particularly because the UAV positions and cable directions depend on the selected architecture. Therefore, a two-tier selection strategy is adopted to progressively eliminate unsuitable configurations before performing the more expensive full-system analysis.
 
@@ -446,3 +453,34 @@ where $\mathbf{W}^{*}$ denotes the desired payload wrench and the tension bounds
 A configuration is considered wrench-feasible when the minimum residual of Eq.~\ref{eq:jointWFC} is below a prescribed tolerance. The surviving configurations are subsequently compared using the performance metrics defined in Section \ref{sec:performanceIndices}.
 
 This strategy separates the inexpensive combinatorial screening of ground-cable routings from the more computationally demanding analysis of the complete aerial-ground system. It therefore reduces the number of configurations requiring full nonlinear evaluation while retaining the relevant UAV-dependent constraints for the final architecture selection.
+
+\todo[inline]{Integrate this?}
+
+To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment. Architectures are subsequently ranked against one another by worst-case conditioning index.
+
+%% Why conditioning index and not composite score?
+The composite score N is not used for ranking routings during the exhaustive search because it requires information that is only available after solving the tension planner, such as the optimal cable tensions and the available wrench set. Computing its capacity-based terms is also computationally expensive and unreliable near singular configurations. Additionally, its weighting factors have not been experimentally validated, making it unsuitable for selecting the best routing. Instead, the search uses the conditioning index (with manipulability as a supporting metric), as it is a parameter-free, geometry-based measure that can be efficiently computed directly from the Jacobian. The composite score and capacity-based metrics are therefore evaluated later during closed-loop simulations, once a routing and tension solution are available.
+
+
+\begin{algorithm}[h]
+\caption{Cable Routing Optimization and Architecture Ranking}
+\label{alg:cable_optimization}
+\begin{algorithmic}[1]
+
+\ForAll{$(\text{payload\_layout}, \text{ground\_layout}) \text{ pairs}$}
+    \State Enumerate every valid 6-cable routing
+    
+    \ForAll{routing}
+        \ForAll{pose $\in$ test-pose set}
+            \State Build $J_p$  \Comment{Eq. \ref{eq:jp}}
+            \State Check Wrench Closure \Comment{$\text{rank}(J_p) = 6$}
+            \State Check Wrench Feasibility \Comment{$0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$}
+            \State Check Interference-Freedom \Comment{Eq. \ref{eq:IFCconstraint}}
+        \EndFor
+        \State Record this routing's \textbf{worst-case} score across all poses
+    \EndFor
+    \State Keep the \textbf{best} surviving routing for this architecture
+\EndFor
+
+\end{algorithmic}
+\end{algorithm}
