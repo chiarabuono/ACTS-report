@@ -8,14 +8,14 @@ Therefore, we will start considering the drone attachment configuration as fixed
 %% How the code work, how a given cable routing has been found
 Focusing on the ground cable routing, there are at most $6! = 720$ physically distinct valid ways to route the six ground cables. Scoring an architecture using only one arbitrarily chosen routing raise the question on how lucky the routing choice was and how good the architecture actually is. Therefore, implementing the selection strategy explained in Section \ref{sec:selection_strategy} is essential to make a guided choice and conclusions on the results.
 
-\subsubsection{Ground screening}
-The pre-screening results are shown in Table \ref{tab:prescreening_feasibility} and Table \ref{tab:prescreening_index}, where ground cable routings were evaluated over 10 different poses.
-
-A routing is discarded as soon as it violates either WCC or IFC at any tested pose (see Section \ref{sec:selection_strategy}). For this reason, the WCC and IFC counts in Table \ref{tab:prescreening_feasibility} reflect per-routing failures, whereas the WFC count is not directly comparable, since it represents the total number of pose-level failures accumulated across all candidate routings. The dominant source of rejection is the WFC, indicating that many routings remain kinematically valid but cannot generate the required wrench while maintaining admissible cable tensions. WCC failures are comparatively limited, showing that rank deficiency is less common than tension infeasibility. IFC failures are exclusively caused by cable-cable interference, whereas no exit-angle violations were observed.
+\subsection{Ground screening}
+\label{sec:ground_screening}
+The pre-screening results are shown in Table \ref{tab:prescreening_feasibility} and Table \ref{tab:prescreening_index}, where ground cable routings were tested over 10 different poses.
+Any routing that violates either WCC or IFC at any tested pose is removed, as it was explained deeply in Section \ref{sec:selection_strategy}.  For this reason, the WCC and IFC counts in Table \ref{tab:prescreening_feasibility} are per-routing failures, while the WFC count is not directly comparable, since it represents the total number of pose-level failures accumulated across all candidate routings. The WFC is the main cause of rejection, which means that many routings are still kinematically feasible, but they cannot produce the required wrench while keeping the cable tensions within the allowed range. The WCC failures are relatively few, indicating that rank deficiency is less common than tension infeasibility. IFC failures are only  caused by cable-cable interference, and not by exit-angle violations.
 
 The quality of the selected routing is evaluated through four complementary metrics. The smallest singular value, $\sigma_{\min}$, measures the distance from singular configurations, while the conditioning index $\nu$ evaluates the isotropy of the wrench generation capability. Manipulability quantifies the overall size of the achievable wrench space, whereas $d_{\min}$ characterizes the minimum cable-to-cable clearance over all tested poses.
 
-Table \ref{tab:prescreening_index} shows how no single architecture simultaneously maximizes every performance metric. The two-triangles configuration provides the largest minimum singular value and the best conditioning index, indicating the greatest robustness against singular configurations. Conversely, the rectangle-opposite architecture achieves the highest manipulability, suggesting a larger overall wrench capability. Finally, the parallelepiped-int layout provides the largest minimum cable clearance, reducing the likelihood of cable interference. These results highlight the trade-off between kinematic robustness, wrench capability, and geometric clearance.
+Table \ref{tab:prescreening_index} shows how no single architecture simultaneously maximizes every performance metric. The two-triangles-vertical-parallelepiped configuration provides the largest minimum singular value and the best conditioning index, indicating the greatest robustness against singular configurations. In contrast, the rectangle-opposite-2x3 architecture performs the highest manipulability, suggesting a larger overall wrench capability. Finally, the parallelepiped-int-2x3 layout provides the largest minimum cable clearance, reducing the likelihood of cable interference. These results highlight the trade-off between kinematic robustness, wrench capability, and geometric clearance.
 
 \begin{table}[htbp]
 \centering
@@ -77,14 +77,12 @@ I would first verify the code. If it is indeed skipped because: payload layout e
 % triangle	triangle	6	10	False	0	0	0	0	0								0	0	
 
 
-Overall, the pre-screening substantially reduces the number of candidate routings while preserving at least one feasible solution for every payload--ground architecture. The results also demonstrate that different routing choices can significantly affect the kinematic quality of the same geometric layout. Consequently, the routing-selection strategy is an essential preprocessing step before comparing the dynamic performance of the different cable robot architectures in the following sections.
 
-
-\subsubsection{Simulation run}
+\subsection{Simulation run}
 %% How and why the results before simulation and after simulation differ?
-The theoretical indices evaluate the geometric and static properties of a cable routing. They identify configurations that are close to kinematic or wrench singularities and rank architectures according to their ability to generate payload wrenches. However, they cannot predict the transient response of the closed-loop system. Dynamic effects such as payload inertia, controller gains and load redistribution are only captured by simulation. Consequently, while poor theoretical indices almost always indicate poor dynamic performance, the opposite is not necessarily true: a routing with good static indices may still exhibit oscillations or poor tracking.
+The theoretical indices evaluate the geometric and static properties of a cable routing. They define configurations close to kinematic or wrench singularities, and they classify architectures based on their ability to generate payload wrenches. However, they cannot predict the transient response of the closed-loop system. Dynamic effects such as payload inertia and load redistribution are only captured by simulation. Therefore, while poor theoretical indices almost always indicate poor dynamic performance, the opposite is not necessarily true: a routing with good static indices may still have oscillations or bad tracking.
 
-For each configuration derived in the previous step, a simulation is run over 60 different poses (shown in Figure \ref{fig:test_poses}) and conclusions are drawn. Additionally, extra simulations have been run to test specific ground cable routing and see if they lead us to further conclusions.
+For each configuration derived in the previous step, a simulation is run over 60 different poses (shown in Figure \ref{fig:test_poses}), and conclusions are drawn. Additionally, extra simulations have been run to test specific ground cable routing and see if they lead us to further conclusions. Table \ref{tab:architecture_ranking} summarizes the results of the dynamic simulations for the candidate architectures selected during the pre-screening. The objective is to evaluate whether the theoretical metrics introduced previously are consistent with the observed closed-loop behavior. In particular, the simulations assess pose reachability, cable rubbing and numerical stability over the set of 60 testing poses. Each indicator is ranked from 1 to 5, where lower values correspond to better overall performance.
 
 
 \begin{figure}
@@ -95,51 +93,51 @@ For each configuration derived in the previous step, a simulation is run over 60
 \end{figure}
 
 
-In Table \ref{tab:architecture_ranking} are shown the metrics obtained from the statistic tests explained in Section \ref{sec:statisticTest}. For all the metrics, the best rank is associated to 1, while the worst is at 5. However, while for metrics like "cable rubbed" and "instability" rank 1 corresponds to the lower value, for the others is the higher.
-
-
-\todo[inline]{Adapt with new results}
 \begin{table}[htbp]
 \centering
 \begin{threeparttable}
 \resizebox{\linewidth}{!}{
-\begin{tabular}{lcccccc}
+\begin{tabular}{l c c c c c c}
 \toprule
 \textbf{Architecture} & $\nu$ & $w$ & $N$ & \textbf{Pose Reach} & \textbf{Cable Rub} & \textbf{Instab.} \\
 \midrule
-pentagon--rect-same
- & 0.0869 (5) & 0.3522 (4) & 6.4366 (1) & 0.8333 (1) & 0.6500 (3) & 0.0000 (1) \\
-2X3--rect-same
- & 0.1135 (2) & 0.7820 (1) & 6.3929 (2) & 0.5833 (5) & 0.6167 (2) & 0.0500 (3) \\
-2triangles--2X3
- & 0.1140 (1) & 0.5953 (2) & 6.2580 (3) & 0.6667 (3) & 0.7667 (4) & 0.1333 (5) \\
-2triangles--vert-parall
- & 0.1107 (3) & 0.4907 (3) & 5.9310 (4) & 0.6667 (3) & 0.9167 (5) & 0.0667 (4) \\
-2triangles--pentagon
- & 0.0950 (4) & 0.3520 (5) & 5.8146 (5) & 0.7000 (2) & 0.5500 (1) & 0.0167 (2) \\
+rectangle-opposite-2x3 & 0.1246 (1) & 1.0459 (1) & 8.9142 (1) & 0.5833 (5) & 0.9333 (6) & 0.0500 (2) \\
+parallel-int-2x3 & 0.0997 (4) & 0.4536 (4) & 6.7857 (2) & 0.7500 (1) & 0.4667 (3) & 0.0500 (2) \\
+two-triangles-vertical-parallel & 0.1107 (3) & 0.4907 (3) & 5.9310 (3) & 0.6667 (3) & 0.9167 (5) & 0.0667 (5) \\
+parallel-ext-horiz-parallel & 0.1210 (2) & 0.7770 (2) & 5.8649 (4) & 0.5333 (6) & 0.4500 (2) & 0.0500 (2) \\
+acts\_stewart & 0.0533 (6) & 0.1054 (6) & 5.5706 (5) & 0.6500 (4) & 0.3167 (1) & 0.0833 (6) \\
+central-trapezoid-horiz-parallel & 0.0803 (5) & 0.2099 (5) & 4.8839 (6) & 0.7333 (2) & 0.6333 (4) & 0.0333 (1) \\
 \bottomrule
 \end{tabular}
 }
-\caption{Static and dynamic performance indices for the five candidate architectures, with rank (1 = best, 5 = worst) shown in parentheses.}
+\caption{Static and dynamic performance indices for the six candidate architectures, with rank (1 = best, 6 = worst) shown in parentheses.}
 \label{tab:architecture_ranking}
 \begin{tablenotes}
 \footnotesize
-\item $\nu$ = conditioning index; $w$\ = manipulability; $N$ = composite score; 
-\item Pose Reach = fraction of trials reaching the target pose (identical to \texttt{orientation\_reached} in this dataset); 
+\item $\nu$ = conditioning index; $w$ = manipulability; $N$ = composite score; 
+\item Pose Reach = fraction of trials reaching the target pose; 
 \item Cable Rub = fraction of trials with cable rubbing; 
-\item Instab.\ = \texttt{simulation\_unstable} rate. 
+\item Instab. = \texttt{simulation\_unstable} rate. 
 \end{tablenotes}
 \end{threeparttable}
 \end{table}
 
 
 \todo[inline]{What does the table tells us about?}
+For instance, the rectangle-opposite-2x3 architecture achieves the highest conditioning index and manipulability, yet exhibits the lowest pose reachability and the highest cable rubbing rate. Conversely, the parallelepiped-int-2x3 and central-trapezoid-horizontal-parallelepiped architectures provide better dynamic performance despite lower theoretical rankings. These results indicate that geometric quality alone is insufficient to characterize the overall behavior of the system, as dynamic effects such as payload inertia, cable force redistribution, and controller interaction become dominant during motion. The ACTS Stewart platform serves as a baseline reference, illustrating how the hybrid cable-driven architectures compare against the conventional parallel manipulator. Overall, the simulations validate the role of the pre-screening in eliminating infeasible routings while demonstrating the necessity of dynamic simulation for selecting the most suitable architecture.
 
 \todo[inline]{How the results before simulation and after simulation differ?}
+
+The dynamic simulations reveal that the theoretical performance indices alone do not fully predict the closed-loop behaviour of the system. The rectangle-opposite-2x3 architecture, which achieves the highest conditioning index and manipulability, exhibits the lowest pose reachability and one of the highest cable rubbing rates. Conversely, the parallelepiped-int-2x3 architecture, despite a lower conditioning index and manipulability, achieves the highest pose reachability while maintaining moderate cable interference. Similarly, the central-trapezoid-horizontal-parallelepiped architecture, which ranks lowest in the theoretical indices among the cable-driven configurations, presents the lowest instability rate. These observations indicate that the static metrics are effective for identifying geometrically favourable routings and avoiding singular configurations, but they do not account for dynamic effects such as payload inertia, force redistribution between cables, and the interaction with the controller.
 
 Supplementary simulations have been run on configurations realized manually, rather than selected through a systematic search.
 
 \todo[inline]{Does this give us additional results?}
+
+The supplementary manually designed configurations further demonstrate that the cable routing itself has a significant influence on the dynamic behavior, even when the underlying payload and ground geometries remain unchanged. Architectures sharing the same layouts but employing different cable assignments exhibit noticeable differences in pose reachability, cable rubbing and instability.
+
+Overall, the manually selected routings do not consistently outperform those obtained through the systematic screening procedure. This suggests that manually identifying a suitable routing based solely on geometric intuition is difficult, whereas the proposed screening strategy provides a more reliable and reproducible means of selecting high-quality candidate routings for subsequent dynamic evaluation.
+
 \begin{table}[htbp]
 \centering
 \begin{threeparttable}
@@ -162,19 +160,19 @@ rect-opposite--2X3-2 & 0.1126 (5) & 6.4080 (5) & 6.4080 (5) & 0.5667 (4) & 1.000
 \end{threeparttable}
 \end{table}
 
-% \subsection{Degenerative ground configurations - Line and Diagonal}
+\subsection{Analysis of Specific configurations}
+\subsubsection{Degenerative ground configurations - Line and Diagonal}
+\label{sec:degenerativeConfigurationa}
 The exhaustive screening consistently rejects the line and diagonal ground-routing configurations. This result is expected, as in these layouts several cable directions become nearly coplanar or aligned, resulting in cable arrangements that are close to kinematic singularities. Consequently, the cable system can no longer generate a full six-dimensional wrench space. This result could have also been explained geometrically. In the line configuration, cable attachments lie along a single axis, which limits the system's ability to generate forces and torques in directions perpendicular to that line. Similarly, the diagonal configuration introduces a strong directional bias along the axis on which the cable attachments are positioned.
 
-Simulation results using hand-crafted configurations confirm this conclusion: line-based and diagonal-based ground cable layouts never rank among the highest-performing architectures in terms of composite score. The drop in performance becomes particularly pronounced when both the payload and the ground attachments are arranged in a one-dimensional configuration. In such cases, the desired pose is achieved less than half the time, like in the LINE-LINE-TRIANGLE configuration that succeeds only 40\% of the time. Success rates nearly double when at least one attachment expands into two dimensions, as seen in LINE-PENTAGON-TRIANGLE (56.67\%) or LINE-HEXAGON-TRIANGLE (76.67\%).
+Simulation results using hand-crafted configurations confirm this conclusion: line-based and diagonal-based ground cable layouts never rank among the highest-performing architectures in terms of composite score. The drop in performance becomes particularly pronounced when both the payload and the ground attachments are arranged in a one-dimensional configuration. In such cases, the desired pose is achieved less than half the time, like in the line-line-triangle configuration that succeeds only 40\% of the time. Success rates nearly double when at least one attachment expands into two dimensions, as seen in line-pentagon-triangle (56.67\%) or line-hexagon-triangle (76.67\%).
 
-\todo[inline]{two-triangles-vertical-parallelepiped}
+\subsubsection{Configuration two-triangles--vertical-parallelepiped--triangle}
 
-two-triangles has the largest $\sigma_{min}$, it also has the largest conditioning index, but it has lower manipulability than rectangle-opposite.
+two-triangles-vertical-parallelepiped has the largest $\sigma_{min}$, it also has the largest conditioning index, but it has lower manipulability than rectangle-opposite. This is nice because it illustrates that: manipulability measures the overall volume of the wrench ellipsoid, whereas $\sigma_{min}$ measures the worst-case direction. So an architecture can have: slightly smaller manipulability, but a larger $\sigma_{min}$, meaning it is more isotropic and farther from singularity, even if its total wrench capability is not maximal.
 
-This is nice because it illustrates that: manipulability measures the overall volume of the wrench ellipsoid, whereas $\sigma_{min}$ measures the worst-case direction.
-
-So an architecture can have: slightly smaller manipulability, but a larger $\sigma_{min}$, meaning it is more isotropic and farther from singularity, even if its total wrench capability is not maximal.
-
+The simulation results further show that neither property alone determines the dynamic performance. Although the two-triangles-vertical-parallelepiped architecture provides the largest $\sigma_{\min}$, indicating the greatest robustness against singular configurations, it does not achieve the best closed-loop performance. Likewise, the rectangle-opposite-2x3 architecture, which maximizes manipulability, performs poorly in terms of pose reachability. Therefore, $\sigma_{\min}$ and manipulability should be interpreted as complementary geometric indicators rather than direct predictors of dynamic behavior.
 
 
 \todo[inline]{Other combinations that give interesting results?}
+Overall, the simulation results indicate that no single architecture simultaneously optimizes every performance metric. The rectangle-opposite-2x3 architecture maximizes the theoretical indices, whereas the central-trapezoid-horizontal-parallelepiped architecture provides the highest numerical stability. The parallelepiped-int-2x3 architecture, however, offers the best overall compromise by combining the highest pose reachability with low instability and acceptable cable rubbing. Relative to the ACTS Stewart baseline, it demonstrates that the proposed cable-driven architecture can achieve comparable closed-loop performance while satisfying the additional routing constraints inherent to the hybrid system.

@@ -1,7 +1,7 @@
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.52\textwidth} c c c}
 \toprule
-Configuration & Large & Normal & Small \\
+Configuration & Large & Nominal & Small \\
 \midrule
 \endhead
 
@@ -10,7 +10,7 @@ Configuration & Large & Normal & Small \\
 \endfoot
 
 \bottomrule
-\caption{Performance and force-related metrics for all platform configurations}
+\caption{Static performance metrics}
 \label{tab:metrics_part1}
 \endlastfoot
 
@@ -26,7 +26,7 @@ two-triangles-vertical-parallelepiped & \textbf{0.8833*} & \textbf{0.9167*} & \t
 \midrule[\lightrulewidth]
 
 % ---------------- CAPACITY MARGIN ----------------
-\multicolumn{4}{l}{\textbf{Capacity Margin}} \\
+\multicolumn{4}{l}{\textbf{Capacity Margin} $\gamma$} \\
 \midrule
 acts\_stewart & 2.7714 & 2.7714 & 2.7714 \\
 central-trapezoid-horizontal-parallelepiped & \textbf{7.7971*} & 3.7436 & \textbf{0.6520*} \\
@@ -37,7 +37,7 @@ two-triangles-vertical-parallelepiped & \textbf{9.6411*} & 2.0005 & \textbf{-0.7
 \midrule[\lightrulewidth]
 
 % ---------------- COMPOSITE SCORE ----------------
-\multicolumn{4}{l}{\textbf{Composite Score}} \\
+\multicolumn{4}{l}{\textbf{Composite Score} $N$} \\
 \midrule
 acts\_stewart & 5.5706 & 5.5706 & 5.5706 \\
 central-trapezoid-horizontal-parallelepiped & \textbf{15.8643*} & 4.8839 & \textbf{2.4967*} \\
@@ -48,7 +48,7 @@ two-triangles-vertical-parallelepiped & \textbf{17.0749*} & 5.9310 & \textbf{2.9
 \midrule[\lightrulewidth]
 
 % ---------------- CONDITIONING INDEX ----------------
-\multicolumn{4}{l}{\textbf{Conditioning Index}} \\
+\multicolumn{4}{l}{\textbf{Conditioning Index} $\nu$} \\
 \midrule
 acts\_stewart & 0.0533 & 0.0533 & 0.0533 \\
 central-trapezoid-horizontal-parallelepiped & \textbf{0.1374*} & \textbf{0.0803*} & \textbf{0.0461*} \\
@@ -98,7 +98,7 @@ two-triangles-vertical-parallelepiped & \textbf{0.7201*} & 0.6747 & 0.5729 \\
 {\small
 \begin{longtable}{>{\raggedright\arraybackslash}p{0.52\textwidth} c c c}
 \toprule
-Configuration & Large & Normal & Small \\
+Configuration & Large & Nominal & Small \\
 \midrule
 \endhead
 
@@ -107,7 +107,7 @@ Configuration & Large & Normal & Small \\
 \endfoot
 
 \bottomrule
-\caption{Task execution, kinematic, and stability metrics for all platform configurations} 
+\caption{Dynamic performance metrics} 
 \label{tab:metrics_part2}
 \endlastfoot
 
@@ -131,17 +131,6 @@ parallelepiped-ext-horizontal-parallelepiped & 1.3721 & \textbf{1.9097*} & \text
 parallelepiped-int-2x3 & 0.5278 & 0.8452 & \textbf{1.6011*} \\
 rectangle-opposite-2x3 & \textbf{0.3350*} & \textbf{1.4925*} & \textbf{1.7521*} \\
 two-triangles-vertical-parallelepiped & 0.2813 & \textbf{1.0135*} & \textbf{1.2945*} \\
-\midrule[\lightrulewidth]
-
-% ---------------- ORIENTATION REACHED ----------------
-\multicolumn{4}{l}{\textbf{Orientation Reached}} \\
-\midrule
-acts\_stewart & 0.6500 & 0.6500 & 0.6500 \\
-central-trapezoid-horizontal-parallelepiped & 0.5833 & 0.7333 & 0.6000 \\
-parallelepiped-ext-horizontal-parallelepiped & 0.6667 & 0.5333 & \textbf{0.3500*} \\
-parallelepiped-int-2x3 & 0.7667 & 0.7500 & 0.5667 \\
-rectangle-opposite-2x3 & 0.6500 & 0.5833 & 0.4333 \\
-two-triangles-vertical-parallelepiped & 0.7500 & 0.6667 & 0.5667 \\
 \midrule[\lightrulewidth]
 
 % ---------------- POSE REACHED ----------------

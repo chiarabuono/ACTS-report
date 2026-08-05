@@ -1,0 +1,176 @@
+%% ------------------ TRACKING
+\todo[inline]{Bold data statistically significant}
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+ &  & \textbf{Orien-} & \textbf{Pose} & \textbf{Simulation} \\
+ & \textbf{Position} & \textbf{tation} & \textbf{Reached} & \textbf{Unstable} \\
+\textbf{Configuration} & \textbf{Error} & \textbf{Error} & \textbf{Rate} & \textbf{Rate} \\
+\midrule
+acts\_stewart & 0.0592 & 0.1223 & 65.00\% & 8.33\% \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
+\midrule
+rhombus-ext-2x3-aligned & 1.1609 & 0.6110 & 13.33\% & 5.00\% \\
+horizzontal-parallelepiped-2x3-aligned & 1.7362 & 0.9779 & 0.00\% & \textbf{3.33\%} \\
+two-triangles-2x3-aligned & 2.9856 & 1.4193 & 1.67\% & 10.00\% \\
+two-triangles-vertical-parallelepiped-aligned & 3.0221 & 1.3568 & 1.67\% & 15.00\% \\
+rectangle-opposite-pyramid-aligned & 3.5081 & 1.4408 & 1.67\% & 13.33\% \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
+\midrule
+rhombus-ext-2x3-diagonal & 0.3978 & 0.2576 & 30.00\% & \textbf{1.67\%} \\
+two-triangles-2x3-diagonal & 1.3208 & 0.6957 & 18.33\% & 5.00\% \\
+two-triangles-vertical-parallelepiped-diagonal & 1.4162 & 0.5881 & 13.33\% & 8.33\% \\
+parallelepiped-int-2x3-diagonal & 2.1079 & 0.7343 & 8.33\% & 8.33\% \\
+rectangle-opposite-2x3-diagonal & 2.6812 & 1.1525 & 3.33\% & 6.67\% \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
+\midrule
+rhombus-ext-2x3-disaligned & 1.1077 & 0.7734 & 23.33\% & \textbf{3.33\%} \\
+two-triangles-vertical-parallelepiped-disaligned & 1.1213 & 0.7439 & 16.67\% & 13.33\% \\
+two-triangles-2x3-disaligned & 1.2081 & 0.7869 & 13.33\% & 5.00\% \\
+parallelepiped-ext-pyramid-disaligned & 2.0989 & 0.9974 & 6.67\% & 8.33\% \\
+rectangle-opposite-pyramid-disaligned & 2.7468 & 1.4195 & 5.00\% & 15.00\% \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
+\midrule
+rhombus-ext-2x3-line & 0.5744 & 0.4359 & 20.00\% & 6.67\% \\
+two-triangles-2x3-line & 1.7290 & 1.0285 & 3.33\% & 13.33\% \\
+two-triangles-vertical-parallelepiped-line & 2.4537 & 1.5033 & 6.67\% & 16.67\% \\
+parallelepiped-int-2x3-line & 2.9301 & 1.1962 & 1.67\% & \textbf{5.00\%} \\
+rectangle-opposite-2x3-line & 3.0277 & 1.3840 & 1.67\% & 6.67\% \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
+\midrule
+central-parallelepiped-vertical-parallelepiped-point & 2.1665 & 0.9907 & 0.00\% & 6.67\% \\
+rhombus-ext-2x3-point & 2.6894 & 0.6838 & 0.00\% & 5.00\% \\
+two-triangles-2x3-point & 2.8918 & 1.0663 & 0.00\% & 10.00\% \\
+two-triangles-vertical-parallelepiped-point & 2.9846 & 1.3437 & 0.00\% & \textbf{3.33\%} \\
+rectangle-opposite-pyramid-point & 3.2820 & 1.7511 & 0.00\% & 13.33\% \\
+\bottomrule
+\end{tabular}}
+\caption{Tracking performance}
+\label{tab:tracking_all_configurations}
+\end{table}
+
+
+%% ------------------------ PERFORMANCE (ALL CONFIGURATIONS)
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lcccc}
+\toprule
+& & \textbf{Cable} &  & \textbf{Worst} \\
+ & \textbf{Composite} & \textbf{Rubbed} & \textbf{Capacity} & \textbf{Case} \\
+\textbf{Configuration} & \textbf{Score} & \textbf{Rate} & \textbf{Margin} & \textbf{Margin} \\
+\midrule
+acts\_stewart & 5.5706 & 31.67\% & 2.7714 & 0.7337 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
+\midrule
+two-triangles-vertical-parallelepiped-aligned & \textbf{6.9394} & 100.00\% & -3.6846 & 0.0807 \\
+rhombus-ext-2x3-aligned & 4.7770 & 70.00\% & 0.3833 & 0.5002 \\
+rectangle-opposite-pyramid-aligned & 4.3749 & 100.00\% & -8.4215 & -0.7738 \\
+horizzontal-parallelepiped-2x3-aligned & 4.1779 & 83.33\% & -0.6416 & 0.4359 \\
+two-triangles-2x3-aligned & 3.1077 & 100.00\% & -5.0017 & 0.0336 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
+\midrule
+rectangle-opposite-2x3-diagonal & \textbf{8.9172} & 100.00\% & -0.9293 & 0.5014 \\
+parallelepiped-int-2x3-diagonal & 7.6856 & 86.67\% & -2.4025 & 0.4346 \\
+two-triangles-2x3-diagonal & 4.4219 & 78.33\% & 0.7669 & 0.6258 \\
+rhombus-ext-2x3-diagonal & 4.2652 & 50.00\% & \textbf{2.9175} & 0.6638 \\
+two-triangles-vertical-parallelepiped-diagonal & 3.4777 & 100.00\% & -1.5186 & 0.5593 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
+\midrule
+two-triangles-2x3-disaligned & \textbf{6.1610} & 93.33\% & 1.2479 & 0.5921 \\
+two-triangles-vertical-parallelepiped-disaligned & 5.2415 & 96.67\% & -0.2683 & 0.5776 \\
+rhombus-ext-2x3-disaligned & 3.8389 & 81.67\% & 0.5601 & 0.5143 \\
+parallelepiped-ext-pyramid-disaligned & 2.4759 & 98.33\% & -8.2006 & -0.1110 \\
+rectangle-opposite-pyramid-disaligned & 1.7293 & 100.00\% & -8.3517 & -1.5166 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
+\midrule
+rectangle-opposite-2x3-line & \textbf{8.6194} & 100.00\% & -3.4354 & -0.0719 \\
+parallelepiped-int-2x3-line & 8.2924 & 93.33\% & -2.1383 & 0.2145 \\
+two-triangles-2x3-line & 5.1898 & 98.33\% & 0.5957 & 0.4536 \\
+rhombus-ext-2x3-line & 4.1202 & 46.67\% & 2.3352 & 0.5436 \\
+two-triangles-vertical-parallelepiped-line & 2.2061 & 100.00\% & -3.7044 & -0.6106 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
+\midrule
+rhombus-ext-2x3-point & 5.0544 & 76.67\% & -0.0824 & 0.2626 \\
+central-parallelepiped-vertical-parallelepiped-point & 4.8195 & 100.00\% & -0.1985 & -0.5824 \\
+two-triangles-2x3-point & 2.9828 & 100.00\% & -9.4867 & -0.9989 \\
+two-triangles-vertical-parallelepiped-point & 2.3153 & 100.00\% & -9.3506 & 0.2763 \\
+rectangle-opposite-pyramid-point & -0.8569 & 100.00\% & -13.2157 & -0.3191 \\
+\bottomrule
+\end{tabular}}
+\caption{Task performance}
+\label{tab:performance_all_configurations}
+\end{table}
+
+
+%% --------------------------- DEXTERITY (ALL CONFIGURATIONS)
+\begin{table}[htbp]
+\centering
+\small
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lccc}
+\toprule
+ & & & \textbf{Radius} \\
+ & \textbf{Conditioning} & \textbf{Manipulability} & \textbf{Available} \\ 
+\textbf{Configuration} & \textbf{Index} &  & \textbf{Force} \\
+\midrule
+acts\_stewart & 0.0533 & 0.1054 & 11.7301 \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Aligned Configurations}}} \\
+\midrule
+rectangle-opposite-pyramid-aligned & \textbf{0.1342} & \textbf{1.4466} & 15.7233 \\
+two-triangles-2x3-aligned & 0.1317 & 0.9448 & 9.7516 \\
+two-triangles-vertical-parallelepiped-aligned & 0.1274 & 0.8604 & \textbf{18.5554} \\
+horizzontal-parallelepiped-2x3-aligned & 0.1038 & 0.6784 & 9.2522 \\
+rhombus-ext-2x3-aligned & 0.0994 & 0.5329 & 9.2058 \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Diagonal Configurations}}} \\
+\midrule
+rectangle-opposite-2x3-diagonal & 0.0951 & \textbf{0.9867} & \textbf{23.6348} \\
+parallelepiped-int-2x3-diagonal & 0.1003 & 0.6093 & 20.0151 \\
+two-triangles-2x3-diagonal & \textbf{0.1060} & 0.5599 & 9.4910 \\
+two-triangles-vertical-parallelepiped-diagonal & 0.0978 & 0.4280 & 8.0267 \\
+rhombus-ext-2x3-diagonal & 0.0822 & 0.2362 & 6.7424 \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Disaligned Configurations}}} \\
+\midrule
+two-triangles-2x3-disaligned & \textbf{0.1107} & 0.6071 & \textbf{13.4894} \\
+two-triangles-vertical-parallelepiped-disaligned & 0.0957 & 0.3979 & 11.4287 \\
+rectangle-opposite-pyramid-disaligned & 0.0893 & \textbf{0.7455} & 9.5642 \\
+rhombus-ext-2x3-disaligned & 0.0872 & 0.3856 & 7.5565 \\
+parallelepiped-ext-pyramid-disaligned & 0.0812 & 0.3659 & 10.3138 \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Line Configurations}}} \\
+\midrule
+rectangle-opposite-2x3-line & \textbf{0.1280} & \textbf{1.2408} & \textbf{25.5407} \\
+two-triangles-2x3-line & 0.1170 & 0.6925 & 12.5314 \\
+parallelepiped-int-2x3-line & 0.1087 & 0.8363 & 22.2708 \\
+two-triangles-vertical-parallelepiped-line & 0.1065 & 0.5784 & 7.7935 \\
+rhombus-ext-2x3-line & 0.0813 & 0.3243 & 7.1416 \\
+\midrule
+\multicolumn{4}{l}{\textit{\textbf{Point Configurations}}} \\
+\midrule
+rhombus-ext-2x3-point & \textbf{0.1488} & \textbf{1.2594} & 9.9832 \\
+two-triangles-2x3-point & 0.1248 & 0.8800 & \textbf{12.4516} \\
+central-parallelepiped-vertical-parallelepiped-point & 0.1144 & 0.8100 & 10.7816 \\
+two-triangles-vertical-parallelepiped-point & 0.1101 & 0.6208 & 10.2408 \\
+rectangle-opposite-pyramid-point & 0.0952 & 0.7693 & 4.9098 \\
+\bottomrule
+\end{tabular}}
+\caption{Geometric performance metrics}
+\label{tab:dexterity_all_configurations}
+\end{table}

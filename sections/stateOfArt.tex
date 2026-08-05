@@ -93,3 +93,20 @@ More recent approaches incorporate cable tension constraints directly into traje
 
 \section{My work in the current state of the art}
 Where does this work position in the current state of the art? What are the scientific challenges?
+
+Challanges:
+\begin{itemize}
+    \item How can an ACTS architecture be designed before building the robot?
+    \item How should UAV and ground cable attachment points be selected?
+    \item How can feasible cable routings be automatically identified among many possibilities?
+    \item Which performance metrics are truly predictive of practical manipulation performance?
+    \item How can theoretical architecture evaluation be connected with dynamic closed-loop simulations?
+\end{itemize}
+
+Existing research on cable-driven aerial manipulation has mainly focused on modeling, trajectory generation, and controller design. Although these works provide effective methods for controlling a given ACTS architecture, comparatively little attention has been devoted to the systematic design of the architecture itself. In particular, selecting the number and placement of cable attachment points, choosing suitable cable routings, and evaluating alternative actuator layouts remain largely open problems. These decisions directly influence the achievable wrench set, controllability, workspace, robustness, and ultimately the performance of any controller.
+
+This thesis addresses these challenges by proposing a unified methodology for the design and evaluation of hybrid Aerial Cable-Towed Systems combining UAVs and ground anchors. First, a general kinematostatic model is developed to describe arbitrary ACTS architectures. Building upon this model, an exhaustive routing search and pre-screening procedure are introduced to automatically identify feasible cable configurations satisfying wrench closure, wrench feasibility, and interference constraints. The candidate architectures are subsequently evaluated through both geometric performance indices and closed-loop dynamic simulations using the proposed control framework.
+
+Beyond the development of the control architecture itself, the thesis investigates the influence of architectural choices on manipulation performance. Particular attention is devoted to the placement of UAV attachment points and ground anchor layouts, providing a quantitative comparison across multiple candidate configurations. The results demonstrate that purely geometric metrics, such as conditioning index and manipulability, are insufficient to predict practical performance on their own. Instead, reliable architecture assessment requires combining theoretical metrics with task-oriented indicators including pose reachability, tracking accuracy, cable interference, and force-generation capability.
+
+The proposed methodology therefore provides a systematic framework for the design, evaluation, and selection of ACTS architectures, bridging the gap between theoretical cable-driven robot analysis and the practical deployment of collaborative aerial manipulation systems.

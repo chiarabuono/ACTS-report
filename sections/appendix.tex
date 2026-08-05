@@ -1,28 +1,66 @@
 \chapter{Singularities and Performance Indices}
 \label{chap:singularities}
 
-\todo[inline]{write it better}
-Cable-driven parallel robots (CDPRs) and aerial cable-driven systems experience critical operating limits where force transmission or controllability degrades. Table \ref{tab:singularity_classification} summarizes these operational singularities and their physical consequences.
+This appendix summarizes the principal singularity types and performance indices used throughout this thesis. The geometric indices introduced in Chapter~3 are intended to evaluate the ability of a cable-driven architecture to generate payload wrenches while remaining sufficiently far from singular configurations. Although these metrics provide valuable information during the design stage, they characterize only the static or quasi-static properties of the architecture. As discussed in Chapter~6, they should therefore be complemented by dynamic simulation metrics to assess the practical closed-loop behavior of the system.
+
+In Cable-Driven Parallel Robots (CDPRs) and Aerial Cable-Towed Systems (ACTSs), singular or near-singular configurations reduce the system's ability to generate arbitrary payload forces and moments. Different singularities arise from different physical mechanisms, and consequently require different performance measures for their identification.
+
+\todo[inline]{Turn the table in a itemized list}
 
 \begin{table}[htbp]
 \centering
 
-\vspace{0.5em}
-% >{\raggedright\arraybackslash} prevents justification issues on narrow columns
-\begin{tabularx}{\textwidth}{l >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+\begin{tabular}{p{2.8cm} p{3.2cm} p{3.6cm} p{4.2cm}}
 \toprule
-\textbf{Type} & \textbf{Cause} & \textbf{Detection Index} & \textbf{Consequence} \\ 
+\textbf{Singularity type} &
+\textbf{Typical cause} &
+\textbf{Detection metric} &
+\textbf{Practical consequence} \\
 \midrule
-Kinematic & $\text{rank}(J_p) < 6$ & Condition Number, Manipulability & Loss of platform Degrees of Freedom (DoF) \\
-Wrench    & Desired wrench outside AWS & Capacity Margin, RAW & Target wrench cannot be generated \\
-Tension   & Negative or zero cable tensions & Tension optimization & Cable slack / loss of constraint \\
-Stiffness & Poor cable distribution & Stiffness Matrix, Simulation & Unwanted oscillations and rocking \\
-Dynamic   & Closed-loop instability & Eigenvalues, Simulation & Trajectory tracking failure \\
+Kinematic &
+$\mathrm{rank}(J_p)<6$ &
+Smallest singular value, conditioning index, manipulability &
+Loss of one or more controllable degrees of freedom \\
+
+\addlinespace
+
+Wrench &
+Desired wrench lies outside the Available Wrench Set &
+Capacity margin, radius of the available wrench set &
+Required payload wrench cannot be generated \\
+
+\addlinespace
+
+Tension &
+Cable tensions become zero or negative &
+Tension optimization /
+feasibility check &
+Cable slack and loss of constraint \\
+
+\addlinespace
+
+Stiffness &
+Poor cable distribution &
+Stiffness analysis &
+Reduced disturbance rejection and increased oscillations \\
+
+\addlinespace
+
+Dynamic &
+Closed-loop instability &
+Simulation-based performance metrics &
+Tracking failure or unstable payload motion \\
+
 \bottomrule
-\end{tabularx}
-\caption{Classification of Singularity Types in Cable-Driven Parallel Systems}
+\end{tabular}
+
+\caption{Summary of the principal singularity types, their causes, representative detection metrics, and their effect on the system performance.}
 \label{tab:singularity_classification}
 \end{table}
+
+Among these measures, the smallest singular value, conditioning index, and manipulability describe the geometric properties of the payload Jacobian and quantify the distance from kinematic singularities. In contrast, the capacity margin and radius of the available wrench evaluate whether the required payload wrench can be generated while satisfying the cable tension limits. Dynamic quantities, such as tracking errors, numerical instability, and cable interference, are instead obtained from closed-loop simulations and capture effects that cannot be predicted by static geometric analysis alone.
+
+For this reason, the architecture evaluation proposed in this work combines both geometric performance indices and dynamic simulation metrics, allowing theoretically favorable configurations to be distinguished from those that also provide robust practical performance.
 
 \chapter{Statistical Methods}
 \todo[inline]{Clean this}
@@ -74,7 +112,137 @@ Together, these correction procedures ensure that statistically significant diff
 \chapter{Complete Evaluation Results}
 \label{app:full_results}
 
-This appendix presents the complete numerical results for all evaluated platform configurations and workspace sizes. The results complement the discussion in Chapter \ref{chap:results} by providing the full set of measurements used in the comparative analysis. For each metric, values are reported for the Large, Normal, and Small workspace configurations. The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} followed by an asterisk (\textbf{*}) indicate statistically significant differences with respect to the reference configuration after Holm-adjusted hypothesis testing ($p < 0.05$).
+This appendix collects the complete numerical results supporting the analyses presented in Chapter \ref{chap:results}. The appendix is organized according to the two comparative studies performed in the thesis. Section \ref{app:ground-spacing} reports the results of the ground-anchor spacing analysis presented in Section \ref{sec:ground-placement}, whereas Section \ref{app:uav-attachment} contains the pre-screening and simulation results supporting the UAV attachment study of Section \ref{sec:dronehook}. Within each section, the tables report the complete metric values together with the outcome of the statistical comparisons against the reference Stewart configuration.
 
-Table \ref{tab:metrics_part1} contains the performance and force-related metrics, while Table \ref{tab:metrics_part2} reports the task execution, kinematic, and stability metrics.
+The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} followed by an asterisk (\textbf{*}) indicate statistically significant differences with respect to the reference configuration after Holm-adjusted hypothesis testing ($p < 0.05$).
+
+
+\section{Ground-anchor spacing study}
+\label{app:ground-spacing}
+
 \input{sections/results/comparison_tables.tex}
+
+\newpage
+\section{UAV attachment study}
+\label{app:uav-attachment}
+\subsection{Pre-screening results}
+
+\begin{table}[htbp]
+  \centering
+  \resizebox{\linewidth}{!}{
+    \begin{tabular}{lcccc}
+      \toprule
+      & \textbf{WCC} & \textbf{WFC} & \textbf{IFC} & \textbf{Feasible} \\
+      \textbf{Configuration} & \textbf{Failures} & \textbf{Failures} & \textbf{Failures} & \\
+      \midrule
+      \multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
+      \midrule
+      two-triangles-vertical-parallelepiped-aligned & 64 & 2555 & 507 & \checkmark \\
+      rhombus-ext-2X3-aligned & 52 & 296 & 97 & \checkmark \\
+      rectangle-opposite-pyramid-aligned & 10 & 541 & 122 & \checkmark \\
+      two-triangles-2X3-aligned & 72 & 2315 & 485 & \checkmark \\
+      horizzontal-parallelepiped-2X3-aligned & 168 & 1546 & 442 & \checkmark \\
+      \midrule
+      \multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
+      \midrule
+      two-triangles-2X3-diagonal & 72 & 2311 & 485 & \checkmark \\
+      rectangle-opposite-2X3-diagonal & 72 & 146 & 94 & \checkmark \\
+      parallelepiped-int-2X3-diagonal & 52 & 342 & 102 & \checkmark \\
+      two-triangles-vertical-parallelepiped-diagonal & 64 & 2552 & 507 & \checkmark \\
+      rhombus-ext-2X3-diagonal & 52 & 301 & 97 & \checkmark \\
+      \midrule
+      \multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
+      \midrule
+      two-triangles-2X3-disaligned & 72 & 2313 & 485 & \checkmark \\
+      two-triangles-vertical-parallelepiped-disaligned & 64 & 2553 & 507 & \checkmark \\
+      rhombus-ext-2X3-disaligned & 52 & 301 & 97 & \checkmark \\
+      parallelepiped-ext-pyramid-disaligned & 8 & 598 & 135 & \checkmark \\
+      rectangle-opposite-pyramid-disaligned & 10 & 541 & 122 & \checkmark \\
+      \midrule
+      \multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
+      \midrule
+      two-triangles-2X3-line & 72 & 2314 & 485 & \checkmark \\
+      two-triangles-vertical-parallelepiped-line & 64 & 2555 & 507 & \checkmark \\
+      rhombus-ext-2X3-line & 52 & 296 & 97 & \checkmark \\
+      rectangle-opposite-2X3-line & 72 & 148 & 94 & \checkmark \\
+      parallelepiped-int-2X3-line & 52 & 342 & 102 & \checkmark \\
+      \midrule
+      \multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
+      \midrule
+      two-triangles-2X3-point & 72 & 2328 & 485 & \checkmark \\
+      rhombus-ext-2X3-point & 52 & 305 & 97 & \checkmark \\
+      two-triangles-vertical-parallelepiped-point & 64 & 2567 & 507 & \checkmark \\
+      rectangle-opposite-pyramid-point & 10 & 545 & 122 & \checkmark \\
+      central-parallelepiped-vertical-parallelepiped-point & 76 & 1184 & 172 & \checkmark \\
+      \bottomrule
+    \end{tabular}
+  }
+  \caption{Pre-screening results}
+  \label{tab:prescreening_feasibility_all}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Configuration} & $\sigma_{\min}$ \tnote{a} & $\nu$ \tnote{b} & $w$ \tnote{c} & $d_{\min}$ \tnote{d} \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
+\midrule
+two-triangles-vertical-parallelepiped-aligned         & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
+rhombus-ext-2X3-aligned                               & 0.1854 & 0.0764 & 0.0405 & 0.2399 \\
+rectangle-opposite-pyramid-aligned                    & 0.1673 & 0.0695 & 0.0626 & 0.0789 \\
+two-triangles-2X3-aligned                             & 0.1666 & 0.0694 & 0.0593 & 0.0874 \\
+horizzontal-parallelepiped-2X3-aligned                & 0.1654 & 0.0686 & 0.0576 & 0.1727 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
+\midrule
+two-triangles-2X3-diagonal                             & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+parallelepiped-int-2X3-diagonal                        & 0.1892 & 0.0784 & 0.0344 & 0.3213 \\
+rectangle-opposite-2X3-diagonal                        & 0.1875 & 0.0786 & 0.0957 & 0.2027 \\
+two-triangles-vertical-parallelepiped-diagonal         & 0.1871 & 0.0781 & 0.0446 & 0.0759 \\
+rhombus-ext-2X3-diagonal                               & 0.1854 & 0.0764 & 0.0405 & 0.2399 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
+\midrule
+two-triangles-2X3-disaligned                           & 0.2043 & 0.0853 & 0.0622 & 0.0759 \\
+two-triangles-vertical-parallelepiped-disaligned       & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
+rhombus-ext-2X3-disaligned                             & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
+parallelepiped-ext-pyramid-disaligned                  & 0.1811 & 0.0743 & 0.0241 & 0.1508 \\
+rectangle-opposite-pyramid-disaligned                  & 0.1730 & 0.0723 & 0.0599 & 0.0723 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
+\midrule
+two-triangles-2X3-line                                 & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+two-triangles-vertical-parallelepiped-line             & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
+rhombus-ext-2X3-line                                   & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
+rectangle-opposite-2X3-line                            & 0.1875 & 0.0786 & 0.0957 & 0.2027 \\
+parallelepiped-int-2X3-line                            & 0.1824 & 0.0756 & 0.0342 & 0.3393 \\
+\midrule
+\multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
+\midrule
+two-triangles-2X3-point                                & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+rhombus-ext-2X3-point                                  & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
+two-triangles-vertical-parallelepiped-point            & 0.1871 & 0.0781 & 0.0446 & 0.0759 \\
+rectangle-opposite-pyramid-point                       & 0.1730 & 0.0723 & 0.0599 & 0.0723 \\
+central-parallelepiped-vertical-parallelepiped-point   & 0.1639 & 0.0680 & 0.0489 & 0.0519 \\
+\bottomrule
+\end{tabular}
+\caption{Selected routing metrics}
+\label{tab:prescreening_UAVs}
+\begin{tablenotes}
+\footnotesize
+\item[a] $\sigma_{\min}$ = smallest singular value of the payload Jacobian.
+\item[b] $\nu$ = conditioning index (Eq. \ref{eq:conditioning_index})
+\item[c] $w$ = manipulability (Eq. \ref{eq:manipulability})
+\item[d] $d_{\min}$ = minimum cable-to-cable clearance of the selected routing over all tested poses.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\newpage
+\subsection{Simulation results}
+\label{app:UAVconnectionSimulation}
+\input{sections/results/comparison_drones.tex}
