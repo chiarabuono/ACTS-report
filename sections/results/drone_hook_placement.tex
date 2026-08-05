@@ -1,0 +1,52 @@
+\section{Drone hook placement}
+\label{sec:dronehook}
+This section focuses on analyzing how the UAVs attach to the payload. First, we compare a common cable-routing scheme across all configurations shown in Figure \ref{fig:3uavsConnections}, keeping every other design variable fixed. This isolates the influence of the attachment topology itself. Afterward, we rerun the prescreening and subsequent simulations using the results obtained from this comparison.
+
+
+\subsection{Stewart cable routing}
+\todo[inline]{How drone attachment influences reaching the goal? Show evolution graph}
+
+\todo[inline]{If one of those give better results, analyze also the two previous section}
+
+
+\begin{shaded} 
+    For each analyze
+\begin{itemize} 
+    \item what are the results for the pre-screening?
+    \item if something pass through, how are the results compared to the ones with triangle?
+    \item which could be the reason why no results in the pre-screning/no good results in the simulations?
+\end{itemize}
+\end{shaded}
+
+
+\subsection{Point}
+
+The point attachment configuration is never able to command the payload to reach the desired pose, yielding 0 out of 60 successful poses across all setups that employ this drone-placement strategy. This demonstrates that relying on a single shared UAV attachment point is a fundamentally weak design choice, largely independent of the ground routing paired with it. A particularly illustrative comparison emerges when evaluating the same ground cable routing under different UAV attachment topologies. For example, contrasting LINE-LINE-TRIANGLE with LINE-LINE-POINT shows the reachability dropping from 40.00 \% to 0.00\%, underscoring how dramatically the attachment geometry influences achievable payload poses.
+
+\todo[inline]{Insert a table, if so which?}
+
+\subsection{Aligned}
+
+
+
+\subsection{Disaligned}
+
+
+\subsection{Line}
+
+
+\subsection{Diagonal}
+
+[hand-made] Among the tested alternatives to a fully triangular attachment, diagonal is the least poor: best capacity margin ($-0.63$), best position error ($0.79$~m) and orientation error ($0.69$~rad) of the five, and joint-best pose-reached rate ($11.7\%$). This is consistent with diagonal being the topology structurally closest to triangular among the non-triangular options in Figure, offering the most independent moment arms of the alternatives. Nonetheless, the gap to the fully triangular attachment used throughout  (up to $85\%$ pose-reached) is large enough that this exploratory comparison offers no evidence to prefer any tested alternative to the triangular UAV attachment adopted as the fixed baseline for this thesis.
+
+TODO test also the ones resulted
+
+
+\subsection{Triangle comparison analysis}
+
+Across all tested ground layouts, the two-triangle UAV attachment consistently exhibits the highest conditioning index while satisfying the feasibility constraints. This indicates that the triangular topology provides a well-conditioned wrench mapping independently of the particular ground anchor arrangement, supporting its use as the reference configuration throughout the remainder of the thesis.
+
+
+This makes composite score an actively misleading selection criterion for UAV attachment topology. Within the \texttt{TRIANGLE-TRIANGLE} family, the point attachment achieves the \emph{highest} composite score of the five non-triangular options ($3.08$, ahead of line at $2.36$ and diagonal at $1.95$), driven by its radius of available force ($14.3$, the highest of the five) --- yet it is the single worst performer on every task-level metric: worst position error ($3.61$~m, roughly $4$--$5 \times$ the error of the other attachments), worst capacity margin ($-10.57$), and $0\%$ pose reached. A composite score built from static, quasi-steady indices rewards the point attachment's large theoretical force envelope without penalizing the fact that a single shared attachment point gives the controller far less independent authority over the payload's six degrees of freedom in practice. This is the most severe instance found in this exploratory batch of the static/dynamic disagreement discussed in , and it argues for excluding point-type UAV attachment from the automated search's candidate set on physical grounds, independent of whatever score the search's objective function would assign it.
+
+

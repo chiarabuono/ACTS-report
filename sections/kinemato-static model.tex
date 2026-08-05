@@ -398,13 +398,19 @@ Since the formulation of rAW in \cite{jamshidifar_static_2020} considers a point
 The conditioning index measures how uniformly the system can generate forces and moments in different directions. Mathematically:
 \begin{equation}
     \nu = \frac{\sigma_{\min}(J_p)}{\sigma_{\max}(J_p)} \in [0, 1]
+    \label{eq:conditioning_index}
 \end{equation}
 $\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values of the Jacobian matrix, obtained via Singular Value Decomposition (SVD) \cite{erskine_dynamic_2021}. A small conditioning number indicates a well-conditioned system, far-away from singular configuration.
 
 \todo[inline]{Isn't it the opposite? Not small but big}
 
 \subsubsection{Manipulability}
-The manipulability index, defined as $w = \sqrt{\text{det}(J_pJ_p^\top)}$, measures the volume of the wrench ellipsoid. A value close to 0 means that the system hit a kinematic singularity, while large value means a large overall wrench generation capability.
+The manipulability index, defined as 
+\begin{equation}
+    w = \sqrt{\text{det}(J_pJ_p^\top)}
+    \label{eq:manipulability}
+\end{equation}
+measures the volume of the wrench ellipsoid. A value close to 0 means that the system hit a kinematic singularity, while large value means a large overall wrench generation capability.
 
 \subsubsection{Composite score}
 Once the feasibility constraints are satisfied, we may want to proceed either by
@@ -461,6 +467,8 @@ To eliminate this source of bias, an exhaustive routing search is performed for 
 %% Why conditioning index and not composite score?
 The composite score N is not used for ranking routings during the exhaustive search because it requires information that is only available after solving the tension planner, such as the optimal cable tensions and the available wrench set. Computing its capacity-based terms is also computationally expensive and unreliable near singular configurations. Additionally, its weighting factors have not been experimentally validated, making it unsuitable for selecting the best routing. Instead, the search uses the conditioning index (with manipulability as a supporting metric), as it is a parameter-free, geometry-based measure that can be efficiently computed directly from the Jacobian. The composite score and capacity-based metrics are therefore evaluated later during closed-loop simulations, once a routing and tension solution are available.
 
+
+for the best routing found by conditioning index, the joint (ground+drone) Wrench Feasible Condition is re-evaluated using the nominal drone positions which place each drone directly above its payload hook. If this strict check fails, rather than discarding the routing outright, the drone positions are instead optimized -- within their fixed cable length -- to minimize the joint WFC residual (\texttt{optimize\_drone\_positions\_for\_wfc}), and the routing is accepted only if this repositioned configuration satisfies the WFC tolerance at every tested pose. An architecture is reported as \emph{feasible} if at least one routing survives WCC and IFC at every pose and passes the WFC check, either directly or after this rescue.
 
 \begin{algorithm}[h]
 \caption{Cable Routing Optimization and Architecture Ranking}

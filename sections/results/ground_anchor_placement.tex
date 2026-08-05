@@ -1,0 +1,49 @@
+\section{Ground anchor placement}
+The influence of the ground-anchor footprint was evaluated by comparing three geometrically similar datasets in which the ground attachment locations were uniformly scaled while preserving the same cable-routing topologies. The comparison was restricted to the triangle-UAV configurations to isolate the effect of anchor placement from that of cable routing.
+
+Increasing the distance between the ground anchors is expected to improve the robot's mechanical performance. A larger anchor footprint increases the moment arm between the payload and the cable attachment points, allowing the cables to generate larger restoring moments and a wider achievable wrench set. Consequently, higher wrench quality, better conditioning, and improved tracking performance are expected.
+
+The complete numerical results for all evaluated metrics, workspace sizes, and platform configurations are reported in Appendix \ref{app:full_results}. Tables \ref{tab:metrics_part1} and~\ref{tab:metrics_part2} provide the complete metric values together with the statistical significance of each comparison relative to the reference \texttt{acts\_stewart} configuration.
+
+\subsection{Results with reduced anchor spread}
+Reducing the anchor spacing consistently degrades the performance of all alternative architectures. Static performance indicators, including the capacity margin, manipulability, radius of available force, and conditioning index, decrease across almost every configuration. Likewise, cable rubbing becomes more frequent as the anchors are brought closer together, indicating that the cable directions become increasingly parallel and clearance between neighbouring cables is reduced.
+
+The effect is particularly evident in the task-level metrics. The pose reached metric shows the clearest deterioration: whereas the reference Stewart configuration successfully reaches 65\% of the target poses, all compressed alternatives achieve only 35-60\%. This difference is statistically significant ($p=0.0001$) and is reflected in the number of unreached poses, which increases from 10/60 in the nominal dataset to 15/60 in the reduced-scale dataset.
+
+\todo[inline]{write tables? Is it even worst than the worst of the small?}
+Among the evaluated layouts, the compact \texttt{small3X2-2X3-TRIANGLE} configuration performs worst, obtaining the lowest composite score within the triangle-UAV subset together with one of the smallest available-force radii. These results indicate that reducing the ground-anchor footprint substantially limits both the feasible wrench space and the achievable workspace.
+
+\subsection{Results with increased anchor spread}
+
+Increasing the anchor spacing produces the opposite trend. Every static performance metric improves, with higher capacity margins, larger radii of available force, better conditioning indices, and increased manipulability across all evaluated architectures. Position and orientation tracking errors also decrease for nearly every routing, demonstrating that the improved static properties translate into better closed-loop performance.
+
+The wider anchor footprint also improves task completion. Only three of the sixty target poses remain unreachable, compared with ten in the nominal configuration and fifteen in the reduced-scale configuration. Interestingly, the overall difference in pose completion between routing topologies is no longer statistically significant ($p=0.069$). This suggests that, once the anchor spread is sufficiently large, the system operates well within its feasible wrench region and the choice of cable routing becomes considerably less critical.
+
+One notable exception is the \texttt{CENTRAL-TRAPEZOID-HORIZONTAL-PARALLELEPIPED} routing, which exhibits increased position and orientation errors despite improvements in all static indices. This behaviour mirrors the discrepancy between static performance measures and dynamic tracking discussed previously, indicating that favourable wrench metrics alone do not necessarily guarantee improved closed-loop accuracy.
+
+\todo[inline]{Is it even better than the better one?}
+The best overall performance is obtained by the \texttt{HEXAGON-HEXAGON-TRIANGLE} configuration, whose large anchor footprint achieves the highest composite score and capacity margin among all evaluated triangle-UAV layouts.
+
+
+\subsection{Considerations on the anchor spacing}
+The experimental results consistently support selecting the largest feasible ground-anchor footprint. Compared with the nominal and reduced configurations, the larger footprint provides superior composite performance, larger wrench margins, better conditioning, lower tracking errors, and substantially fewer unreached poses. Furthermore, it is the only tested scale for which the routing topology no longer has a statistically significant influence on pose completion, indicating increased robustness to architectural choices.
+
+The improvement in reachability is also spatially meaningful. As the anchor footprint increases, failures at low altitude disappear completely, while the few remaining unreached poses are located near the upper boundary of the tested workspace. This behaviour is consistent with the underlying mechanics: increasing the anchor spacing enlarges the available moment arm most effectively when the payload is close to the ground anchors. At greater heights, the cable directions become nearly vertical regardless of the anchor spacing, reducing the benefit of further increasing the footprint.
+
+The principal drawback of a larger anchor footprint is practical rather than mechanical. A wider anchor distribution requires a larger installation area around the deployment site, which may be constrained by the available space during façade operations. Consequently, although the largest tested footprint provides the best mechanical performance, the final design should balance these gains against the physical limitations of the intended deployment environment.
+
+
+\begin{table}[ht]
+\centering
+\begin{tabular}{rc}
+\toprule
+Ground-anchor footprint & Unreached poses \\
+\midrule
+Small  & 15/60 \\
+Normal & 10/60 \\
+Large  & \phantom{0}3/60 \\
+\bottomrule
+\end{tabular}
+\caption{Number of target poses that could not be reached by any evaluated configuration for each ground-anchor footprint.}
+\label{tab:reachposeSize}
+\end{table}

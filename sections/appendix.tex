@@ -2,7 +2,7 @@
 \label{chap:singularities}
 
 \todo[inline]{write it better}
-Cable-driven parallel robots (CDPRs) and aerial cable-driven systems experience critical operating limits where force transmission or controllability degrades. Table~\ref{tab:singularity_classification} summarizes these operational singularities and their physical consequences.
+Cable-driven parallel robots (CDPRs) and aerial cable-driven systems experience critical operating limits where force transmission or controllability degrades. Table \ref{tab:singularity_classification} summarizes these operational singularities and their physical consequences.
 
 \begin{table}[htbp]
 \centering
@@ -23,3 +23,58 @@ Dynamic   & Closed-loop instability & Eigenvalues, Simulation & Trajectory track
 \caption{Classification of Singularity Types in Cable-Driven Parallel Systems}
 \label{tab:singularity_classification}
 \end{table}
+
+\chapter{Statistical Methods}
+\todo[inline]{Clean this}
+This appendix summarizes the statistical methods used to analyse the experimental results presented in Chapter \ref{chap:results}. Hypothesis testing is used to determine whether the experimental observations provide sufficient evidence to support a research claim\cite{statistic_lecture}. Before conducting the statistical analysis, two competing hypotheses are defined:
+
+\begin{itemize}
+    \item Null hypothesis ($H_0$): no statistically significant difference exists between the evaluated robot configurations.
+    \item Alternative hypothesis ($H_a$): at least one robot configuration differs significantly from the others.
+\end{itemize}
+
+
+The statistical tests produce a p-value, representing the probability of obtaining the observed data if the null hypothesis is true. Throughout this thesis, a significance level of $\alpha = 0.05$ was adopted. Consequently, when the computed p-value is smaller than 0.05, the null hypothesis is rejected in favor of the alternative hypothesis. Otherwise, there is insufficient evidence to reject the null hypothesis. It is important to note that failing to reject $H_0$ does not prove that the null hypothesis is true; it merely indicates that the collected evidence is insufficient to conclude otherwise.
+
+Additionally, we distinguish between parametric and non-parametric statistical methods. Parametric tests assume that the underlying data satisfy specific distributional assumptions, most commonly normality. When these assumptions cannot be guaranteed, non-parametric methods provide a more robust alternative because they do not rely on a predefined population distribution.
+
+Since every robot configuration was evaluated on the same set of target poses, producing paired observations, and several evaluation metrics were binary variables, non-parametric statistical tests were selected throughout this work.
+
+\section{Friedman Test}
+The Friedman test is the non-parametric equivalent of a repeated-measures analysis of variance (ANOVA). It compares three or more related samples to determine whether they originate from the same distribution without assuming normally distributed data.
+
+In this thesis, the Friedman test was applied to all continuous performance metrics, including the composite score, manipulability, conditioning index, capacity margin, force capability, and positioning errors. The test evaluates whether at least one robot configuration exhibits significantly different performance from the others across the common set of evaluated poses.
+
+\section{Cochran's Q Test}
+
+Several performance metrics in this work are binary outcomes, such as whether the desired pose was reached or whether cable rubbing occurred. For repeated binary observations, the appropriate omnibus statistical test is Cochran's Q test.
+
+Cochran's Q test determines whether the probability of success differs significantly among three or more related configurations. In this thesis, it was applied to the binary metrics describing pose success, orientation success, cable rubbing events, and simulation instability.
+
+\section{Pairwise Comparisons}
+When an omnibus test indicates a statistically significant difference, it identifies that at least one configuration differs from the others but does not specify which configurations are responsible for the difference. Therefore, post-hoc pairwise comparisons were subsequently performed.
+
+For continuous metrics, the Wilcoxon signed-rank test was used. This test compares two related samples by analysing the signed differences between paired observations and is the non-parametric alternative to the paired Student's t-test.
+
+For binary metrics, McNemar's exact test was employed. This test compares paired binary observations and evaluates whether two related configurations exhibit significantly different success probabilities.
+
+In both cases, each robot configuration was compared with the selected reference configuration.
+
+\section{Multiple Comparison Correction}
+
+Performing multiple statistical tests increases the probability of obtaining significant results purely by chance. To reduce this risk, multiple comparison corrections were applied.
+
+The Benjamini-Hochberg False Discovery Rate (BH-FDR) procedure was applied to the omnibus tests. Unlike methods that strictly control the probability of any false positive, BH-FDR controls the expected proportion of false discoveries among all rejected hypotheses while maintaining greater statistical power.
+
+For the post-hoc pairwise comparisons, the Holm correction was applied. Holm's procedure adjusts the p-values sequentially and controls the family-wise error rate while generally being less conservative than the traditional Bonferroni correction.
+
+Together, these correction procedures ensure that statistically significant differences reported in Chapter 6 are unlikely to be the result of multiple testing alone.
+
+
+\chapter{Complete Evaluation Results}
+\label{app:full_results}
+
+This appendix presents the complete numerical results for all evaluated platform configurations and workspace sizes. The results complement the discussion in Chapter \ref{chap:results} by providing the full set of measurements used in the comparative analysis. For each metric, values are reported for the Large, Normal, and Small workspace configurations. The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} followed by an asterisk (\textbf{*}) indicate statistically significant differences with respect to the reference configuration after Holm-adjusted hypothesis testing ($p < 0.05$).
+
+Table \ref{tab:metrics_part1} contains the performance and force-related metrics, while Table \ref{tab:metrics_part2} reports the task execution, kinematic, and stability metrics.
+\input{sections/results/comparison_tables.tex}
