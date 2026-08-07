@@ -24,9 +24,10 @@ In this thesis, the following assumptions are adopted:
     \item The cables are modeled as massless, non-extensible and perfectly straight \cite{sanalitro_indirect_2022, erskine_wrench_2019, erskine_control_2019};
     \item The cable attachment point coincides with the quadrotor's center of mass \cite{six_dynamic_2021, erskine_wrench_2019, liu_wrench_2022};
     \item There are no aerodynamic disturbances, such as the rotor wash \cite{six_dynamic_2021, liu_wrench_2022, erskine_dynamic_2021};
-    \item The flight is quasi-stationary and the aerodynamic friction and resistance can be neglected in the dynamic model \cite{forte_impedance_2012, erskine_wrench_2019};
+    \item The aerodynamic friction and resistance are neglected \cite{forte_impedance_2012, erskine_wrench_2019};
 \end{itemize}
-\todo[inline]{If the flight is quasi-stationary, do we really have a dynamic model or just a static model?}
+
+The analyses presented in this chapter assume quasi-stationary operation of the ACTS. Under this assumption, the payload velocities and accelerations are sufficiently small that inertial effects can be neglected with respect to gravity and cable tensions. Consequently, the system is modelled in static equilibrium, allowing the architecture to be evaluated through its wrench-generation capabilities. The validity of this assumption is consistent with the intended façade interaction tasks, which involve slow and controlled payload motions. Dynamic effects are subsequently assessed through simulation in Chapter \ref{chap:results}.
 
 Lastly, the ground vehicles will be considered fixed anchoring points, as the ShieldBot project is still at its early stages.
 
@@ -400,9 +401,8 @@ The conditioning index measures how uniformly the system can generate forces and
     \nu = \frac{\sigma_{\min}(J_p)}{\sigma_{\max}(J_p)} \in [0, 1]
     \label{eq:conditioning_index}
 \end{equation}
-$\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values of the Jacobian matrix, obtained via Singular Value Decomposition (SVD) \cite{erskine_dynamic_2021}. A small conditioning number indicates a well-conditioned system, far-away from singular configuration.
+$\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values of the Jacobian matrix, obtained via Singular Value Decomposition (SVD) \cite{erskine_dynamic_2021}. A conditioning index close to one indicates a well-conditioned system, far-away from singular configuration.
 
-\todo[inline]{Isn't it the opposite? Not small but big}
 
 \subsubsection{Manipulability}
 The manipulability index, defined as 
@@ -422,22 +422,13 @@ where all the metrics are scaled to $[0, 1]$,
     U^* =\arg \max_U \left(N(U) \right)
 \end{equation}
 
-% \todo[inline]{Do this?}
-% Or either choosing the solution that maximizes the radius of available wrench between all the solutions that satisfy $\gamma > \gamma_{\text{min}}$ and using the worst-case capacity margin as a tiebreaker.
-
-% When the weighted-sum formulation of Eq. 3.27 is used instead of the $\gamma$ > $\gamma$min selection rule, each of the four metrics — capacity margin $\gamma$, radius of available wrench in force (rAW$_{force}$) and in moment (rAW$_{moment}$), and worst-case capacity margin $\zeta$ — is first normalized to a common reference scale before being combined. For this study, the weights are set to w$\gamma$ = 0.20, wforce = 0.35, wmoment = 0.30, w$\zeta$ = 0.15, reflecting a design preference that prioritizes force- and moment-generation capability (rAW$_{force}$ and rAW$_{moment}$ together account for 65\% of the score) over robustness margins ($\gamma$ and $\zeta$ together account for the remaining 35\%). This weighting was chosen empirically for the FaçadeShieldBot use case, where the ability to generate a sufficiently large wrench in all directions was judged more critical than operating with a wide safety margin from actuator saturation; a different application with tighter disturbance-rejection requirements might instead favor higher weights on $\gamma$ and $\zeta$.
-
-\newpage
 \subsection{Selection Strategy}
 \label{sec:selection_strategy}
 
-The architecture search involves a potentially large number of candidate ground-cable routings. Evaluating the complete nonlinear ACTS model for every candidate would be computationally expensive, particularly because the UAV positions and cable directions depend on the selected architecture. Therefore, a two-tier selection strategy is adopted to progressively eliminate unsuitable configurations before performing the more expensive full-system analysis.
+The search begins by exhaustively enumerating all physically valid cable routings for each payload--ground layout pair while respecting the maximum cable capacity of every attachment point. Each routing is evaluated over the representative set of payload poses introduced in Section~\ref{sec:performanceIndices}.
 
-Initially, candidate ground-cable routings are screened using the ground-cable subsystem alone. For each routing, the ground-only payload Jacobian ($J_{p,\mathrm{ground}}$) is constructed from the six ground cables and evaluated against the Wrench Closure Condition (WCC), $\operatorname{rank}(J_{p,\mathrm{ground}})=6$, and the Interference-Free Condition (IFC), restricted to ground-cable pairs. A routing is discarded immediately if it violates either criterion at any tested pose.
+The ground-cable subsystem is first screened using the Wrench Closure Condition (WCC) and the Interference-Free Condition (IFC). Routings violating either criterion at any pose are immediately discarded. The surviving routings are ranked according to their worst-case conditioning index across all tested poses, and the highest-ranked routing is selected for each architecture. For the highest-ranked routing, the Wrench Feasibility Condition (WFC) is then evaluated using the nominal UAV positions, in which each UAV is initially placed directly above its payload attachment point: 
 
-% A dedicated rescue stage is triggered only if no routing passes all three criteria cleanly: the top candidates by manipulability are then re-evaluated using an actuator-repositioning search (Nelder--Mead over each UAV's angular position on its cable sphere, minimizing the joint WFC residual), promoting the first candidate whose repositioned configuration satisfies the residual tolerance. 
-
-The surviving ground routings are subsequently combined with candidate UAV attachment geometries. For each resulting complete ACTS configuration, the full payload Jacobian, $J_{p,\mathrm{full}}$, is assembled from the ground and aerial cables. Wrench feasibility is then evaluated by solving the bounded optimization problem
 \begin{equation}
     \min_{\boldsymbol{\tau}}
     \left\|
@@ -456,38 +447,45 @@ The surviving ground routings are subsequently combined with candidate UAV attac
 \end{equation}
 where $\mathbf{W}^{*}$ denotes the desired payload wrench and the tension bounds account for the admissible cable tensions, including the maximum tension imposed by the UAV thrust capabilities.
 
-A configuration is considered wrench-feasible when the minimum residual of Eq.~\ref{eq:jointWFC} is below a prescribed tolerance. The surviving configurations are subsequently compared using the performance metrics defined in Section \ref{sec:performanceIndices}.
+A configuration is considered wrench-feasible when the minimum residual of Eq. \ref{eq:jointWFC} is below a prescribed tolerance. If this does not happen, the UAV positions are re-optimized. The routing is accepted only if this repositioned configuration satisfies the WFC criterion for every tested pose.
+
+An architecture is considered feasible if its highest-ranked routing satisfies the WCC, IFC, and joint WFC over all tested poses. The surviving architectures are subsequently evaluated using the performance indices introduced in Section~\ref{sec:performanceIndices}. The conditioning index is used only to rank candidate routings because it is a geometry-based metric that can be computed directly from the payload Jacobian without solving the tension optimization problem. The remaining performance indices are evaluated only after the architecture selection process.
 
 This strategy separates the inexpensive combinatorial screening of ground-cable routings from the more computationally demanding analysis of the complete aerial-ground system. It therefore reduces the number of configurations requiring full nonlinear evaluation while retaining the relevant UAV-dependent constraints for the final architecture selection.
 
-\todo[inline]{Integrate this?}
-
-To eliminate this source of bias, an exhaustive routing search is performed for every pair of payload and ground layouts. All physically valid routings are enumerated while respecting the maximum cable capacity of each attachment point. For every routing, the corresponding payload Jacobian $J_p$ is constructed according to Equation \ref{eq:jp}, and the routing is evaluated over a representative set of payload poses. At each pose, the routing must satisfy the necessary conditions introduced in Section \ref{sec:performanceIndices}. Routings that fail any of these conditions are discarded. Among the surviving candidates, the routing is assigned its worst-case performance across all poses, and the architecture is finally characterized by the routing that maximizes the conditioning index. In this way, architectures are compared according to their best achievable routing rather than to an arbitrary cable assignment. Architectures are subsequently ranked against one another by worst-case conditioning index.
-
-%% Why conditioning index and not composite score?
-The composite score N is not used for ranking routings during the exhaustive search because it requires information that is only available after solving the tension planner, such as the optimal cable tensions and the available wrench set. Computing its capacity-based terms is also computationally expensive and unreliable near singular configurations. Additionally, its weighting factors have not been experimentally validated, making it unsuitable for selecting the best routing. Instead, the search uses the conditioning index (with manipulability as a supporting metric), as it is a parameter-free, geometry-based measure that can be efficiently computed directly from the Jacobian. The composite score and capacity-based metrics are therefore evaluated later during closed-loop simulations, once a routing and tension solution are available.
-
-
-for the best routing found by conditioning index, the joint (ground+drone) Wrench Feasible Condition is re-evaluated using the nominal drone positions which place each drone directly above its payload hook. If this strict check fails, rather than discarding the routing outright, the drone positions are instead optimized -- within their fixed cable length -- to minimize the joint WFC residual (\texttt{optimize\_drone\_positions\_for\_wfc}), and the routing is accepted only if this repositioned configuration satisfies the WFC tolerance at every tested pose. An architecture is reported as \emph{feasible} if at least one routing survives WCC and IFC at every pose and passes the WFC check, either directly or after this rescue.
 
 \begin{algorithm}[h]
-\caption{Cable Routing Optimization and Architecture Ranking}
+\caption{Architecture Selection Strategy}
 \label{alg:cable_optimization}
 \begin{algorithmic}[1]
 
-\ForAll{$(\text{payload\_layout}, \text{ground\_layout}) \text{ pairs}$}
-    \State Enumerate every valid 6-cable routing
-    
-    \ForAll{routing}
-        \ForAll{pose $\in$ test-pose set}
-            \State Build $J_p$  \Comment{Eq. \ref{eq:jp}}
-            \State Check Wrench Closure \Comment{$\text{rank}(J_p) = 6$}
-            \State Check Wrench Feasibility \Comment{$0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$}
-            \State Check Interference-Freedom \Comment{Eq. \ref{eq:IFCconstraint}}
+\ForAll{payload--ground layout pairs}
+    \ForAll{possible cable routing}
+        \ForAll{test poses}
+            \State Build $J_{p,\mathrm{ground}}$
+            \State Check WCC \Comment{$\mathrm{rank}(J_{p,\mathrm{ground}})=6$}
+            \State Check IFC \Comment{Eq. \ref{eq:IFCconstraint}}
+
+            \If{WCC or IFC fails}
+                \State Reject routing
+                \State \textbf{continue}
+            \EndIf
+
         \EndFor
-        \State Record this routing's \textbf{worst-case} score across all poses
+        \State Compute the worst-case conditioning index
     \EndFor
-    \State Keep the \textbf{best} surviving routing for this architecture
+
+    \State Select routing with largest worst-case conditioning index
+    \State Build complete Jacobian \Comment{Eq. \ref{eq:jp}}
+    \State Evaluate WFC using nominal UAV positions \Comment{$0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$}
+
+    \If{WFC fails}
+        \State Optimize UAV positions
+        \State Re-evaluate WFC
+    \EndIf
+
+    \State Accept architecture if WFC is satisfied
+
 \EndFor
 
 \end{algorithmic}

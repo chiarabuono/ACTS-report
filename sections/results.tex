@@ -20,9 +20,11 @@ The Stewart platform configuration is used as a baseline for evaluating the prop
 In particular, the conditioning index, manipulability, radius of available wrench, capacity margin, and composite score are evaluated at the prescribed payload pose. These quantities provide a reference for assessing the wrench-generation capability and isotropy of the ground-cable arrangement. The complete ACTS configuration is then evaluated by incorporating the aerial cables and their actuation constraints. Finally, the resulting configuration is simulated in MuJoCo to verify the dynamic payload tracking behavior.
 
 \subsection{Numerical Verification of the Baseline Configuration}
-This section verifies that the implemented optimization and control algorithms correctly reproduce the mathematical model derived in Chapters \ref{chap:design_modeling}. For one representative Stewart-platform configuration, each stage of the computation is independently reconstructed from the governing equations: cable directions are computed from the geometry, the resulting Jacobian is assembled, cable tensions are substituted to recover the payload wrench, and the required UAV thrust is recomputed from the static equilibrium equations. Agreement between these hand calculations and the implementation provides confidence that subsequent comparisons between ACTS architectures reflect architectural differences rather than implementation errors.
+This section verifies the implementation of the optimization and control algorithms by independently reconstructing the principal computation steps for a representative Stewart-platform configuration. The payload Jacobian, cable tensions, payload wrench, and UAV thrust commands are recomputed from the analytical equations derived in Chapter \ref{chap:design_modeling} and compared with the implementation. Agreement between the analytical calculations and the numerical results confirms the correctness of the implementation before comparing different ACTS architectures.
 
-\subsubsection{Configuration}
+% This section verifies that the implemented optimization and control algorithms correctly reproduce the mathematical model derived in Chapters \ref{chap:design_modeling}. For one representative Stewart-platform configuration, each stage of the computation is independently reconstructed from the governing equations: cable directions are computed from the geometry, the resulting Jacobian is assembled, cable tensions are substituted to recover the payload wrench, and the required UAV thrust is recomputed from the static equilibrium equations. Agreement between these hand calculations and the implementation provides confidence that subsequent comparisons between ACTS architectures reflect architectural differences rather than implementation errors.
+
+\subsubsection{Reference configuration}
 Payload dimensions: $2.0 \times 2.0 \times 0.2$~m \\
 Desired pose: $p^*= [0.5, -0.5, 2.0]^\top$~m \\
 Desired orientation: $R^* = \mathbb{I}$ \\
@@ -40,7 +42,8 @@ Desired payload wrench: $W_p^* = [0, 0, 9.81, 0, 0, 0]^\top$
     \label{tab:groundAttachments}
 \end{table}
 
-\noindent Using Equation~\ref{eq:cableVector}b, the ground cable directions $u_i$ are:
+\subsubsection{Ground System Geometry}
+Using Equation~\ref{eq:cableVector}b, the ground cable directions $u_i$ and the corresponding Jacobian are obtained as:
 
 \begin{table}[h]
     \centering
@@ -65,18 +68,21 @@ J_{p,\text{ground}} =
 \end{equation}
 
 \subsubsection{Drone Attachment Geometry}
-Unlike the ground anchors, the drone attachment points $a_1, a_2, a_3$ are not fixed geometry — they are the output of the layout optimization of Section \ref{sec:tensionPlanner}. The corresponding cable directions $u_1, u_2, u_3$ are therefore extracted from a converged simulation run for this configuration rather than computed from known attachment coordinates:
+The UAV positions are not predefined but result from the tension-planning procedure described in Section \ref{sec:tensionPlanner}. The corresponding cable directions $u_1, u_2, u_3$ are therefore extracted from a converged simulation run for this configuration rather than computed from known attachment coordinates:
 \begin{equation}
-a_1 = [1.1020, -0.2692, 3.5972]^\top, \quad
-a_2 = [0.1802, -0.7553, 3.4976]^\top, \quad
-a_3 = [0.9397, -1.2760, 3.5192]^\top.
+    \begin{aligned}
+a_1 = [1.1020, -0.2692, 3.5972]^\top \\
+a_2 = [0.1802, -0.7553, 3.4976]^\top \\
+a_3 = [0.9397, -1.2760, 3.5192]^\top
+    \end{aligned}
 \end{equation}
-With $r_i = p^* + R^*\,{}^p b_i$ and the drone hook offsets ${}^p b_i$, the resulting drone cable
-directions are
+Using Equation~\ref{eq:cableVector}b, the resulting drone cable directions are
 \begin{equation}
-u_1 = [0.0837, -0.0294, 0.9961]^\top, \quad
-u_2 = [0.1042, -0.3528, 0.9299]^\top, \quad
-u_3 = [0.2926, -0.1504, 0.9443]^\top,
+    \begin{aligned}
+u_1 = [0.0837, -0.0294, 0.9961]^\top \\
+u_2 = [0.1042, -0.3528, 0.9299]^\top \\
+u_3 = [0.2926, -0.1504, 0.9443]^\top
+    \end{aligned}
 \end{equation}
 with $\lVert a_i - r_i \rVert \approx 1.503$~m for all three, consistent with the nominal drone
 cable length of $1.5$~m and confirming the optimizer converged to a geometrically taut solution.
@@ -84,26 +90,28 @@ The corresponding drone Jacobian is
 \begin{equation}
 J_{p,\text{drones}} =
 \begin{bmatrix}
-0.0837 & 0.1042 & 0.2926 \\
--0.0294 & -0.3528 & -0.1504 \\
-0.9961 & 0.9299 & 0.9443 \\
-0.2769 & 0.2910 & -0.5043 \\
--0.4661 & 0.4533 & 0.0293 \\
--0.0370 & 0.1394 & 0.1609
-\end{bmatrix}.
+0.0837 & -0.0294 & 0.9961 & 0.2769 & -0.4661  & -0.0370\\
+0.1042 & -0.1042 & 0.9299 & 0.2910 & 0.4533 & 0.1394 \\
+0.2926 & -0.1504 & 0.9443 &  -0.5043 & 0.0293 & 0.1609\\
+\end{bmatrix}
 \end{equation}
 
 \subsubsection{Cable Tensions}
 For this configuration, the optimizer returns
+
 \begin{equation}
-\tau_{\text{UAV}} = [13.6970,\ 11.1548,\ 14.4154]^\top~\text{N}, \qquad
-\tau_{\text{ground}} = [5.4903,\ 5.4740,\ 5.4901,\ 5.4784,\ 5.4860,\ 5.4708]^\top~\text{N}.
+\begin{aligned}
+\tau_{\text{UAV}} &= [13.6970,\ 11.1548,\ 14.4154]^\top~\text{N} \\
+\tau_{\text{ground}} &= [5.4903,\ 5.4740,\ 5.4901,\ 5.4784,\ 5.4860,\ 5.4708]^\top~\text{N}
+\end{aligned}
 \end{equation}
-All six ground tensions lie close to $\tau_{\min}=5.5$~N. This behavior is physically expected. Because the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. Consequently, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces.
+
+All six ground tensions lie close to $\tau_{\min}=5.5$ N. This result is expected. Because the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. Consequently, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces.
 
 \subsubsection{Payload Wrench Verification}
-Combining $J_{p,\text{drones}}$ and $J_{p,\text{ground}}$ into the full Jacobian $J_p$ and
-evaluating $W_p = J_p\,\tau$ with the tensions above:
+Because the tension planner solves a bounded least-squares problem, the recovered wrench is not expected to match the desired wrench exactly.
+
+Combining $J_{p,\text{drones}}$ and $J_{p,\text{ground}}$ into the full Jacobian $J_p$ and evaluating $W_p = J_p\,\tau$ with the tensions above:
 \begin{equation}
 W_p = J_p\,\tau =
 \begin{bmatrix} -0.0023 \\ 0.0018 \\ 9.8110 \\ -0.0003 \\ -0.0001 \\ -0.0009 \end{bmatrix},
@@ -111,36 +119,19 @@ W_p = J_p\,\tau =
 W_p^* =
 \begin{bmatrix} -0.0158 \\ 0.0180 \\ 9.7341 \\ -0.0022 \\ 0.0019 \\ -0.0151 \end{bmatrix}.
 \end{equation}
-All six components match to within $0.08$ in force units and $0.015$ in moment units. This
-residual is expected rather than an error: with \texttt{MODE = "tau\_optimal"}, tensions are found
-by a bounded least-squares solve (Eq.~\ref{eq:tension-planner}) that \emph{penalizes} wrench
-mismatch rather than enforcing $J_p^\top \tau = W_p^*$ as a hard equality constraint, so a small,
-non-zero residual is the expected outcome of the optimization rather than a sign of implementation
-error.
+
+All six components match to within $0.08$ in force units and $0.015$ in moment units. The residual remains small, confirming that the optimizer reproduces the desired wrench within the prescribed tolerance.
 
 \subsubsection{Required Drone Thrust}
 Under the steady-state assumption $p_d = p$, $\dot{p}_d = \dot{p} = 0$,
-Eq.~\ref{eq:drone-disposition} reduces to $F_{prop,i} = \tau_i u_i + m_i g\,e_3$, giving the
-hand-computed thrust magnitudes
+Eq.~\ref{eq:drone-disposition} reduces to $F_{prop,i} = \tau_i u_i + m_i g\,e_3$, giving the hand-computed thrust magnitudes
 \begin{equation}
 T_1 = 33.29~\text{N}, \qquad T_2 = 30.27~\text{N}, \qquad T_3 = 33.57~\text{N}.
 \end{equation}
-The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and
-$33.5657$~N respectively, matching the hand-computed values to within floating-point precision and
-confirming that \texttt{compute\_motor\_wrenches} correctly implements
-Eq.~\ref{eq:drone-disposition}.
+The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and $33.5657$~N respectively, matching the hand-computed values to within numerical precision and confirming the correct implementation of Eq.\ref{eq:drone-disposition}.
 
 \subsubsection{Discussion}
-Both checks confirm the implementation is correct, at two different tolerances appropriate to what
-each is verifying. The thrust-command comparison, which involves no optimization step, matches to
-floating-point precision, confirming that the geometric force-to-thrust mapping in the drone
-controller (Eq.~\ref{eq:drone-disposition}) is implemented exactly as derived. The wrench-tracking
-comparison shows a small, non-zero residual, which is the expected signature of the tension
-planner's least-squares formulation (Eq.~\ref{eq:tension-planner}) rather than an error: the
-optimizer trades a small wrench-tracking residual for reduced drone propulsion effort, weighted by
-$K$ in the objective of Eq.~\ref{eq:tension-planner}. Together, these results validate both the
-geometric optimization and the low-level control implementation for this representative
-configuration, providing the basis for the comparative architecture study that follows.
+The numerical verification confirms the correctness of both the optimization and control implementations. The recovered payload wrench satisfies the desired equilibrium within the expected residual introduced by the bounded least-squares tension planner, while the hand-computed UAV thrusts coincide with the controller outputs to numerical precision. These results provide confidence that the subsequent comparison of ACTS architectures reflects differences in the robot configurations rather than implementation errors.
 
 \subsection{Comparison between tension allocation strategies}
 As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinct tension allocation strategies:
@@ -230,24 +221,16 @@ The considerations from now on will be done using the optimal tension strategy.
 
 \newpage
 
-\section{Statistic tests}
+\section{Statistical tests}
 \label{sec:statisticTest}
-\todo[inline]{Adjust this}
-The performance of each robot configuration was evaluated using a set of primary and diagnostic metrics extracted from the simulation results. These metrics were selected to assess not only the overall task success but also the quality, robustness, and physical feasibility of each configuration.
 
-Because every robot configuration was evaluated on the same set of target poses, the resulting data constitute a repeated-measures design.
+The performance of each robot configuration was evaluated using a set of continuous and binary performance metrics extracted from the simulations. Since every configuration was assessed on the same set of target poses, the resulting observations constitute a repeated-measures design.
 
-Continuous metrics were compared across configurations using the Friedman test, while binary metrics were analysed using Cochran's Q test, both of which are appropriate for repeated, non-independent observations. To control the family-wise error rate across multiple performance metrics, the resulting omnibus p-values were adjusted using the Benjamini-Hochberg False Discovery Rate (BH-FDR) procedure. For metrics exhibiting a statistically significant omnibus result, post-hoc comparisons were performed against the reference configuration. Continuous variables were analysed using paired Wilcoxon signed-rank tests, whereas binary variables were analysed using McNemar's exact test. Holm's correction was applied to all pairwise comparisons to account for multiple testing.
+Continuous metrics were analysed using the Friedman test, whereas binary metrics were analysed using Cochran's Q test. For metrics exhibiting a statistically significant omnibus result, post-hoc comparisons against the reference configuration were performed using paired Wilcoxon signed-rank tests for continuous variables and McNemar's exact tests for binary variables.
 
-The Friedman test was selected because each robot configuration was evaluated on the same set of target poses, resulting in repeated, paired observations.
+To account for multiple testing, the Benjamini--Hochberg false discovery rate (BH--FDR) procedure was applied to the omnibus tests, while Holm's correction was used for all post-hoc pairwise comparisons. Statistical significance was assessed using a significance level of $\alpha = 0.05$.
 
-Cochran's Q test - repeated binary outcomes.
-Wilcoxon signed-rank test - post-hoc pairwise comparison for paired continuous data.
-McNemar's exact test - post-hoc comparison for paired binary outcomes.
-Benjamini-Hochberg FDR - controls the expected proportion of false discoveries across multiple omnibus tests.
-Holm correction - controls the family-wise error rate for pairwise comparisons.
-
-Throughout the analysis, statistical significance was assessed using a significance level of ($\alpha = 0.05$).
+A detailed description of the adopted statistical methods is provided in Appendix \ref{app:statistics}.
 
 \input{sections/results/ground_cable_routing.tex}
 \input{sections/results/ground_anchor_placement.tex}

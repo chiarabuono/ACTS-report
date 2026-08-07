@@ -1,112 +1,65 @@
 \chapter{Singularities and Performance Indices}
 \label{chap:singularities}
 
-This appendix summarizes the principal singularity types and performance indices used throughout this thesis. The geometric indices introduced in Chapter~3 are intended to evaluate the ability of a cable-driven architecture to generate payload wrenches while remaining sufficiently far from singular configurations. Although these metrics provide valuable information during the design stage, they characterize only the static or quasi-static properties of the architecture. As discussed in Chapter~6, they should therefore be complemented by dynamic simulation metrics to assess the practical closed-loop behavior of the system.
-
-In Cable-Driven Parallel Robots (CDPRs) and Aerial Cable-Towed Systems (ACTSs), singular or near-singular configurations reduce the system's ability to generate arbitrary payload forces and moments. Different singularities arise from different physical mechanisms, and consequently require different performance measures for their identification.
-
-\todo[inline]{Turn the table in a itemized list}
-
-\begin{table}[htbp]
-\centering
-
-\begin{tabular}{p{2.8cm} p{3.2cm} p{3.6cm} p{4.2cm}}
-\toprule
-\textbf{Singularity type} &
-\textbf{Typical cause} &
-\textbf{Detection metric} &
-\textbf{Practical consequence} \\
-\midrule
-Kinematic &
-$\mathrm{rank}(J_p)<6$ &
-Smallest singular value, conditioning index, manipulability &
-Loss of one or more controllable degrees of freedom \\
-
-\addlinespace
-
-Wrench &
-Desired wrench lies outside the Available Wrench Set &
-Capacity margin, radius of the available wrench set &
-Required payload wrench cannot be generated \\
-
-\addlinespace
-
-Tension &
-Cable tensions become zero or negative &
-Tension optimization /
-feasibility check &
-Cable slack and loss of constraint \\
-
-\addlinespace
-
-Stiffness &
-Poor cable distribution &
-Stiffness analysis &
-Reduced disturbance rejection and increased oscillations \\
-
-\addlinespace
-
-Dynamic &
-Closed-loop instability &
-Simulation-based performance metrics &
-Tracking failure or unstable payload motion \\
-
-\bottomrule
-\end{tabular}
-
-\caption{Summary of the principal singularity types, their causes, representative detection metrics, and their effect on the system performance.}
-\label{tab:singularity_classification}
-\end{table}
-
-Among these measures, the smallest singular value, conditioning index, and manipulability describe the geometric properties of the payload Jacobian and quantify the distance from kinematic singularities. In contrast, the capacity margin and radius of the available wrench evaluate whether the required payload wrench can be generated while satisfying the cable tension limits. Dynamic quantities, such as tracking errors, numerical instability, and cable interference, are instead obtained from closed-loop simulations and capture effects that cannot be predicted by static geometric analysis alone.
-
-For this reason, the architecture evaluation proposed in this work combines both geometric performance indices and dynamic simulation metrics, allowing theoretically favorable configurations to be distinguished from those that also provide robust practical performance.
-
-\chapter{Statistical Methods}
-\todo[inline]{Clean this}
-This appendix summarizes the statistical methods used to analyse the experimental results presented in Chapter \ref{chap:results}. Hypothesis testing is used to determine whether the experimental observations provide sufficient evidence to support a research claim\cite{statistic_lecture}. Before conducting the statistical analysis, two competing hypotheses are defined:
+This appendix summarizes the principal singularity types encountered throughout this thesis. In ACTSs, singular or near-singular configurations reduce the system's ability to generate arbitrary payload forces and moments. Different singularities arise from different physical mechanisms.
 
 \begin{itemize}
-    \item Null hypothesis ($H_0$): no statistically significant difference exists between the evaluated robot configurations.
-    \item Alternative hypothesis ($H_a$): at least one robot configuration differs significantly from the others.
+
+\item Kinematic singularities.
+
+These occur when the payload Jacobian loses rank ($\mathrm{rank}(J_p)<6$), reducing the system's ability to independently control all six degrees of freedom. They are typically identified using the smallest singular value of the Jacobian, the conditioning index, or the manipulability measure.
+
+\item Wrench singularities.
+
+These arise when the desired payload wrench lies outside the Available Wrench Set (AWS). Even though the robot may remain kinematically controllable, the required forces and moments cannot be generated while satisfying the cable tension limits. Capacity margin and the radius of the available wrench set are commonly used to quantify the distance from this condition.
+
+\item Tension singularities.
+
+They occur when one or more cable tensions become zero or negative. Since cables can only sustain tensile forces, the affected cables become slack, reducing the system's ability to constrain and control the payload.
+
 \end{itemize}
 
+Even though these indices are essential to characterize the static capabilities of the robot, they do not completely predict the practical behavior of the system. Dynamic quantities, such as pose reachability, tracking errors, and cable interference, obtained from closed-loop simulations, are also required to comprehensively evaluate an ACTS architecture.
 
-The statistical tests produce a p-value, representing the probability of obtaining the observed data if the null hypothesis is true. Throughout this thesis, a significance level of $\alpha = 0.05$ was adopted. Consequently, when the computed p-value is smaller than 0.05, the null hypothesis is rejected in favor of the alternative hypothesis. Otherwise, there is insufficient evidence to reject the null hypothesis. It is important to note that failing to reject $H_0$ does not prove that the null hypothesis is true; it merely indicates that the collected evidence is insufficient to conclude otherwise.
+\chapter{Statistical Methods}
+\label{app:statistics}
+This appendix summarizes the statistical methods used to analyze the experimental results presented in Chapter \ref{chap:results}. The adopted methodology was selected according to the characteristics of the collected data and the experimental design.
 
-Additionally, we distinguish between parametric and non-parametric statistical methods. Parametric tests assume that the underlying data satisfy specific distributional assumptions, most commonly normality. When these assumptions cannot be guaranteed, non-parametric methods provide a more robust alternative because they do not rely on a predefined population distribution.
+\section{Hypothesis testing}
 
-Since every robot configuration was evaluated on the same set of target poses, producing paired observations, and several evaluation metrics were binary variables, non-parametric statistical tests were selected throughout this work.
+Statistical hypothesis testing is used to determine whether the experimental observations provide sufficient evidence to support a research claim \cite{statistic_lecture}. Two hypotheses are considered:
 
-\section{Friedman Test}
-The Friedman test is the non-parametric equivalent of a repeated-measures analysis of variance (ANOVA). It compares three or more related samples to determine whether they originate from the same distribution without assuming normally distributed data.
+\begin{itemize}
 
-In this thesis, the Friedman test was applied to all continuous performance metrics, including the composite score, manipulability, conditioning index, capacity margin, force capability, and positioning errors. The test evaluates whether at least one robot configuration exhibits significantly different performance from the others across the common set of evaluated poses.
+\item Null hypothesis ($H_0$): no statistically significant difference exists between the evaluated robot configurations.
 
-\section{Cochran's Q Test}
+\item Alternative hypothesis ($H_a$): at least one robot configuration differs significantly from the others.
 
-Several performance metrics in this work are binary outcomes, such as whether the desired pose was reached or whether cable rubbing occurred. For repeated binary observations, the appropriate omnibus statistical test is Cochran's Q test.
+\end{itemize}
 
-Cochran's Q test determines whether the probability of success differs significantly among three or more related configurations. In this thesis, it was applied to the binary metrics describing pose success, orientation success, cable rubbing events, and simulation instability.
+The statistical tests produce a \emph{p}-value, which is the probability of obtaining results at least as extreme as those observed assuming that the null hypothesis is true. In this thesis, a significance level of $\alpha = 0.05$ was adopted, meaning that if $p < 0.05$, the null hypothesis is rejected in favor of the alternative hypothesis. Otherwise, there is not enough evidence to reject the null hypothesis. If the latter happens, it means that there's not enough evidence to conclude that the null hypothesis is false.
 
-\section{Pairwise Comparisons}
-When an omnibus test indicates a statistically significant difference, it identifies that at least one configuration differs from the others but does not specify which configurations are responsible for the difference. Therefore, post-hoc pairwise comparisons were subsequently performed.
+\section{Selection of statistical tests}
 
-For continuous metrics, the Wilcoxon signed-rank test was used. This test compares two related samples by analysing the signed differences between paired observations and is the non-parametric alternative to the paired Student's t-test.
+Every robot configuration was evaluated on the same set of target poses, resulting in paired observations. Non-parametric statistics are used, since several evaluation metrics are binary variables. Therefore, an omnibus test is first performed to determine whether there are significant differences among all evaluated configurations. When this happens, post-hoc pairwise comparisons identify which configurations differ from the selected reference architecture
 
-For binary metrics, McNemar's exact test was employed. This test compares paired binary observations and evaluates whether two related configurations exhibit significantly different success probabilities.
+\section{Omnibus tests}
 
-In both cases, each robot configuration was compared with the selected reference configuration.
+The Friedman test compares three or more related samples without assuming normally distributed data. In this thesis, it is applied to all continuous performance metrics, including the composite score, conditioning index, manipulability, capacity margin, radius of the available wrench set, and tracking errors.
 
-\section{Multiple Comparison Correction}
+Cochran's Q test determines whether the probability of success differs among three or more related configurations. It was applied to binary evaluation metrics such as pose reachability, orientation reachability, cable rubbing, and simulation instability.
 
-Performing multiple statistical tests increases the probability of obtaining significant results purely by chance. To reduce this risk, multiple comparison corrections were applied.
+\section{Post-hoc pairwise comparisons}
 
-The Benjamini-Hochberg False Discovery Rate (BH-FDR) procedure was applied to the omnibus tests. Unlike methods that strictly control the probability of any false positive, BH-FDR controls the expected proportion of false discoveries among all rejected hypotheses while maintaining greater statistical power.
+Pairwise comparisons are used to identify which configurations differ from the reference architecture. For continuous variables, the Wilcoxon signed-rank test was employed, which compares two related samples by analyzing the signed differences between paired observations and is the non-parametric alternative to the paired Student's \emph{t}-test. For binary variables, McNemar's exact test was used, which determines whether two related configurations exhibit significantly different probabilities of success.
 
-For the post-hoc pairwise comparisons, the Holm correction was applied. Holm's procedure adjusts the p-values sequentially and controls the family-wise error rate while generally being less conservative than the traditional Bonferroni correction.
+Throughout this thesis, all post-hoc comparisons were performed against the selected reference configuration.
 
-Together, these correction procedures ensure that statistically significant differences reported in Chapter 6 are unlikely to be the result of multiple testing alone.
+\section{Multiple-comparison correction}
+
+Performing multiple statistical tests increases the probability of identifying significant differences purely by chance. To reduce this risk, multiple-comparison correction procedures were applied.
+
+While the Benjamini-Hochberg False Discovery Rate (BH-FDR) procedure was used to adjust the omnibus test results, Holm's correction was applied for the post-hoc pairwise comparisons,
 
 
 \chapter{Complete Evaluation Results}
@@ -114,7 +67,7 @@ Together, these correction procedures ensure that statistically significant diff
 
 This appendix collects the complete numerical results supporting the analyses presented in Chapter \ref{chap:results}. The appendix is organized according to the two comparative studies performed in the thesis. Section \ref{app:ground-spacing} reports the results of the ground-anchor spacing analysis presented in Section \ref{sec:ground-placement}, whereas Section \ref{app:uav-attachment} contains the pre-screening and simulation results supporting the UAV attachment study of Section \ref{sec:dronehook}. Within each section, the tables report the complete metric values together with the outcome of the statistical comparisons against the reference Stewart configuration.
 
-The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} followed by an asterisk (\textbf{*}) indicate statistically significant differences with respect to the reference configuration after Holm-adjusted hypothesis testing ($p < 0.05$).
+The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} indicate statistically significant differences with respect to the reference configuration ($p < 0.05$).
 
 
 \section{Ground-anchor spacing study}
@@ -137,43 +90,43 @@ The \texttt{acts\_stewart} platform is used as the reference configuration. Valu
       \midrule
       \multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
       \midrule
+      two-triangles-2X3-aligned & 72 & 2315 & 485 & \checkmark \\
+      two-triangles-pentagon-aligned & 0 & 1296 & 249 & \checkmark \\
       two-triangles-vertical-parallelepiped-aligned & 64 & 2555 & 507 & \checkmark \\
       rhombus-ext-2X3-aligned & 52 & 296 & 97 & \checkmark \\
-      rectangle-opposite-pyramid-aligned & 10 & 541 & 122 & \checkmark \\
-      two-triangles-2X3-aligned & 72 & 2315 & 485 & \checkmark \\
-      horizzontal-parallelepiped-2X3-aligned & 168 & 1546 & 442 & \checkmark \\
+      two-triangles-rectangle-same-aligned & 6 & 792 & 110 & \checkmark \\
       \midrule
       \multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
       \midrule
-      two-triangles-2X3-diagonal & 72 & 2311 & 485 & \checkmark \\
-      rectangle-opposite-2X3-diagonal & 72 & 146 & 94 & \checkmark \\
-      parallelepiped-int-2X3-diagonal & 52 & 342 & 102 & \checkmark \\
-      two-triangles-vertical-parallelepiped-diagonal & 64 & 2552 & 507 & \checkmark \\
+      pentagon-rectangle-same-diagonal & 0 & 400 & 42 & \checkmark \\
+      two-triangles-pentagon-diagonal & 0 & 1290 & 249 & \checkmark \\
+      two-triangles-rectangle-same-diagonal & 6 & 790 & 110 & \checkmark \\
+      rhombus-int-rectangle-same-diagonal & 8 & 74 & 19 & \checkmark \\
       rhombus-ext-2X3-diagonal & 52 & 301 & 97 & \checkmark \\
       \midrule
       \multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
       \midrule
       two-triangles-2X3-disaligned & 72 & 2313 & 485 & \checkmark \\
+      arrow-rectangle-same-disaligned & 12 & 378 & 46 & \checkmark \\
       two-triangles-vertical-parallelepiped-disaligned & 64 & 2553 & 507 & \checkmark \\
       rhombus-ext-2X3-disaligned & 52 & 301 & 97 & \checkmark \\
-      parallelepiped-ext-pyramid-disaligned & 8 & 598 & 135 & \checkmark \\
-      rectangle-opposite-pyramid-disaligned & 10 & 541 & 122 & \checkmark \\
+      rectangle-opposite-2X3-disaligned & 72 & 146 & 94 & \checkmark \\
       \midrule
       \multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
       \midrule
-      two-triangles-2X3-line & 72 & 2314 & 485 & \checkmark \\
-      two-triangles-vertical-parallelepiped-line & 64 & 2555 & 507 & \checkmark \\
-      rhombus-ext-2X3-line & 52 & 296 & 97 & \checkmark \\
+      arrow-rectangle-same-line & 12 & 379 & 46 & \checkmark \\
+      two-triangles-pentagon-line & 0 & 1295 & 249 & \checkmark \\
+      two-triangles-rectangle-same-line & 6 & 790 & 110 & \checkmark \\
+      2X3-rectangle-same-line & 60 & 146 & 106 & \checkmark \\
       rectangle-opposite-2X3-line & 72 & 148 & 94 & \checkmark \\
-      parallelepiped-int-2X3-line & 52 & 342 & 102 & \checkmark \\
       \midrule
       \multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
       \midrule
       two-triangles-2X3-point & 72 & 2328 & 485 & \checkmark \\
-      rhombus-ext-2X3-point & 52 & 305 & 97 & \checkmark \\
+      two-triangles-pentagon-point & 0 & 1301 & 249 & \checkmark \\
       two-triangles-vertical-parallelepiped-point & 64 & 2567 & 507 & \checkmark \\
-      rectangle-opposite-pyramid-point & 10 & 545 & 122 & \checkmark \\
-      central-parallelepiped-vertical-parallelepiped-point & 76 & 1184 & 172 & \checkmark \\
+      rhombus-ext-2X3-point & 52 & 305 & 97 & \checkmark \\
+      rhombus-int-rectangle-same-point & 8 & 75 & 19 & \checkmark \\
       \bottomrule
     \end{tabular}
   }
@@ -191,43 +144,43 @@ The \texttt{acts\_stewart} platform is used as the reference configuration. Valu
 \midrule
 \multicolumn{5}{l}{\textit{\textbf{Aligned Configurations}}} \\
 \midrule
+two-triangles-2X3-aligned                             & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+two-triangles-pentagon-aligned                        & 0.1979 & 0.0818 & 0.0429 & 0.0836 \\
 two-triangles-vertical-parallelepiped-aligned         & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
-rhombus-ext-2X3-aligned                               & 0.1854 & 0.0764 & 0.0405 & 0.2399 \\
-rectangle-opposite-pyramid-aligned                    & 0.1673 & 0.0695 & 0.0626 & 0.0789 \\
-two-triangles-2X3-aligned                             & 0.1666 & 0.0694 & 0.0593 & 0.0874 \\
-horizzontal-parallelepiped-2X3-aligned                & 0.1654 & 0.0686 & 0.0576 & 0.1727 \\
+rhombus-ext-2X3-aligned                               & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
+two-triangles-rectangle-same-aligned                  & 0.1893 & 0.0793 & 0.0740 & 0.0982 \\
 \midrule
 \multicolumn{5}{l}{\textit{\textbf{Diagonal Configurations}}} \\
 \midrule
-two-triangles-2X3-diagonal                             & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
-parallelepiped-int-2X3-diagonal                        & 0.1892 & 0.0784 & 0.0344 & 0.3213 \\
-rectangle-opposite-2X3-diagonal                        & 0.1875 & 0.0786 & 0.0957 & 0.2027 \\
-two-triangles-vertical-parallelepiped-diagonal         & 0.1871 & 0.0781 & 0.0446 & 0.0759 \\
+pentagon-rectangle-same-diagonal                       & 0.2005 & 0.0832 & 0.0721 & 0.1790 \\
+two-triangles-pentagon-diagonal                        & 0.1979 & 0.0818 & 0.0429 & 0.0836 \\
+two-triangles-rectangle-same-diagonal                  & 0.1893 & 0.0793 & 0.0740 & 0.0982 \\
+rhombus-int-rectangle-same-diagonal                    & 0.1863 & 0.0773 & 0.0521 & 0.2121 \\
 rhombus-ext-2X3-diagonal                               & 0.1854 & 0.0764 & 0.0405 & 0.2399 \\
 \midrule
 \multicolumn{5}{l}{\textit{\textbf{Disaligned Configurations}}} \\
 \midrule
-two-triangles-2X3-disaligned                           & 0.2043 & 0.0853 & 0.0622 & 0.0759 \\
+two-triangles-2X3-disaligned                           & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+arrow-rectangle-same-disaligned                        & 0.1959 & 0.0812 & 0.0587 & 0.1913 \\
 two-triangles-vertical-parallelepiped-disaligned       & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
 rhombus-ext-2X3-disaligned                             & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
-parallelepiped-ext-pyramid-disaligned                  & 0.1811 & 0.0743 & 0.0241 & 0.1508 \\
-rectangle-opposite-pyramid-disaligned                  & 0.1730 & 0.0723 & 0.0599 & 0.0723 \\
+rectangle-opposite-2X3-disaligned                      & 0.1875 & 0.0786 & 0.0957 & 0.2027 \\
 \midrule
 \multicolumn{5}{l}{\textit{\textbf{Line Configurations}}} \\
 \midrule
-two-triangles-2X3-line                                 & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
-two-triangles-vertical-parallelepiped-line             & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
-rhombus-ext-2X3-line                                   & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
+arrow-rectangle-same-line                              & 0.1974 & 0.0819 & 0.0588 & 0.3225 \\
+two-triangles-pentagon-line                            & 0.1979 & 0.0818 & 0.0429 & 0.0836 \\
+two-triangles-rectangle-same-line                      & 0.1893 & 0.0793 & 0.0740 & 0.0982 \\
+2X3-rectangle-same-line                                & 0.1885 & 0.0790 & 0.0896 & 0.2721 \\
 rectangle-opposite-2X3-line                            & 0.1875 & 0.0786 & 0.0957 & 0.2027 \\
-parallelepiped-int-2X3-line                            & 0.1824 & 0.0756 & 0.0342 & 0.3393 \\
 \midrule
 \multicolumn{5}{l}{\textit{\textbf{Point Configurations}}} \\
 \midrule
 two-triangles-2X3-point                                & 0.1965 & 0.0820 & 0.0628 & 0.0638 \\
+two-triangles-pentagon-point                           & 0.1979 & 0.0818 & 0.0429 & 0.0836 \\
+two-triangles-vertical-parallelepiped-point            & 0.1911 & 0.0797 & 0.0450 & 0.0638 \\
 rhombus-ext-2X3-point                                  & 0.1925 & 0.0793 & 0.0406 & 0.2057 \\
-two-triangles-vertical-parallelepiped-point            & 0.1871 & 0.0781 & 0.0446 & 0.0759 \\
-rectangle-opposite-pyramid-point                       & 0.1730 & 0.0723 & 0.0599 & 0.0723 \\
-central-parallelepiped-vertical-parallelepiped-point   & 0.1639 & 0.0680 & 0.0489 & 0.0519 \\
+rhombus-int-rectangle-same-point                       & 0.1863 & 0.0773 & 0.0521 & 0.2121 \\
 \bottomrule
 \end{tabular}
 \caption{Selected routing metrics}
