@@ -10,7 +10,7 @@ whose other end is fixed to the vehicle at point $A_i$, for $i = 1, \dots, n_q$.
 \noindent We can also define the following systems of reference:
 \begin{itemize}
     \item $F_0(O, x_0, y_0, z_0)$ as the inertial reference world frame;
-    \item $F_p(P, x_p, y_p, z_p)$ as the frame attached to the platform at its center of mass;
+    \item $\mathbf{F}_p(P, x_p, y_p, z_p)$ as the frame attached to the platform at its center of mass;
     \item $F_i(A_i, x_i, y_i, z_i)$ as the frame attached to the quadrotor at point $A_i$, with the z-axis normal to the plane of the rotors;
     \item $F_{C_i}(A_{C_i}, x_{C_i}, y_{C_i}, z_{C_i})$ as the frame attached to the quadrotor at its center of mass $A_{C_i}$ with the x-axis pointing forward, the y-axis pointing left and the z-axis pointing upwards;
     \item $F_k(A_k, x_k, y_k, z_k)$ as the frame attached to the ground vehicle at point $A_k$, with the z-axis normal to the ground.
@@ -48,171 +48,301 @@ A kinematostatic model is a model that combines kinematics (motion and geometry)
     \label{fig:platform_connection_graphical_representation}
 \end{figure}
 
-Given the payload twist $^0\xi = \begin{bmatrix}
-    ^0v_p & ^0\omega_p
-\end{bmatrix}^\top$ in the inertial reference frame $<0>$, we can write the position and velocity of the attachment point $B_i$ (resp. $B_k$) of the aerial vehicle (resp. ground) in $<0>$.
+Given the payload twist ${}^0\boldsymbol{\xi}
+    =
+    \begin{bmatrix}
+        {}^0\mathbf{v}_p \\
+        {}^0\boldsymbol{\omega}_p
+    \end{bmatrix}
+    \in \mathbb{R}^{6}$
+expressed in the inertial reference frame $<0>$, we can write the position and velocity of the attachment point $B_i$ (resp. $B_k$) of the aerial vehicle (resp. ground) in $<0>$.
 \begin{equation}
-    ^0\boldsymbol{r}_i = ^0\boldsymbol{p} + \, ^0_PR \, ^P\boldsymbol{b}_i
+    {}^0\mathbf{r}_i = {}^0\mathbf{p} + {}^0\mathbf{R}_P\,{}^P\mathbf{b}_i,
 \end{equation}
-where $b_i$ is the attachment point on payload.
+where ${}^P\mathbf{b}_i$ is the position of the attachment point relative to the payload frame $<P>$. The corresponding velocity of the attachment point expressed in the inertial frame is
 \begin{equation}
-    ^0\dot{\boldsymbol{r}}_i = ^0\boldsymbol{v}_p + ^0\boldsymbol{\omega}_p \times \left( ^0_PR \, ^P\boldsymbol{b}_i \right)
+    {}^0\dot{\mathbf{r}}_i = {}^0\mathbf{v}_p + {}^0\boldsymbol{\omega}_p \times \left({}^0\mathbf{R}_P\,{}^P\mathbf{b}_i \right).
     \label{eq:attachmentpointvelWRTinertialframe}
 \end{equation}
 
-For definition, the cable vector is $\boldsymbol{l}_i = \boldsymbol{a}_i - \boldsymbol{r}_i = A_i - B_i$ with $\boldsymbol{a}_i$ being the anchor position. 
-Under a centralized controller, the positions of all UAV $A_i$ and UGV $A_k$ are known which directly determine the anchor vector $\boldsymbol{a}_i$. Furthermore, the payload's position and orientation are assumed to be known together with the known locations of the attachment points relative to the payload, this information allows us to calculate the cable vectors $\boldsymbol{l}_i$.
+For definition, the cable vector is $\mathbf{l}_i = \mathbf{a}_i-\mathbf{r}_i$ where $\mathbf{a}_i$ is the anchor position and $\mathbf{r}_i$ is the corresponding payload attachment-point position. Hence, $\mathbf{l}_i$ points from $B_i$ towards $A_i$.
+Under a centralized controller, the positions of all UAV $A_i$ and UGV $A_k$ are known which directly determine the anchor vector $\mathbf{a}_i$. Furthermore, the payload's position and orientation are assumed to be known together with the known locations of the attachment points relative to the payload, this information allows us to calculate the cable vectors $\boldsymbol{l}_i$.
+
+The cable length and unit cable direction are given by
+\begin{equation}
+    l_i = \|\mathbf{l}_i\|,
+    \qquad
+    \mathbf{u}_i
+    =
+    \frac{\mathbf{l}_i}{\|\mathbf{l}_i\|} = \frac{\mathbf{a}_i-\mathbf{r}_i}{\|\mathbf{a}_i-\mathbf{r}_i \|}
+    \label{eq:cableVector}
+\end{equation}
 
 The final form of cable vector variation is given by applying Equation \ref{eq:attachmentpointvelWRTinertialframe} in its definition:
 
 \begin{equation}
-    \dot{\boldsymbol{l}}_i = \dot{\boldsymbol{a}}_i - \dot{\boldsymbol{r}}_i = \dot{\boldsymbol{a}}_i - \frac{d}{dt}\left(\boldsymbol{p} + \, _PR \, ^P\boldsymbol{b}_i \right) =\dot{\boldsymbol{a}}_i - \left(\boldsymbol{v}_p + \boldsymbol{\omega}_p \times \left( _PR \, ^P\boldsymbol{b}_i \right)\right)
+    \dot{\mathbf{l}}_i = \dot{\mathbf{a}}_i - \dot{\mathbf{r}}_i = \dot{\mathbf{a}}_i - \left( \mathbf{v}_p + \boldsymbol{\omega}_p \times \left({}^0\mathbf{R}_P\,{}^P\mathbf{b}_i \right) \right).
 \end{equation}
 
+Since $l_i=\|\mathbf{l}_i\|$, the cable-length rate is $ \dot{l}_i = \mathbf{u}_i^\top \dot{\mathbf{l}}_i$. Each $\dot{l}_i$ corresponds to the projection of the relative velocity of $B_i$ along the cable direction
 
-Each $\dot{l}_i$ corresponds to the projection of the relative velocity of $B_i$ along the cable direction
 \begin{equation}
 \begin{aligned}
-    \dot{l}_i 
-    &= u_i^\top \left( 
-        \dot{\boldsymbol{a}}_i 
-        - \left( 
-            \boldsymbol{v}_p 
-            + \boldsymbol{\omega}_p \times (\, _P R \, ^P\boldsymbol{b}_i ) 
-        \right) 
-    \right) \\
-    &= u_i^\top \dot{\boldsymbol{a}}_i 
-    - 
+    \dot{l}_i
+    &= \mathbf{u}_i^\top \left( \dot{\mathbf{a}}_i - \left( \mathbf{v}_p + \boldsymbol{\omega}_p \times \left({}^0\mathbf{R}_P\,{}^P\mathbf{b}_i\right)\right)\right)
+    \\
+    &= \mathbf{u}_i^\top\dot{\mathbf{a}}_i -
     \begin{bmatrix}
-        u_i^\top & (\, _P R \, ^P b_i \times u_i )^\top
+        \mathbf{u}_i^\top & \left( {}^0\mathbf{R}_P\,{}^P\mathbf{b}_i \times \mathbf{u}_i\right)^\top
     \end{bmatrix}
-    \xi \\
-    &= J_{a,i}\, \dot{a}_i - J_{p,i}\, \xi ,
+    \boldsymbol{\xi}
+    \\
+    &= \mathbf{J}_{a,i}\dot{\mathbf{a}}_i - \mathbf{J}_{p,i}\boldsymbol{\xi},
 \end{aligned}
 \label{eq:cablelengthrate}
 \end{equation}
-This gives us the kinematic model that relates the variation of cable length vector $\boldsymbol{\rho}$ with the change in position of the anchors and the payload twist:
+where
+$
+    \mathbf{J}_{a,i}
+    =
+    \mathbf{u}_i^\top
+    \in\mathbb{R}^{1\times3},
+$
+and
+$
+    \mathbf{J}_{p,i}
+    =
+    \begin{bmatrix}
+        \mathbf{u}_i^\top &
+        \left(
+            {}^0\mathbf{R}_P\,{}^P\mathbf{b}_i
+            \times
+            \mathbf{u}_i
+        \right)^\top
+    \end{bmatrix}
+    \in\mathbb{R}^{1\times6}.
+$
+
+Let $m = n_a + n_g$ be the total number of winches (or cables) and $\mathbf{u}_i = l_i/\|l_i\|$ the unit cable direction. Define the cable-length vector as $\boldsymbol{\rho} =
+    \begin{bmatrix} 
+        l_1 & l_2 & \cdots & l_m
+    \end{bmatrix}^{\top}$ and the anchor position vector as $\mathbf{a}
+    =
+    \begin{bmatrix}
+        \mathbf{a}_1^\top &
+        \mathbf{a}_2^\top &
+        \cdots &
+        \mathbf{a}_m^\top
+    \end{bmatrix}^{\top}
+    \in\mathbb{R}^{3m}.$
+
+The anchor Jacobian is
 \begin{equation}
-    \dot{\rho} = J_a \dot{a} - J_p \xi = J_a \begin{bmatrix}
-        \dot{a}^{(a)} \\ \dot{a}^{(g)}
-    \end{bmatrix} - J_p \xi
+    \mathbf{J}_a
+    =
+    \begin{bmatrix}
+        \mathbf{u}_1^\top & \mathbf{0}^\top & \cdots & \mathbf{0}^\top \\
+        \mathbf{0}^\top & \mathbf{u}_2^\top & \cdots & \mathbf{0}^\top \\
+        \vdots & \vdots & \ddots & \vdots \\
+        \mathbf{0}^\top & \mathbf{0}^\top & \cdots & \mathbf{u}_m^\top
+    \end{bmatrix}
+    \in\mathbb{R}^{m\times3m}.
+    \label{eq:Ja}
+\end{equation}
+
+he payload Jacobian is
+\begin{equation}
+    \mathbf{J}_p
+    =
+    \begin{bmatrix}
+        \mathbf{J}_{p,1} \\
+        \vdots \\
+        \mathbf{J}_{p,m}
+    \end{bmatrix}
+    \in\mathbb{R}^{m\times6},
+\end{equation}
+or explicitly,
+\begin{equation}
+    \mathbf{J}_p
+    =
+    \begin{bmatrix}
+        \mathbf{u}_1^\top &
+        \left(
+            {}^0\mathbf{R}_P\,{}^P\mathbf{b}_1
+            \times
+            \mathbf{u}_1
+        \right)^\top
+        \\
+        \vdots & \vdots
+        \\
+        \mathbf{u}_m^\top &
+        \left(
+            {}^0\mathbf{R}_P\,{}^P\mathbf{b}_m
+            \times
+            \mathbf{u}_m
+        \right)^\top
+    \end{bmatrix}.
+    \label{eq:jp}
+\end{equation}
+
+The resulting kinematic model is
+\begin{equation}
+    \dot{\boldsymbol{\rho}}
+    =
+    \mathbf{J}_a\dot{\mathbf{a}}
+    -
+    \mathbf{J}_p\boldsymbol{\xi}
+    =
+    \mathbf{J}_a
+    \begin{bmatrix}
+        \dot{\mathbf{a}}^{(a)} \\
+        \dot{\mathbf{a}}^{(g)}
+    \end{bmatrix}
+    -
+    \mathbf{J}_p\boldsymbol{\xi}.
     \label{eq:kinematic_model}
 \end{equation}
 
-Let $m = n_a + n_g$ be the total number of winches (or cables) and $u_i = l_i/\|l_i\|$ the unit cable direction, then:
-\begin{itemize}
-    \item $\dot{\rho} = \begin{bmatrix}
-        \dot{l}_1 & \dot{l}_2 & \dots & \dot{l}_m
-    \end{bmatrix}^\top$ is the cable length rate (dimension $[m\times1]$). 
-
-    \item $J_a$ is the Jacobian relating the anchor velocities to the cable-length rates $[m\times3m]$. In particular, each cable depends only on its anchor velocity.
-    
-\begin{equation}
-J_a =
-\begin{bmatrix}
-u_1 & 0   & \cdots & 0 \\
-0   & u_2 & \cdots & 0 \\
-\vdots & \vdots & \ddots & \vdots \\
-0 & 0 & \cdots & u_{n_a + n_g} \\
-\end{bmatrix},
-\qquad
-u_j = \frac{(a_j - r_j)}{\|a_j - r_j\|}.
-\label{eq:cableVector}
-\end{equation}
-    \item $J_p$ is the Jacobian relating the payload twist to the cable-length  $[m\times6]$
-\end{itemize}
-\begin{equation}
-    J_p =
-\begin{bmatrix}
-u_1^\top & \left( \, _pR\, ^pb_1 \times u_1 \right)^\top \\ 
-\vdots & \vdots \\
-u_m^\top & \left( \, _pR\, ^pb_m \times u_m \right)^\top \\
-\end{bmatrix}
-\label{eq:jp}
-\end{equation}
 % \begin{note}
-%     Equation \ref{eq:cablelengthrate} contains $m$ equations in 6 unknown. I need at least six independent cable directions ($\text{rank}(J_p) = 6$).
+%     Equation \ref{eq:cablelengthrate} contains $m$ equations in 6 unknown. I need at least six independent cable directions ($\text{rank}(\mathbf{J}_p) = 6$).
 % \end{note}
 
-\noindent The control allocation matrix maps the actuator inputs (cable tension vector) to the system (payload) wrench. For this definition $J_p^\top$ is the allocation matrix.
+Let the cable tension vector be $\boldsymbol{\tau}
+    =
+    \begin{bmatrix}
+        \boldsymbol{\tau}_{\mathrm{uav}} \\
+        \boldsymbol{\tau}_{\mathrm{ugv}}
+    \end{bmatrix}
+    \in\mathbb{R}^{m}$, where each $\tau_i$ is a scalar cable tension. The control allocation matrix is $\mathbf{J}_p^\top$, which maps the cable
+tensions to the payload wrench: $ \mathbf{W}_p = \mathbf{J}_p^\top\boldsymbol{\tau}, $
+where
 \begin{equation}
-    W_p = J_p^\top \tau
+    \mathbf{W}_p
+    =
+    \begin{bmatrix}
+        \mathbf{F}_p \\
+        \mathbf{M}_p
+    \end{bmatrix}
+    \in\mathbb{R}^{6}.
 \end{equation}
-Let $W_p^*$ be the desired payload wrench, the control allocation problem to solve is
+Given a desired payload wrench $\mathbf{W}_p^*$, the control allocation
+problem is
 \begin{equation}
-    J_p^\top \tau = W_p^*, \qquad \text{s.t}. \tau_i > 0
+    \mathbf{J}_p^\top\boldsymbol{\tau}
+    =
+    \mathbf{W}_p^*,
+    \qquad
+    \boldsymbol{\tau}>\mathbf{0}.
+\end{equation}
+
+The contribution of the $i$-th cable to the payload wrench is
+\begin{equation}
+    \mathbf{W}_{p,i}
+    =
+    \mathbf{J}_{p,i}^\top\tau_i
+    =
+    \begin{bmatrix}
+        \tau_i\mathbf{u}_i
+        \\
+        \left(
+            {}^0\mathbf{R}_P\,{}^P\mathbf{b}_i
+        \right)
+        \times
+        \left(
+            \tau_i\mathbf{u}_i
+        \right)
+    \end{bmatrix}.
+\end{equation}
+Consequently,
+\begin{equation}
+    \mathbf{w}_p
+    =
+    \sum_{i=1}^{m}\mathbf{w}_{p,i}
+    =
+    \mathbf{J}_p^\top\boldsymbol{\tau},
+\end{equation}
+and the total force acting on the payload is
+\begin{equation}
+    \mathbf{F}_p
+    =
+    \sum_{i=1}^{m}
+    \tau_i\mathbf{u}_i.
+    %\label{eq:ForceOnPayload}
 \end{equation}
 
 \subsection{Static model}
-Let $\tau=[\tau_{uav}^\top, \tau_{ugv}^\top]^\top\in \mathbb{R}^{m\times 1}$ be the cable tension vector, then
+
+Given the cable tension vector $\boldsymbol{\tau}$, the total cable power can be written as:
+
 \begin{equation} 
 \begin{aligned}
-    \underbrace{\tau^\top\dot{\rho}}_{\text{total cable power}} &= \underbrace{\tau^\top J_a\dot{a}}_{\text{UAVs and UGVs mechanical power}} - \underbrace{\tau^\top J_p \, \xi}_{\text{payload power}} \\
-    &= (J_a^\top \tau)^\top \dot{a} - (J_p^\top \tau)^\top \xi\\
-    &= F_a^\top \, \dot{a} - W_p^\top \, \xi
+    \underbrace{\boldsymbol{\tau}^{\top}\dot{\boldsymbol{\rho}}}_{\text{total cable power}} &= \underbrace{\boldsymbol{\tau}^{\top}
+    \mathbf{J}_a\dot{\mathbf{a}}}_{\text{UAVs and UGVs mechanical power}} - \underbrace{\boldsymbol{\tau}^{\top}
+    \mathbf{J}_p\boldsymbol{\xi}}_{\text{payload power}} \\
+    &=
+    \left(
+        \mathbf{J}_a^\top\boldsymbol{\tau}
+    \right)^\top
+    \dot{\mathbf{a}}
+    -
+    \left(
+        \mathbf{J}_p^\top\boldsymbol{\tau}
+    \right)^\top
+    \boldsymbol{\xi}  \\
+    &= \mathbf{F}_a^\top \, \dot{a} - \mathbf{W}_p^\top \, \boldsymbol{\xi}
 \end{aligned}
 \end{equation}
 
-Each cable $i$ applies a force on the payload $F_{a, i}$ and an equal and opposite force on the UAV (resp. UGV). We can write balance equation on our elements:
+Each cable $i$ applies a force on the payload $\mathbf{F}_{a, i}$ and an equal and opposite force on the UAV (resp. UGV). We can write balance equation on our elements:
 
 \subsubsection{Payload Balance}
 \begin{equation}
-    \underbrace{W_p}_ {J_p^\top \tau } + \underbrace{W_g}_{\begin{bmatrix}
+    \underbrace{\boldsymbol{W}_p}_ {\mathbf{J}_p^\top \tau } + \underbrace{\boldsymbol{W}_g}_{\begin{bmatrix}
         0 \\0 \\ - m_p g \\ 0\\ 0\\ 0\\
-    \end{bmatrix}} + W_{contact}
- + \underbrace{W_{wind}}_{\parbox{2cm}{\centering let = 0}} = 0
+    \end{bmatrix}} + \boldsymbol{W}_{contact}
+ + \underbrace{\boldsymbol{W}_{wind}}_{\parbox{2cm}{\centering let = 0}} = \mathbf{0}
  \label{eq:payloadbalance}
 \end{equation}
-where since each cable produces a wrench on the payload, the contribution given by the $i$-th cable is:
-\begin{equation}
-    \underbrace{w_{p,i}}_{6\times 1} = \underbrace{J_{p,i}^\top}_{6\times1} \, \underbrace{\tau_i}_{1\times 1}  = \begin{bmatrix}
-        u_i^\top & (\, _P R \, ^P b_i \times u_i )^\top
-    \end{bmatrix}^\top \tau_i = \begin{bmatrix}
-        \tau_i u_i \\ (\, _P R \, ^P b_i \times \tau_i u_i )
-    \end{bmatrix}
-\end{equation}
-and $W_{contact} = 0$ when there is no contact with the environment.
+
+In particular, $\boldsymbol{W}_{contact} = 0$ when there is no contact with the environment.
 
 \subsubsection{UAV balance} % at the attachment point $A_i$
 \begin{equation}
-    -F_{a,i} + F_{prop, i} + \underbrace{F_{g,i}}_{\begin{bmatrix}
+    -\boldsymbol{F}_{a,i} + \boldsymbol{F}_{prop, i} + \underbrace{\boldsymbol{F}_{g,i}}_{\begin{bmatrix}
         0 \\ 0 \\ - m_{i} g
-    \end{bmatrix}} = 0
+    \end{bmatrix}} = \mathbf{0}
     \label{eq:uavbalance}
 \end{equation}
-with $^iF_{prop} = \begin{bmatrix}
+with $^i \boldsymbol{F}_{prop} = \begin{bmatrix}
         0 & 0 & F_{prop,z,i}
-    \end{bmatrix}^\top$ and $F_{a, i} = J_{a, i}^\top \tau_i = \tau_i u_i$.
+    \end{bmatrix}^\top$ and $\mathbf{F}_{a, i} = \mathbf{J}_{a, i}^\top \tau_i = \tau_i \mathbf{u}_i$.
 
 UAVs must always generate sufficient thrust to maintain flight and ensure their own stability. As a result, only a portion of their available thrust can be allocated to payload manipulation, which reduces the effective force that can be transmitted through the cables.
 
 \subsubsection{UGV balance}
 \begin{equation}
-    -F_{a,j} + \underbrace{F_{ground, j}}_{\begin{bmatrix}
-        F_{frict,x,j} \\ F_{frict,y,j} \\ F_{norm}
-    \end{bmatrix}} + \underbrace{F_{g,j}}_{\begin{bmatrix}
+    -\boldsymbol{F}_{a,j} + \underbrace{\boldsymbol{F}_{ground, j}}_{\begin{bmatrix}
+        F_{frict,x,j} \\ F_{frict,y,j} \\ \mathbf{F}_{norm}
+    \end{bmatrix}} + \underbrace{\boldsymbol{F}_{g,j}}_{\begin{bmatrix}
         0 \\ 0 \\ - m_{j} g
-    \end{bmatrix}} = 0
+    \end{bmatrix}} = \mathbf{0}
     \label{eq:ugvbalance}
 \end{equation}
-with $\|F_{frict}\| \le \mu F_{norm}$, $F_{norm} = m_j g - F_{a, z, j}$ and $F_{a,j}$ is obtained through Equation \ref{eq:Fai}.
+with $\|\mathbf{F}_{frict}\| \le \mu \mathbf{F}_{norm}$, $\mathbf{F}_{norm} = m_j \mathbf{g} - \mathbf{F}_{a, z, j}$ and $F_{a,j}$ is obtained through Equation \ref{eq:Fai}.
 
 Similarly, UGVs are subject to ground interaction constraints. In particular, they must satisfy friction limits to remain stationary when no motion is commanded. This imposes bounds on the admissible cable forces, as excessive tension may cause slipping.
 
 
-\noindent By Newton's third law, the force the cable exerts on the drone $F_{a, i}$ (resp. on the UGV $F_{a, j}$) is equal and opposite to the force it exerts on the payload. Since $u_i$ points from $B_i$ toward $A_i$, the cable pulls the drone with
+\noindent By Newton's third law, the force the cable exerts on the drone $\mathbf{F}_{a, i}$ (resp. on the UGV $\mathbf{F}_{a, j}$) is equal and opposite to the force it exerts on the payload. Since $\mathbf{u}_i$ points from $B_i$ toward $A_i$, the cable pulls the drone with
 \begin{equation}
-    F_{a, i} = J_{a, i}^\top \tau_i = \tau_i u_i
+    \mathbf{F}_{a, i} = \mathbf{J}_{a, i}^\top \tau_i = \tau_i \mathbf{u}_i
     \label{eq:Fai}
 \end{equation}
 As a consequence, the total cable force on the payload is:
     \begin{equation}
-        F_p = -\sum_{i=1}^{n_a} F_{a, i} -\sum_{j=n_a + 1}^{n_a + n_g} F_{a, j}
+        \mathbf{F}_p = -\sum_{i=1}^{n_a} \mathbf{F}_{a, i} -\sum_{j=n_a + 1}^{n_a + n_g} \mathbf{F}_{a, j}
         \label{eq:ForceOnPayload}
         \end{equation}
-where the payload wrench is $W_p = \begin{bmatrix}
-    F_p & M_P
-\end{bmatrix}^\top$
 
 \begin{figure}
     \centering
@@ -224,23 +354,25 @@ where the payload wrench is $W_p = \begin{bmatrix}
 \subsection{Kinematostatic model}
 Writing Equation \ref{eq:payloadbalance}, \ref{eq:uavbalance} and \ref{eq:ugvbalance} in terms of $\tau$, we obtain:
 \begin{equation}
-    W_{sys} = \begin{bmatrix}
-        W_p \\ F_a
+    \mathbf{W}_{sys} = \begin{bmatrix}
+        \mathbf{W}_p \\ \mathbf{F}_a
     \end{bmatrix} = 
     \begin{bmatrix}
-        J_p^\top \\ J_a^\top
-    \end{bmatrix} \tau = G\tau = \begin{bmatrix}
-        -W_g - W_{contact} - W_{wind} \\
-        F_{prop} + F_{ground} + F_g
+        \mathbf{J}_p^\top \\ \mathbf{J}_a^\top
+    \end{bmatrix} \boldsymbol{\tau} = \mathbf{G}\boldsymbol{\tau} = \begin{bmatrix}
+        -\mathbf{W}_g - \mathbf{W}_{contact} - \mathbf{W}_{wind} \\
+        \mathbf{F}_{prop} + \mathbf{F}_{ground} + \mathbf{F}_g
     \end{bmatrix}
 \end{equation}
-where $F_{prop,j} = 0$ for the UGVs and $F_{ground, i} = 0$ for the UAVs. Then $W_{sys}$ is $(6+3m)\times 1$ and
+where $\mathbf{F}_{prop,j} = 0$ for the UGVs and $\mathbf{F}_{ground, i} = 0$ for the UAVs. Then $\mathbf{W}_{sys} \in \mathbb{R}^{(6+3m)\times 1}$, $\mathbf{G} \in \mathbb{R}^{(6+3m)\times m}$, and
 \begin{equation}
-    G\tau + \begin{bmatrix}
-        W_g + W_{contact} + W_{wind} \\
-        - F_{prop} - F_{ground} - F_g
+    \mathbf{G}\boldsymbol{\tau} + \begin{bmatrix}
+        \boldsymbol{W}_g + \boldsymbol{W}_{contact} + \boldsymbol{W}_{wind} \\
+        - \boldsymbol{F}_{prop} - \boldsymbol{F}_{ground} - \boldsymbol{F}_g
     \end{bmatrix} = 0
 \end{equation}
+
+
 
 \section{Architecture Design}
 \label{sec:architecture_design}
@@ -321,7 +453,7 @@ In the context of the ShieldBot project, we are working with two questions:
 \begin{itemize}
     \item Wrench closure conditions (WCC), which guarantees that the payload is fully constrained and arbitrary wrenches can be generated. Mathematically:
     $
-    \text{rank}(J_p) = 6
+    \operatorname{rank}(\mathbf{J}_p)=6
     $
     and positive tensions exist.
     \item Wrench Feasible Condition (WFC), which checks whether tensions remain in the feasible bound $0\le \tau_{\text{min}} \le \tau \le \tau_{\text{max}}$, included UAV thrust limits, cable strength limits and UGV friction limits in a future where the ground anchor point will be movable.
@@ -361,14 +493,6 @@ Additionally, we can define the worst-case capacity margin as to how far the sys
     \zeta = \min \left(1 - \max_i \frac{\tau_i}{\tau_{i, max}} \right)
 \end{equation}
 
-% For each drone, the maximum available cable tension $t_{i, max}$ is based on its maximum thrust $f_{i, max}$ and its current orientation relative to the cable \cite{erskine_wrench_2019}
-% \begin{equation}
-% t_{i, max} = m_i \boldsymbol{u}_i^T (\boldsymbol{g} - \ddot{\boldsymbol{x}}_i) + \sqrt{f_{i, max}^2 + m_i^2 \left( \left( \boldsymbol{u}_i^T (\ddot{\boldsymbol{x}}_i - \boldsymbol{g}) \right)^2 - \ddot{\boldsymbol{x}}_i^T \ddot{\boldsymbol{x}}_i - \boldsymbol{g}^T \boldsymbol{g} \right)}
-% \end{equation}
-% Considering only quasi-static motion, this can be reduced to the following, where $u_{iz} = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{u}_i$ and $g = \begin{bmatrix} 0 & 0 & 1 \end{bmatrix} \boldsymbol{g}$.
-% \begin{equation}
-%     t_{i, max} = m_igu_{iz} + \sqrt{f_{i, max}^2 + m_i^2 g^2 \left(u_{iz}^2 - 1 \right)}
-% \end{equation}
 
 \subsubsection{Radius of Available Wrench (rAW)}
 The radius of the available wrench (rAW) is the maximum magnitude of force that the system can generate uniformly in all directions while remaining within admissible tension limits \cite{jamshidifar_static_2020}. Its optimization helps identify arrangements that simultaneously maximize force robustness, geometric and collision-avoidance constraints, resulting into an enlargement of the static workspace \cite{jamshidifar_static_2020}.
@@ -387,18 +511,10 @@ being $u_{null, i} = \text{null}(M_i)$ with $M_i$ containing combinations of lin
 
 Since the formulation of rAW in \cite{jamshidifar_static_2020} considers a point-mass payload, it does not account for the moments generated by the cable tensions about the payload's attachment points. To capture both effects, the radius of the available wrench is therefore split into two independent quantities: rAW$_{force}$, the maximum pure force the system can generate uniformly in any direction while producing zero net moment, and rAW$_{moment}$, the analogous quantity for pure moment generation with zero net force. Whereas rAW$_{force}$ admits the closed-form null-space expression of Eq. \ref{eq:rAWforce}, rAW$_{moment}$ is instead obtained through a vertex-enumeration procedure: candidate cable tension vectors satisfying zero net force at the bounds of the admissible tension box are computed, their corresponding moments $\tau_i (\mathbf{b}_i \times \mathbf{u}_i)$ are collected, and rAW$_{moment}$ is taken as the distance from the origin to the nearest facet of the convex hull of these moment vectors.
 
-
-% The force component rAW$_{force}$ follows the null-space construction of Eq. \ref{eq:rAWforce}: for every combination of three cables whose unit direction vectors are linearly independent, the null space of their combined direction matrix identifies a direction in which the remaining cables can generate force without being resisted by those three. The signed margins dpi and dqi (Eq. 3.25) are evaluated by summing each cable's contribution along that null direction at its tension bound ($\tau$max if the cable pulls in the positive null direction, $\tau$min otherwise), and subtracting the payload's weight component along the same direction. The overall rAW$_{force}$ is the minimum of |dpi|/||nnull,i|| and |dqi|/||nnull,i||over all such combinations, so that the reported value reflects the most restrictive direction across the entire cable set.
-
-% Moment component. rAW$_{moment}$ is obtained analogously, but in moment space rather than force space. For every combination of three cables, the corresponding tensions are solved such that the net force on the payload vanishes (Ufree$\tau$free = -Ufixed$\tau$fixed, where Ufree/Ufixed partition the cable direction matrix into the three chosen cables and the remaining ones, whose tensions are fixed at either bound); solutions respecting all tension bounds and yielding zero net force are retained as vertices of the zero-force tension polytope. Each retained vertex is mapped into moment space via the cable moment arms ($b_i \times u_i$, weighted by $\tau$i), and the convex hull of the resulting moment vectors defines the set of moments achievable while holding the net force at zero. rAW$_{moment}$ is then the shortest distance from the origin to the boundary of this hull, representing the largest pure moment the system can guarantee in every direction. If fewer than four valid zero-force tension vertices exist, or if the resulting moment set is degenerate, rAW$_{moment}$ is reported as zero, indicating that the configuration cannot generate a pure moment independent of a net force.
-
-% Both rAW$_{force}$ and rAW$_{moment}$ are evaluated using the same cable tension bounds ($\tau$min, $\tau$max) applied throughout the architecture, so that the two indices remain directly comparable to one another and to the combined $\gamma$ and $\zeta$ metrics used in the composite score.
-
-
 \subsubsection{Conditioning index}
 The conditioning index measures how uniformly the system can generate forces and moments in different directions. Mathematically:
 \begin{equation}
-    \nu = \frac{\sigma_{\min}(J_p)}{\sigma_{\max}(J_p)} \in [0, 1]
+    \nu = \frac{\sigma_{\min}(\mathbf{J}_p)}{\sigma_{\max}(\mathbf{J}_p)} \in [0, 1]
     \label{eq:conditioning_index}
 \end{equation}
 $\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values of the Jacobian matrix, obtained via Singular Value Decomposition (SVD) \cite{erskine_dynamic_2021}. A conditioning index close to one indicates a well-conditioned system, far-away from singular configuration.
@@ -407,7 +523,7 @@ $\sigma_{\min}$ and $\sigma_{\max}$ are the minimum and maximum singular values 
 \subsubsection{Manipulability}
 The manipulability index, defined as 
 \begin{equation}
-    w = \sqrt{\text{det}(J_pJ_p^\top)}
+    w = \sqrt{\text{det}(\mathbf{J}_p\mathbf{J}_p^\top)}
     \label{eq:manipulability}
 \end{equation}
 measures the volume of the wrench ellipsoid. A value close to 0 means that the system hit a kinematic singularity, while large value means a large overall wrench generation capability.
