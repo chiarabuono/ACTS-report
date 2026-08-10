@@ -1,3 +1,10 @@
 \section*{Abstract}
+This thesis addresses the modeling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for collaborative payload manipulation, developed in the context of the ShieldBot project's FaçadeShieldBot application. While previous ACTS research has largely focused on trajectory generation and control, comparatively little attention has been devoted to the systematic design of cable architectures.
+
+A kinematostatic model is developed to describe ACTS configurations composed of aerial and ground actuators. Then, a centralized control is implemented and validated, integrating a payload-level wrench controller, tension-distribution optimizer, and UAV cascade control. A selection methodology is used to filter unfavorable cable-routing candidates using feasibility conditions (IFC, WFC, and WCC) and geometric performance indices, including conditioning index, manipulability, capacity margin, radius of the Available Wrench Set, and a composite score. The most promising configurations are then evaluated using the developed controller across 60 test poses in MuJoCo and statistically compared.
+
+Results show that static geometric indices are necessary but insufficient predictors of closed-loop performance: configurations with superior conditioning or manipulability can frequently underperform in pose reachability and cable interference. Ground-anchor spacing provides the clearest monotonic benefit, improving both static indices and task completion. Most critically, UAV attachment geometry is the dominant architectural factor, with two-dimensional triangular configurations substantially outperforming collinear or shared-point layouts. These findings establish a validated and reproducible methodology for ACTS architecture selection, bridging theoretical cable-robot analysis and practical aerial manipulation design.
+
+
 
 \newpage

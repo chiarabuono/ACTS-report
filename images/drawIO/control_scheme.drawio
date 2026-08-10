@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="ctrl1" name="High-Level Control Scheme (corrected)">
-        <mxGraphModel dx="629" dy="552" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="820" pageHeight="800" math="0" shadow="0">
+        <mxGraphModel dx="640" dy="673" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="820" pageHeight="800" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -31,7 +31,7 @@
                 <mxCell id="plant" value="State Feedback" style="rounded=1;whiteSpace=wrap;html=1;fontSize=12;fontStyle=0;" parent="1" vertex="1">
                     <mxGeometry x="310" y="607" width="160" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="e1" value="&lt;div&gt;x(t), ẋ(t),&amp;nbsp;&lt;span&gt;&lt;em&gt;ẍ&lt;/em&gt;&lt;/span&gt;(t)&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="traj" target="junction" edge="1">
+                <mxCell id="e1" value="&lt;div&gt;p(t),&amp;nbsp;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;ṗ&lt;/span&gt;&lt;span style=&quot;color: rgb(63, 63, 63); background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;(t),&amp;nbsp;&lt;/span&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212));&quot;&gt;p̈&lt;/span&gt;&lt;span style=&quot;background-color: light-dark(#ffffff, var(--ge-dark-color, #121212)); color: rgb(63, 63, 63);&quot;&gt;(t)&lt;/span&gt;&lt;/div&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=11;exitX=0.5;exitY=1;entryX=0.5;entryY=0;" parent="1" source="traj" target="junction" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;exitX=1;exitY=0.5;entryX=0.5;entryY=0;exitDx=0;exitDy=0;" parent="1" source="junction" target="cableCtrl" edge="1">

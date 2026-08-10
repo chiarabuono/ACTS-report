@@ -4,9 +4,60 @@
 $F_0(O, x_0, y_0, z_0)$ & Inertial reference world frame \\
 $F_p(P, x_p, y_p, z_p)$ & Platform reference frame at its center of mass \\
 $F_i(A_i, x_i, y_i, z_i)$ & Quadrotor reference frame at cable connection \\
-$F_{C_i}(A_{C_i}, x_{C_i}, y_{C_i}, z_{C_i})$ & Quadrotor reference frame attached to the quadrotor at its center of mass \\
+$F_{C_i}(A_{C_i}, x_{C_i}, y_{C_i}, z_{C_i})$ & Quadrotor reference frame attached to quadrotor's center of mass \\
 $F_k(A_k, x_k, y_k, z_k)$ & Ground vehicle reference frame \\
+
+$n_a$, $n_g$ & Number of aerial/ground vehicles \\
+$d$ & Number of degrees of freedom of the payload \\
+$m_p$ & Payload mass \\
+$m_i$, $m_j$ & Mass of the $i$-th UAV / $j$-th ground vehicle \\
+
+$a_i$ & Anchor position vector \\
+$r_i$ & Position of the payload attachment point in $F_0$ \\
+$l_i$ & Cable length \\
+$\mathbf{u}_i$ & Unit cable direction vector \\
+$\boldsymbol{\rho}$ & Vector of cable lengths \\
+${}^0\boldsymbol{\xi}$ & Payload twist (${}^0\boldsymbol{\xi}
+    =
+    \begin{bmatrix}
+        {}^0\mathbf{v}_p^\top & {}^0\boldsymbol{\omega}_p^\top
+    \end{bmatrix}^\top$) \\
+$\mathbf{p}$, $\mathbf{p}^*$ & Current / desired payload position \\
+$\mathbf{R}$, $\mathbf{R}^*$ & Current / desired payload orientation \\
+$\mathbf{J}_a$ & Anchor Jacobian \\
+$\mathbf{J}_p$ & Payload Jacobian \\
+$\sigma_{\min}$, $\sigma_{\max}$ & Minimum / maximum singular value of $\mathbf{J}_p$ \\
+
+$\boldsymbol{\tau}$ & Vector of cable tensions \\
+$\tau_{\min}$, $\tau_{\max}$ & Minimum / maximum admissible cable tension \\
+$\mathbf{W}_p$ & Payload wrench ($\mathbf{F}_p$, $\mathbf{M}_p$) \\
+$\mathbf{W}_{sys}$ & Full system wrench vector \\
+$\mathbf{G}$ & System mapping matrix \\
+$\mathbf{F}_{a,i}$ & Cable force acting on the $i$-th vehicle \\
+$\mathbf{F}_{prop,i}$ & Propeller thrust force of the $i$-th UAV \\
+$\mathbf{F}_{ground,j}$ & Ground reaction force on the $j$-th UGV \\
+$\mathbf{F}_{g,i}$, $\mathbf{F}_{g,j}$ & Gravity force on the $i$-th UAV / $j$-th UGV \\
+$\mathbf{F}_{frict}$ & Friction force at the ground contact \\
+
+$\mathbf{e}_R$ & Attitude error \\
+$\mathbf{e}_\Omega$ & Angular velocity error \\
+$\boldsymbol{\Omega}$, $\boldsymbol{\Omega}^*$ & Current / desired angular velocity \\
+$k_t$ & Rotor thrust coefficient \\
+$k_d$ & Rotor drag coefficient \\
+$\omega_{\max}$ & Maximum rotor velocity \\
+$v_{\max}$ & Maximum winch speed \\
+$\mathbf{H}$ & Weighting matrix in the tension-planner \\
+$K$ & Penalty weight in the tension-planner optimization \\
+
+$\gamma$ & Capacity margin \\
+$\zeta$ & Worst-Case capacity margin \\
+$\nu$ & Conditioning index \\
+$w$ & Manipulability index \\
+$N$ & Composite score \\
+$rAW_{force}$ & Radius available force \\
+$rAW_{moment}$ & Radius available moment 
 \end{tabularx}
+
 
 \raggedbottom
 \newpage
@@ -14,26 +65,17 @@ $F_k(A_k, x_k, y_k, z_k)$ & Ground vehicle reference frame \\
 \section*{Abbreviations}
 
 \begin{tabular}{l l}
-   ACT  & Aerial Cable Towed \\
    ACTR & Aerial Cable Towed Robot \\
    ACTS & Aerial Cable Towed System \\
-   AW   & Available Wrench set \\
+   AWS   & Available Wrench Set \\
    CDPR & Cable-Driven Parallel Robot \\
-   DKM  & Direct Kinematic Model \\
-   DoF  & Degree of Freedom \\
-   IKC  & Inverse Kinematic Controller \\
-   INDI & Incremental Nonlinear Dynamic Inversion \\
-   MPC  & Model Predictive Control \\
-   NMPC & Nonlinear Model Predictive Control \\
-   OCP  & Optimal Control Problem \\
-   ORCA & Optimal Reciprocal Collision Avoidance \\
+   IFC & Interference-Free Condition \\
+   FPR & Flying Parallel Robot \\
+   NLP & Nonlinear Optimization Problem \\
    rAW  & Radius of the Available Wrench \\
-   SAW  & Static Available Wrench set \\
-   SW   & Static workspace \\
+   RCDPR & Reconfigurable Cable-Driven Parallel Robot \\
    UAV  & Unmanned Aerial Vehicle \\
    UGV  & Unmanned Ground Vehicle \\
-   VIC  & Variable Impedance Control \\
-   WFW  & Wrench Feasible Workspace \\
+   WCC & Wrench Closure Condition \\
+   WFC  & Wrench Feasible Condition \\
 \end{tabular}
-
-

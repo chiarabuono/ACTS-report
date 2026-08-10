@@ -3,10 +3,10 @@ Before going into details on the full consideration, let's analyze some simpler 
 
 \subsection{Case: one drone connected to the ground through a cable}
 \label{sec:forceControl1droneToGround}
-The goal is to design the drone force $F_{prop}$ such as that the ground tension is controlled. Since only a tension in the cable direction is imposable, an arbitrary force $f^*$ at the ground anchor can be achieved only by moving the drone, changing the cable direction $u$. Called $a$ the drone's position and $b$ the attachment point to the ground:
-  \begin{equation}
-    u = \frac{a-b}{\|a-b\|}
-  \end{equation}
+The goal is to design the drone force $\mathbf F_{prop}$ such as that the ground tension is controlled. Since only a tension in the cable direction is imposable, an arbitrary force $\mathbf f^*$ at the ground anchor can be achieved only by moving the drone, changing the cable direction $\mathbf u$. Called $\mathbf a$ the drone's position and $\mathbf b$ the attachment point to the ground:
+\begin{equation}
+    \mathbf u = \frac{\mathbf a-\mathbf b} {\|\mathbf a-\mathbf b\|}.
+\end{equation}
 
 \begin{figure}[ht]
     \centering
@@ -16,60 +16,59 @@ The goal is to design the drone force $F_{prop}$ such as that the ground tension
 \end{figure}
 
 \subsubsection{Option 1}
-Defined the desired cable tension $\tau^*$ and the desired cable direction $u^*$ as:
+Defined the desired cable tension $\tau^*$ and the desired cable direction $\mathbf u^*$ as:
 
 \begin{minipage}[t]{0.45\textwidth}
-  \begin{equation}
-    \tau^* = \|f^*\|
+\begin{equation}
+    \tau^* = \|\mathbf f^*\|
     \label{eq:tau_des}
-  \end{equation}
+\end{equation}
 \end{minipage}\hfill
 \begin{minipage}[t]{0.45\textwidth}
-  \begin{equation} 
-    u^* = \frac{f^*}{\|f^*\|}
+\begin{equation} 
+    \mathbf u^* = \frac{\mathbf f^*}{\|\mathbf f^*\|}
     \label{eq:u_des}
-  \end{equation} 
+\end{equation}
 \end{minipage}
 
 \noindent The ground tension is obtained using the geometric constraint which relates the anchor point to the drone position:
 \begin{equation}
-    a^* = b + l \, u^*
+    \mathbf a^* = \mathbf b + l\,\mathbf u^*
     \label{eq:geometricContraintOnUAV}
 \end{equation}
 where $l$ is the cable length. Equation \ref{eq:geometricContraintOnUAV} is then used as a reference to compute the propeller force.
 \begin{equation}
-    F_{prop} =  m_i g e_3 + K_p (a^*-a) + K_d (\dot{a}^* - \dot{a}) + \tau^* u
+    \mathbf F_{\mathrm{prop}} = m_i g\,\mathbf e_3 + \mathbf K_p \left(     \mathbf a^*-\mathbf a \right) + \mathbf K_d \left(     \dot{\mathbf a}^*-\dot{\mathbf a} \right) + \tau^* \mathbf u.
 \end{equation}
 
 \subsubsection{Option 2}
-Given Newton's Second Law applied to the drone described in Equation \ref{eq:uavbalance}, we are able to estimate the cable force $\hat{f} = F_{a, i}^{est}$
+Given Newton's Second Law applied to the drone described in Equation \ref{eq:uavbalance}, we are able to estimate the cable force $\hat{\mathbf f} = \mathbf F_{a, i}^{est}$
 \begin{equation}
-    m_i \ddot{a}_i = F_{prop, i} - \hat{f} + F_{g, i} \qquad \xrightarrow[]{} \qquad \hat{f} = F_{prop, i} + F_{g, i} - m_i \ddot{a}_i
+    m_i\ddot{\mathbf a}_i = \mathbf F_{\mathrm{prop},i} - \hat{\mathbf f} + \mathbf F_{g,i} \qquad \xrightarrow{} \qquad \hat{\mathbf f} = \mathbf F_{\mathrm{prop},i} + \mathbf F_{g,i} - m_i\ddot{\mathbf a}_i
     \label{eq:uavNewton2law}
 \end{equation}
 where all the forces are in the world frame and $\ddot{a}_i$ is the drone linear acceleration. Using Equation \ref{eq:uavbalance}, we would like to apply a propulsion force equal to 
 
-\begin{equation}    
-    F_{prop, i}^* = f^* - F_{g, i}
+\begin{equation}
+    \mathbf F_{\mathrm{prop},i}^* = \mathbf f^* - \mathbf F_{g,i}.
 \end{equation}
 Finally, the closed loop equation is:
 
 \begin{equation}
-    F_{prop, i} = F_{prop, i}^* + K_p e + K_d \dot{e}
-    , \quad \text{with } e = f^* - \hat{f}
+    \mathbf F_{\mathrm{prop},i} = \mathbf F_{\mathrm{prop},i}^* + \mathbf K_p \mathbf e + \mathbf K_d \dot{\mathbf e}, \qquad \mathbf e = \mathbf f^*-\hat{\mathbf f}.
 \end{equation}
 The result is given to the attitude controller, which aligns the body z-axis with the commanded thrust vector.
 
 \subsection{Case: payload connected to the ground and a drone}
 \label{sec:payload1drone1groundCable}
-In this case, we are working with the simplified case of an ACTS composed by a drone, a ground anchor and a point-mass payload. Called with subscript 1 the cable that connects the payload to the drone and with 2 the one that connects it to the ground, for definition the vector $u_i$, $i = 1\div n$ is given by 
-  \begin{equation}
-    u_i = \frac{a_i-p}{\|a_i-p\|}
-  \end{equation}
-being $a_i$ and $p$ respectively the actuator and the payload position.
+In this case, we are working with the simplified case of an ACTS composed by a drone, a ground anchor and a point-mass payload. Called with subscript 1 the cable that connects the payload to the drone and with 2 the one that connects it to the ground, for definition the vector $\mathbf u_i$, $i = 1\div n$ is given by 
+\begin{equation}
+    \mathbf u_i = \frac{\mathbf a_i-\mathbf p} {\|\mathbf a_i-\mathbf p\|}.
+\end{equation}
+being $\mathbf a_i$ and $\mathbf p$ respectively the actuator and the payload position.
 
 \subsubsection{Payload position control}
-The goal is to design $F_{prop, 1}$ such that the payload reaches a desired position ($p \xrightarrow{}p^*$), which is reachable for the length of the cable.
+The goal is to design $\mathbf F_{prop, 1}$ such that the payload reaches a desired position ($\mathbf p \xrightarrow{} \mathbf p^*$), which is reachable for the length of the cable.
 
 \begin{figure}[h]
     \centering
@@ -82,29 +81,30 @@ The goal is to design $F_{prop, 1}$ such that the payload reaches a desired posi
 The payload dynamics is given by:
 \begin{equation}
 \begin{aligned}
-    m_p \ddot{p} &= \tau_1 u_1 + \tau_2 u_2 - m_p g e_3 \\
-    &= F_{a, 1} + F_{a, 2} + F_g \\
-    &= F_p + F_g \\
-\end{aligned} \quad \xrightarrow[]{}\quad  F_p =m_p (\ddot{p} + ge_3)
+    m_p\ddot{\mathbf p} &= \tau_1\mathbf u_1 + \tau_2\mathbf u_2 - m_p g\,\mathbf e_3 \\ &= \mathbf F_{a,1} + \mathbf F_{a,2} + \mathbf F_g \\ &= \mathbf F_p + \mathbf F_g,
+\end{aligned}
+\qquad \xrightarrow{} \qquad
+\mathbf F_p = m_p \left(\ddot{\mathbf p} + g\mathbf e_3 \right)
 \label{eq:Fpdynamics}
 \end{equation}
+
 The desired payload force is defined using an impedance controller:
 \begin{equation}
-    F_p^* = m_p (\ddot{p}^* + ge_3) + K_p (p^*-p) + K_d (\dot{p}^* - \dot{p})
-\label{eq:impedancePayloadcontrol}
+    \mathbf F_p^* = m_p \left(\ddot{\mathbf p}^*+g\mathbf e_3 \right) + \mathbf K_p \left(\mathbf p^*-\mathbf p \right) + \mathbf K_d \left(\dot{\mathbf p}^*-\dot{\mathbf p} \right)
+    \label{eq:impedancePayloadcontrol}
 \end{equation}
-with $\dot{p}^*=0$ and $\ddot{p} = 0$ as we required the payload to maintain the position once it is reached. 
+with $\dot{\mathbf p}^*= \mathbf 0$ and $\ddot{\mathbf p} = \mathbf 0$ as we required the payload to maintain the position once it is reached. 
 The remaining force to be generated by cable 1 is:
 \begin{equation}
-    F_{a,1}^* = F_p^* - F_{a,2}
+    \mathbf F_{a,1}^* = \mathbf F_p^* - \mathbf F_{a,2},
 \end{equation}
-where $F_{a, 2} = \tau_2u_2$. This brings us back to the situation in Section \ref{sec:forceControl1droneToGround}, where $F_{a,1}$ is $f^*$.
+where $\mathbf F_{a,2} = \tau_2\mathbf u_2$. This brings us back to the situation in Section \ref{sec:forceControl1droneToGround}, where $\mathbf F_{a,1}$ is $\mathbf f^*$.
 
 \subsubsection{Tension and orientation control}
-The goal can also be design $F_{prop,1}$ such that an arbitrary force $f^*$ on the ground can be applied ($F_2 \xrightarrow{} f^*$). In other words, $u_2 \xrightarrow{} u_2^*$ and $\tau_2\xrightarrow{}\tau_2^*$. This case can be interesting to study as in a redundancy system situation, it may be helpful to add additional constraint in one of the cables.
-The only difference from the previous case is that the desired position for the payload $p^*$ is not an input anymore, but obtained such that the 2nd cable is aligned along the desired direction given by $f^*$ (Equation \ref{eq:tau_des} and \ref{eq:u_des}). Then:
+The goal can also be design $\mathbf F_{prop,1}$ such that an arbitrary force $\mathbf f^*$ on the ground can be applied ($\mathbf F_2 \xrightarrow{} \mathbf f^*$). In other words, $\mathbf u_2 \xrightarrow{} \mathbf u_2^*$ and $\tau_2\xrightarrow{}\tau_2^*$. This case can be interesting to study as in a redundancy system situation, it may be helpful to add additional constraint in one of the cables.
+The only difference from the previous case is that the desired position for the payload $p^*$ is not an input anymore, but obtained such that the second cable is aligned along the desired direction given by $\mathbf f^*$ (Equation \ref{eq:tau_des} and \ref{eq:u_des}). Then:
 \begin{equation}
-    p^* = a_2 - l_2 u^*_2
+    \mathbf p^* = \mathbf a_2 - l_2\mathbf u_2^*.
 \end{equation}
 
 \begin{figure}[h]
@@ -115,7 +115,7 @@ The only difference from the previous case is that the desired position for the 
 \end{figure}
 
 \subsection{Case: payload connected to the ground through two cables}
-The ACTS consists of a point-mass payload connected to the ground through two cables and to an UAV. The enumeration is shown in Figure \ref{fig:1drone2cablesToground}.
+The ACTS consists of a point-mass payload connected to the ground through two cables and to a drone. The enumeration is shown in Figure \ref{fig:1drone2cablesToground}.
 
 \begin{figure}[h]
     \centering
@@ -125,54 +125,54 @@ The ACTS consists of a point-mass payload connected to the ground through two ca
 \end{figure}
 
 \subsubsection{Payload position control}
-If the input is the desired payload position $p^*$, we find ourselves in three situations:
+If the input is the desired payload position $\mathbf p^*$, we find ourselves in three situations:
 \begin{enumerate}
-    \item $p^*$ lies precisely on the intersecting boundary arcs dictated by the maximum lengths of the ground cables;
-    \item $p^*$ is out of reach;
-    \item $p^*$ is inside the triangle $A_1A_3P$, resulting into slack cables
+    \item $\mathbf p^*$ lies precisely on the intersecting boundary arcs dictated by the maximum lengths of the ground cables;
+    \item $\mathbf p^*$ is out of reach;
+    \item $\mathbf p^*$ is inside the triangle $A_1A_3P$, resulting into slack cables
 \end{enumerate}
 
-In the first case, $p^*$ is used to compute the desired payload force $F_p^*$ (Equation \ref{eq:impedancePayloadcontrol}). Using the simplified payload balance equation related to the forces acting on the payload (Equation \ref{eq:ForceOnPayload}), we obtain the following.
+In the first case, $\mathbf p^*$ is used to compute the desired payload force $\mathbf F_p^*$ (Equation \ref{eq:impedancePayloadcontrol}). Using the simplified payload balance equation related to the forces acting on the payload (Equation \ref{eq:ForceOnPayload}), we obtain the following.
 \begin{equation}
-    F_{a, 1}^*=F_p^* - \sum_{i=2}^{n} F_{a, i}
+    \mathbf F_{a, 1}^*= \mathbf F_p^* - \sum_{i=2}^{n} \mathbf F_{a, i}
 \end{equation}
-which brings us back to the previous case. 
+which brings us back to the previous case. Because the payload is physically constrained at a boundary where both ground cables are stretched straight, any movement or external disturbance is perfectly resisted by the tension of the cables.
 
-Because the payload is physically constrained at a boundary where both ground cables are stretched straight, any movement or external disturbance is perfectly resisted by the tension of the cables.
-
-In the second case, since the ground cables physically block the payload from reaching $p^*$, a steady error $e=(p^*-p)\ne 0$ builds up. The actual tension will be directly proportional to the control gains and the distance of the unreachable input:
+In the second case, since the ground cables physically block the payload from reaching $\mathbf p^*$, a steady error $\mathbf e = \mathbf p^*-\mathbf p \neq \mathbf 0$ builds up. The actual tension will be directly proportional to the control gains and the distance of the unreachable input:
 \begin{equation}
-    \sum F_{virtual} \propto (p^* - p_{geom}) \quad \implies \quad \sum F_{virtual} = K (p^* - p_{geom})
-\end{equation}
-where $p_{geom}$ is the closest reachable point that lies on the workspace boundary. In this case, we may impose a controlled tension on the ground cables directed along $(p^* - p_{geom})$ to ensure the drone continues to pull toward the desired target:
-
-\begin{equation}
-    F_{a, 1}^*=F_p^* -\sum_{i=2}^{n} F_{a, i} + F_{virtual}
+    \mathbf F_{\mathrm{virtual}} \propto \left( \mathbf p^*-\mathbf p_{\mathrm{geom}} \right) \quad\implies\quad    \mathbf F_{\mathrm{virtual}} = K\left(\mathbf p^*-\mathbf p_{\mathrm{geom}}\right).
 \end{equation}
 
-In the last case, the distance from the anchors to the payload is less than the cable length, resulting into slack cables as the latter cannot push. Mathematically $\tau_2= 0$ and/or $\tau_3=0$. Then, $F_{a,1}^*= F_p^*$
+where $\mathbf p_{geom}$ is the closest reachable point that lies on the workspace boundary. In this case, we may impose a controlled tension on the ground cables directed along $(\mathbf p^* - \mathbf p_{geom})$ to ensure the drone continues to pull toward the desired target:
+
+\begin{equation}
+    \mathbf F_{a,1}^* = \mathbf F_p^* - \sum_{i=2}^{n}\mathbf F_{a,i} + \mathbf F_{\mathrm{virtual}}.
+\end{equation}
+
+In the last case, the distance from the anchors to the payload is less than the cable length, resulting into slack cables as the latter cannot push. Mathematically $\tau_2= 0$ and/or $\tau_3=0$. Then, $\mathbf F_{a,1}^* = \mathbf F_p^*$.
 
 \subsubsection{Desired tension in the cable on the ground}
-The desired variable to control is the tension of one of the cables $F_{a,2} \xrightarrow{} f^*$. 
+The desired variable to control is the tension of one of the cables $\mathbf F_{a,2} \xrightarrow{} \mathbf f^*$. 
 
 \begin{equation}
-    F_{a, 1}^*=F_p - f^* - F_{a,2}
+    \mathbf F_{a,1}^* = \mathbf F_p - \mathbf f^* - \mathbf F_{a,2},
 \end{equation}
-where $F_p = m_p (\ddot{p} + ge_3)$ and $F_{a, 2} = \tau_2u_2$.
-
+where $\mathbf F_p = m_p \left( \ddot{\mathbf p} + g\mathbf e_3 \right)$ and $ \mathbf F_{a,2} = \tau_2\mathbf u_2$.
 
 \subsubsection{Desired tension difference between the cables on the ground}
-The desired variable to control a linear combination of the two $F_{a, 2} + \alpha F_{a, 3} \xrightarrow{} f^*$.
+The desired variable to control a linear combination of the two $\mathbf F_{a,2} + \alpha\mathbf F_{a,3} \xrightarrow{} \mathbf f^*$.
 
 \begin{equation}
-    F_{a, 1} = F_p - F_{a, 2} - F_{a, 3} 
-    \qquad \implies \qquad 
+    \mathbf F_{a,1} = \mathbf F_p - \mathbf F_{a,2} - \mathbf F_{a,3} \qquad \implies \qquad
     \begin{aligned}
-        F_{a,1}^* &= F_p - (f^* - \alpha F_{a, 3}^* + F_{a, 3}^*) \\
-        &= F_p - f^* - (1-\alpha)F_{a, 3}
+        \mathbf F_{a,1}^* &= \mathbf F_p -
+        \left(
+            \mathbf f^* - \alpha\mathbf F_{a,3}^* + \mathbf F_{a,3}^*
+        \right) \\
+        &= \mathbf F_p - \mathbf f^* - (1-\alpha)\mathbf F_{a,3}^*.
     \end{aligned}
 \end{equation}
-For the specific case where $F_{a, 2} - F_{a, 3} \to f^*$:
+For the specific case where $ \mathbf F_{a,2} - \mathbf F_{a,3} \xrightarrow{} \mathbf f^*$:
 \begin{equation}
-    F_{a,1}^* = F_p - f^* - 2F_{a, 3}^* = F_p - f'^*
+    \mathbf F_{a,1}^* = \mathbf F_p - \mathbf f^* - 2\mathbf F_{a,3}^* = \mathbf F_p - \mathbf f^{\prime *}.
 \end{equation}

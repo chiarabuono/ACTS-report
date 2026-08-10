@@ -16,12 +16,11 @@ This thesis work takes place in the context of the ShieldBot project, which aims
     \label{fig:shieldbotGraph}
 \end{figure}
 
-\noindent This thesis focuses on the robotic manipulation challenges inherent to the Façade\-Shield\-Bot scenario. The system must generate sufficient force to manipulate the payload while maintaining a stable pose, as the application requires transporting and accurately positioning a payload near a vertical surface. At the same time, it must operate across large façades without requiring complex or permanent infrastructure on the building.
-
-The overall system employs a platform-mounted robotic arm to manipulate and position tools along the surface. However, the scope of this work is strictly centered on the aerial platform itself and its ability to maintain a controlled pose without relying on permanent building infrastructure.
+\noindent This thesis focuses on the challenges associated with using the Façade\-Shield\-Bot robot. Here, the system must generate sufficient force to manipulate a robotic arm mounted on
+the payload while maintaining a stable pose, as the application requires transporting and accurately positioning a payload near a vertical surface. However, the scope of this work is strictly centered on the aerial platform itself and its ability to maintain a controlled pose without relying on permanent building infrastructure.
 
 % Existing cable-driven robots provide high precision but rely on fixed environmental anchors
-Previous robotic developments have demonstrated the potential of cable-based systems for construction applications. For example, the TitanBot project investigates cable-driven parallel robotic (CDPR) systems capable of transporting loads over large areas and reducing the physical effort required from construction workers \cite{cnrs_titanbot_2025}. Such systems benefit from the mechanical simplicity and large workspace offered by cable-based actuation. Additionally, their actuators can be located away from the manipulated payload, which makes them particularly attractive for applications involving heavy loads. However, conventional configurations generally rely on fixed or ground-based cable attachment points, which can limit their flexibility when operating over complex or changing environments.
+Previous robotic developments have demonstrated the potential of cable-based systems for construction applications. For example, the TitanBot project investigates cable-driven parallel robotic (CDPR) systems capable of transporting loads over large areas and reducing the physical effort required from construction workers \cite{cnrs_titanbot_2025}. Such systems benefit from the mechanical simplicity and large workspace offered by cable-based actuation. What is even more interesting is that this configuration allows their actuators to be positioned at a distance from the load to be moved, making them particularly suitable for applications involving heavy loads. However, conventional configurations generally rely on fixed or ground-based cable attachment points, which can limit their flexibility when operating over complex or changing environments.
 
 
 \begin{figure}[h]
@@ -59,17 +58,7 @@ The resulting system, however, is characterized by a large set of design paramet
 As a result, architectural design cannot be isolated from control system development. A configuration that is mechanically feasible may nevertheless provide poor force distribution or positioning performance in the region of interest. Conversely, an appropriate choice of architecture and attachment locations can improve the controllability and robustness of the system without necessarily increasing its mechanical complexity.
 
 % This thesis addresses this gap by...
-The main objective of this thesis is to study the modelling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for payload manipulation. In particular, the thesis focuses on how the architecture and cable configuration influence the ability of the system to manipulate a payload and generate the required payload wrench. The work focuses on the selection of suitable cable routing and attachment configurations and on the development of a control approach based on the resulting system model. The proposed configurations are evaluated through simulation to assess their performance and identify the most suitable architecture for the considered application.
-
-% More specifically, this thesis addresses the following questions:
-
-% \begin{itemize}
-% \item How can a hybrid aerial-ground cable-driven system be modelled for payload manipulation?
-% \item How do the routing, and attachment locations of the cables influence the kinematic and static performance of the system?
-% \item Which architecture provides the most suitable compromise between controllability, force generation, and mechanical complexity?
-% \item How can the resulting system be controlled to generate the forces required for payload manipulation?
-% \item How does the selected configuration perform in simulation under the conditions relevant to façade applications?
-% \end{itemize}
+The main objective of this thesis is to study the modelling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for payload manipulation. In particular, the thesis focuses on how the selection of suitable cable routing and attachment configurations to the payload influence the ability of the system to manipulate the payload itself and generate the required payload wrench. The proposed configurations are evaluated through simulation to assess their performance and identify the most suitable architecture for the considered application.
 
 
 % thesis organization
@@ -92,7 +81,7 @@ Chapter \ref{chap:conclusions}
 
 % Chapter \ref{chap:design_modeling} presents the design and modelling of the proposed ACTS. The system architecture is first introduced, followed by the kinematic, static, and kinemato-static models. The main mechanical design choices are then discussed, and candidate architectures are evaluated using appropriate performance indices before selecting the configuration used in the remainder of the thesis.
 
-% Chapter \ref{chap:control} focuses on the control of the ACTS. A force-control approach is first investigated using simplified configurations in order to analyse the relationship between cable tensions and the forces generated on the payload. The approach is then extended to the complete system architecture.
+% Chapter \ref{chap:control} focuses on the control of the ACTS. A force-control approach is first investigated using simplified configurations in order to analyze the relationship between cable tensions and the forces generated on the payload. The approach is then extended to the complete system architecture.
 
 % Chapter \ref{chap:simulation} describes the simulation environment and experimental methodology used to evaluate the proposed system. The simulator selection, software architecture, simulation setup, and evaluation framework are presented.
 

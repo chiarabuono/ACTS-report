@@ -9,17 +9,17 @@ In fact, a configuration is considered successful if the desired payload is reac
 %% Why did you choose Stewart as the reference?
 First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. In fact, if even Stewart-like performs poorly, the problem is likely the controller rather than the architecture. 
 
-%% Scenario A and B
-Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.
-
 The remaining experiments then investigate how modifications to the ground cable routing, UAV attachment geometry, and hook placement affect both the theoretical performance indices and the closed-loop behavior of the system. This progressive analysis makes it possible to identify which geometric features have the greatest influence on payload manipulation performance.
 
 \section{Stewart platform baseline}
 The Stewart platform configuration is used as a baseline for evaluating the proposed ACTS architectures. Its symmetric arrangement of the six ground cables provides a well-defined reference configuration against which alternative cable routings can be compared. The baseline is first examined using the static performance indices introduced in Section \ref{sec:performanceIndices}. 
 
+%% Scenario A and B
+Two desired payload poses are taken in considerations. In the first scenario, the desired payload orientation coincides with the world reference frame; while in the other scenario a non-zero desired orientation is imposed. This allows to analyze separately the rotational motions from the translation tracking.
+
 In particular, the conditioning index, manipulability, radius of available wrench, capacity margin, and composite score are evaluated at the prescribed payload pose. These quantities provide a reference for assessing the wrench-generation capability and isotropy of the ground-cable arrangement. The complete ACTS configuration is then evaluated by incorporating the aerial cables and their actuation constraints. Finally, the resulting configuration is simulated in MuJoCo to verify the dynamic payload tracking behavior.
 
-\subsection{Numerical Verification of the Baseline Configuration}
+\subsection{Numerical verification of the baseline configuration}
 This section verifies the implementation of the optimization and control algorithms by independently reconstructing the principal computation steps for a representative Stewart-platform configuration. The payload Jacobian, cable tensions, payload wrench, and UAV thrust commands are recomputed from the analytical equations derived in Chapter \ref{chap:design_modeling} and compared with the implementation. Agreement between the analytical calculations and the numerical results confirms the correctness of the implementation before comparing different ACTS architectures.
 
 % This section verifies that the implemented optimization and control algorithms correctly reproduce the mathematical model derived in Chapters \ref{chap:design_modeling}. For one representative Stewart-platform configuration, each stage of the computation is independently reconstructed from the governing equations: cable directions are computed from the geometry, the resulting Jacobian is assembled, cable tensions are substituted to recover the payload wrench, and the required UAV thrust is recomputed from the static equilibrium equations. Agreement between these hand calculations and the implementation provides confidence that subsequent comparisons between ACTS architectures reflect architectural differences rather than implementation errors.
@@ -33,27 +33,23 @@ Desired payload wrench: $W_p^* = [0, 0, 9.81, 0, 0, 0]^\top$
 \begin{table}[h]
     \centering
     \begin{tabular}{lccc}
-        attachment        &    & hook points & \\ \hline
+        Attachment points       &    & Hook points & \\ \hline
         $A_4 \equiv A_5$ &  $[0.0, 1.1, 0.0]^\top$         &   $B_4 \equiv B_9$ &  $[0.5, 0.05, 1.9]^\top$          \\
         $A_6 \equiv A_7$ &  $[-0.9526, -0.55, 0.0]^\top$   &   $B_5 \equiv B_6$ &  $[-0.0237, -0.775, 1.9]^\top$    \\
         $A_8 \equiv A_9$ &  $[0.9526, -0.55, 0.0]^\top$    &   $B_7 \equiv B_8$ &  $[0.9763, -0.775, 1.9]^\top$     \\
     \end{tabular}
-    \caption{Ground anchor and hook attachment points for the Stewart baseline.}
-    \label{tab:groundAttachments}
 \end{table}
 
 \subsubsection{Ground System Geometry}
 Using Equation~\ref{eq:cableVector}b, the ground cable directions $u_i$ and the corresponding Jacobian are obtained as:
 
-\begin{table}[h]
-    \centering
-    \begin{tabular}{cc}
-        $u_4 = [-0.2245,\ 0.4713,\ -0.8529]^\top$ & $u_7 = [-0.7100,\ 0.0828,\ -0.6993]^\top$ \\
-        $u_5 = [-0.0089,\ 0.7024,\ -0.7117]^\top$ & $u_8 = [-0.0124,\ 0.1176,\ -0.9930]^\top$ \\
-        $u_6 = [-0.4545,\ 0.1047,\ -0.8846]^\top$ & $u_9 = [0.2215,\ -0.2937,\ -0.9299]^\top$ \\
-    \end{tabular}
-    \caption{Ground cable unit directions.}
-\end{table}
+\begin{equation}
+    \begin{aligned}
+    u_4 = [-0.2245,\ 0.4713,\ -0.8529]^\top \qquad u_7 = [-0.7100,\ 0.0828,\ -0.6993]^\top \\
+    u_5 = [-0.0089,\ 0.7024,\ -0.7117]^\top \qquad u_8 = [-0.0124,\ 0.1176,\ -0.9930]^\top \\
+    u_6 = [-0.4545,\ 0.1047,\ -0.8846]^\top \qquad u_9 = [0.2215,\ -0.2937,\ -0.9299]^\top \\
+    \end{aligned}
+\end{equation}
 
 \begin{equation}
 J_{p,\text{ground}} =
@@ -106,11 +102,9 @@ For this configuration, the optimizer returns
 \end{aligned}
 \end{equation}
 
-All six ground tensions lie close to $\tau_{\min}=5.5$ N. This result is expected. Because the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. Consequently, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces.
+All six ground tensions lie close to $\tau_{\min}=5.5$ N. This result is expected: since the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. As a result, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces.
 
 \subsubsection{Payload Wrench Verification}
-Because the tension planner solves a bounded least-squares problem, the recovered wrench is not expected to match the desired wrench exactly.
-
 Combining $J_{p,\text{drones}}$ and $J_{p,\text{ground}}$ into the full Jacobian $J_p$ and evaluating $W_p = J_p\,\tau$ with the tensions above:
 \begin{equation}
 W_p = J_p\,\tau =
@@ -128,10 +122,10 @@ Eq.~\ref{eq:drone-disposition} reduces to $F_{prop,i} = \tau_i u_i + m_i g\,e_3$
 \begin{equation}
 T_1 = 33.29~\text{N}, \qquad T_2 = 30.27~\text{N}, \qquad T_3 = 33.57~\text{N}.
 \end{equation}
-The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and $33.5657$~N respectively, matching the hand-computed values to within numerical precision and confirming the correct implementation of Eq.\ref{eq:drone-disposition}.
+The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and $33.5657$~N respectively, matching the hand-computed values to within numerical precision and confirming the correct implementation of Eq. \ref{eq:drone-disposition}.
 
 \subsubsection{Discussion}
-The numerical verification confirms the correctness of both the optimization and control implementations. The recovered payload wrench satisfies the desired equilibrium within the expected residual introduced by the bounded least-squares tension planner, while the hand-computed UAV thrusts coincide with the controller outputs to numerical precision. These results provide confidence that the subsequent comparison of ACTS architectures reflects differences in the robot configurations rather than implementation errors.
+The numerical verification confirms the correctness of both the optimization and control implementations. These results provide confidence that the subsequent comparison of ACTS architectures reflects differences in the robot configurations rather than implementation errors.
 
 \subsection{Comparison between tension allocation strategies}
 As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinct tension allocation strategies:
@@ -142,21 +136,17 @@ As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinc
 
 The performance indices and tracking errors under both strategies across two operational scenarios are summarized in Table \ref{tab:stewart_comparative}.
 
+
 The minimal tension strategy has negative consequences on the system's robustness. By locking all cable tensions to their absolute lowest limit ($\tau_{\min}$), the range of available tension choices shrinks to a single point. As a result, the controller loses its ability to adjust forces, reducing the payload's Available Wrench Set (AWS) to just a single fixed outcome. \cite{yang_robust_2025}
 % Even though being faster, the minimal tension strategy has negative consequences on the system's robustness. Fixing the tension vector to its lower limit $\tau_{\min}$ collapses the tension space from an $N$-orthotope $[\tau_{\min}, \tau_{\max}]^N$ to a single point, which linearly maps through the wrench matrix $W$ to degenerate the Available Wrench Set (AWS) into a single point \cite{yang_robust_2025}. 
 As a result, any deviation of the desired payload wrench $W_p^*$ from this single point results in a negative capacity margin (as seen in Scenario A where $\gamma = -0.19343$). This indicates that the system is theoretically incapable of resisting external disturbances or maintaining equilibrium without violating the tension constraints.
-
-Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. As a result, the radius of the Available Wrench increases and the capacity margin takes on a positive value ($\gamma = 10.46403$). Thus, also the composite score increases. Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
-
-
-On the other hand, it is worth to notice that, since the objective function does not contain any state-tracking terms, this optimizer does not directly minimize the payload's real-time position or orientation tracking errors. 
-Because of this, a spatial configuration that yields globally minimal propulsion effort does not guarantee a minimum in tracking error.
 
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{lcccc}
+\begin{threeparttable}
+\begin{tabular}{rcccc}
 \toprule
  & \multicolumn{2}{c}{\textbf{Scenario A}} & \multicolumn{2}{c}{\textbf{Scenario B}} \\
 \cmidrule(lr){2-3} \cmidrule(lr){4-5}
@@ -165,12 +155,12 @@ Because of this, a spatial configuration that yields globally minimal propulsion
 Desired Position & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} & \multicolumn{2}{c}{$[0.5, -0.5, 2.0]^\top$} \\
 Desired Orientation & \multicolumn{2}{c}{$[1.0, 0.0, 0.0, 0.0]^\top$} & \multicolumn{2}{c}{$[1.0, 0.1, -0.1, 0.1]^\top$} \\
 \midrule
-Conditioning Index & 0.10259 & 0.09617 & 0.07052 & 0.05550 \\
-Manipulability & 0.47775 & 0.43700 & 0.31471 & 0.24108 \\
-Radius Avail. Wrench & 49.29711 & 47.90399 & 52.21278 & 53.22707 \\
-Capacity Margin & -0.19343 & 10.46403 & -3.83256 & 2.65386 \\
-Worst-case CM & 0.90998 & 0.76401 & 0.90998 & 0.75072 \\
-Composite Score & 17.35180 & 20.62849 & 17.64446 & 19.42488 \\
+$\nu$  & 0.10259 & 0.09617 & 0.07052 & 0.05550 \\
+$w$ & 0.47775 & 0.43700 & 0.31471 & 0.24108 \\
+$rAW_{force}$  & 49.29711 & 47.90399 & 52.21278 & 53.22707 \\
+$\gamma$ & -0.19343 & 10.46403 & -3.83256 & 2.65386 \\
+$\zeta$  &  0.90998 & 0.76401 & 0.90998 & 0.75072 \\
+$N$ & 17.35180 & 20.62849 & 17.64446 & 19.42488 \\
 \midrule
 Position Error & 0.00201 & 0.00284 & 0.00187 & 0.00262 \\
 Orientation Error & 0.00121 & 0.00209 & 0.00379 & 0.00385 \\
@@ -178,32 +168,40 @@ Orientation Error & 0.00121 & 0.00209 & 0.00379 & 0.00385 \\
 \end{tabular}
 \caption{Comparative performance indices and tracking errors for Stewart baseline configuration across Scenarios A and B.}
 \label{tab:stewart_comparative}
+
+\end{threeparttable}
 \end{table}
+
+
+Switching to the optimal tension allocation, allows the cable tensions to vary dynamically between $\tau_{min}$ and $\tau_{max}$. As a result, the radius of the available wrench rAW increases and the capacity margin takes on a positive value ($\gamma = 10.46403$). Thus, also the composite score increases. Differently, changing the tension allocation algorithm has no effect on the conditioning index or manipulability because they are kinematic metrics that only depend on the platform's geometric position.
+
+An ideal ACTS architecture should remain far from singular configurations, generate payload wrenches efficiently in every direction, and maintain sufficient redundancy to accommodate disturbances while respecting cable tension limits. Consequently, all the considered performance indices should be as big as possible. The considerations from now on will be done using the optimal tension strategy.
+
+% \noindent On the other hand, it is worth to notice that, since the objective function does not contain any state-tracking terms, this optimizer does not directly minimize the payload's real-time position or orientation tracking errors. 
+% Because of this, a spatial configuration that yields globally minimal propulsion effort does not guarantee a minimum in tracking error.
 
 Although the Stewart configuration exhibits good overall performance and provides an excellent reference architecture, the proposed ACTS differs from a classical Stewart platform because the UAV cables can be connected to the payload in several different ways. Moreover, different ground cable routings may further improve specific performance aspects such as stability, wrench generation capability, or robustness. For these reasons, the Stewart configuration is adopted as a baseline against which all alternative architectures are compared. 
 
+
 \begin{figure}
     \centering
-    \begin{subfigure}{0.3\linewidth}
+    \begin{subfigure}{0.8\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{images/performanceIdxBTauOpt.png}
+        \includegraphics[width=\linewidth]{images/simulation_graphs/acts_stewart_tau_optimal_0.5--0.5-2.0_1.0-0.0-0.0-0.0_indices.png}
         \caption{Performance indices}
         \label{fig:performanceIdxATauOpt}
     \end{subfigure}
     \hfill
-    \begin{subfigure}{0.48\linewidth}
+    \begin{subfigure}{0.8\linewidth}
         \centering
-        \includegraphics[width=\linewidth]{images/acts_stewart_tau_optimal_0.5--0.5-2.0_1.0-0.1-0.1-0.1_errors.png}
+        \includegraphics[width=\linewidth]{images/simulation_graphs/acts_stewart_tau_optimal_0.5--0.5-2.0_1.0-0.0-0.0-0.0_errors.png}
         \caption{Pose error}
         \label{fig:errorTauOpt}
     \end{subfigure}
-    \caption{Graphs}
+    \caption{Trend of performance indices and pose error in the simulation with optimal tension strategy for $\mathbf p^* = [0.5, -0.5, 2.0]^\top$ and $\mathbf R = \mathbb{I}$}
     \label{fig:tauopt}
 \end{figure}
 
-An ideal ACTS architecture should remain far from singular configurations, generate payload wrenches efficiently in every direction, and maintain sufficient redundancy to accommodate disturbances while respecting cable tension limits. Consequently, all the considered performance indices should be as big as possible.
-
-The considerations from now on will be done using the optimal tension strategy.
 
 \begin{figure}
     \centering
@@ -219,18 +217,16 @@ The considerations from now on will be done using the optimal tension strategy.
     \label{fig:3uavsConnections}
 \end{figure}
 
-\newpage
-
 \section{Statistical tests}
 \label{sec:statisticTest}
 
-The performance of each robot configuration was evaluated using a set of continuous and binary performance metrics extracted from the simulations. Since every configuration was assessed on the same set of target poses, the resulting observations constitute a repeated-measures design.
+Every configuration is assessed on the same set of poses, making them comparable on the basis of the result obtained. Particularly, the performance of each robot configuration was evaluated using a set of continuous and binary performance metrics extracted from the simulations. 
 
-Continuous metrics were analysed using the Friedman test, whereas binary metrics were analysed using Cochran's Q test. For metrics exhibiting a statistically significant omnibus result, post-hoc comparisons against the reference configuration were performed using paired Wilcoxon signed-rank tests for continuous variables and McNemar's exact tests for binary variables.
+Continuous metrics were analyzed using the Friedman test, whereas binary metrics were analyzed using Cochran's Q test. For metrics exhibiting a statistically significant omnibus result, post-hoc comparisons against the reference configuration were performed using paired Wilcoxon signed-rank tests for continuous variables and McNemar's exact tests for binary variables.
 
-To account for multiple testing, the Benjamini--Hochberg false discovery rate (BH--FDR) procedure was applied to the omnibus tests, while Holm's correction was used for all post-hoc pairwise comparisons. Statistical significance was assessed using a significance level of $\alpha = 0.05$.
+Since multiple statistical tests were performed, corrections were applied to reduce the probability of false-positive results. The Benjamini-Hochberg false discovery rate correction was applied to the omnibus tests, while Holm's correction was applied to the post-hoc comparisons. 
 
-A detailed description of the adopted statistical methods is provided in Appendix \ref{app:statistics}.
+Statistical significance was assessed using a significance level of $\alpha = 0.05$. A detailed description of the adopted statistical methods is provided in Appendix \ref{app:statistics}.
 
 \input{sections/results/ground_cable_routing.tex}
 \input{sections/results/ground_anchor_placement.tex}

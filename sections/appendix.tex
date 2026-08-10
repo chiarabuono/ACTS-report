@@ -1,7 +1,7 @@
-\chapter{Singularities and Performance Indices}
+\chapter{Singularities and performance indices}
 \label{chap:singularities}
 
-This appendix summarizes the principal singularity types encountered throughout this thesis. In ACTSs, singular or near-singular configurations reduce the system's ability to generate arbitrary payload forces and moments. Different singularities arise from different physical mechanisms.
+This appendix summarizes the principal singularity types encountered throughout this thesis as different singularities arise from different physical mechanisms. In ACTSs, singular or near-singular configurations reduce the system's ability to generate arbitrary payload forces and moments. 
 
 \begin{itemize}
 
@@ -19,9 +19,8 @@ They occur when one or more cable tensions become zero or negative. Since cables
 
 \end{itemize}
 
-Even though these indices are essential to characterize the static capabilities of the robot, they do not completely predict the practical behavior of the system. Dynamic quantities, such as pose reachability, tracking errors, and cable interference, obtained from closed-loop simulations, are also required to comprehensively evaluate an ACTS architecture.
 
-\chapter{Statistical Methods}
+\chapter{Statistical methods}
 \label{app:statistics}
 This appendix summarizes the statistical methods used to analyze the experimental results presented in Chapter \ref{chap:results}. The adopted methodology was selected according to the characteristics of the collected data and the experimental design.
 
@@ -44,16 +43,13 @@ The statistical tests produce a \emph{p}-value, which is the probability of obta
 Every robot configuration was evaluated on the same set of target poses, resulting in paired observations. Non-parametric statistics are used, since several evaluation metrics are binary variables. Therefore, an omnibus test is first performed to determine whether there are significant differences among all evaluated configurations. When this happens, post-hoc pairwise comparisons identify which configurations differ from the selected reference architecture
 
 \section{Omnibus tests}
+The Friedman test takes the paired measurements from all configurations, ranks them within each experimental condition, and tests whether the configurations have systematically different rank distributions. In this thesis, it is applied to all continuous performance metrics, including the composite score, conditioning index, manipulability, capacity margin, radius of the available wrench set, and tracking errors.
 
-The Friedman test compares three or more related samples without assuming normally distributed data. In this thesis, it is applied to all continuous performance metrics, including the composite score, conditioning index, manipulability, capacity margin, radius of the available wrench set, and tracking errors.
-
-Cochran's Q test determines whether the probability of success differs among three or more related configurations. It was applied to binary evaluation metrics such as pose reachability, orientation reachability, cable rubbing, and simulation instability.
+Similarly, Cochran's Q test is applied to binary evaluation metrics such as pose reachability, orientation reachability, cable rubbing, and simulation instability.
 
 \section{Post-hoc pairwise comparisons}
 
-Pairwise comparisons are used to identify which configurations differ from the reference architecture. For continuous variables, the Wilcoxon signed-rank test was employed, which compares two related samples by analyzing the signed differences between paired observations and is the non-parametric alternative to the paired Student's \emph{t}-test. For binary variables, McNemar's exact test was used, which determines whether two related configurations exhibit significantly different probabilities of success.
-
-Throughout this thesis, all post-hoc comparisons were performed against the selected reference configuration.
+Pairwise comparisons are used to identify which configurations differ from the reference architecture. For continuous variables, the Wilcoxon signed-rank test was employed, which compares two related samples by ranking the magnitudes of their paired differences and testing whether those differences are systematically positive or negative, indicating a significant difference between the two configurations. For binary variables, McNemar's exact test was used, which determines whether two related configurations exhibit significantly different probabilities of success.
 
 \section{Multiple-comparison correction}
 
@@ -62,12 +58,12 @@ Performing multiple statistical tests increases the probability of identifying s
 While the Benjamini-Hochberg False Discovery Rate (BH-FDR) procedure was used to adjust the omnibus test results, Holm's correction was applied for the post-hoc pairwise comparisons,
 
 
-\chapter{Complete Evaluation Results}
+\chapter{Complete evaluation results}
 \label{app:full_results}
 
 This appendix collects the complete numerical results supporting the analyses presented in Chapter \ref{chap:results}. The appendix is organized according to the two comparative studies performed in the thesis. Section \ref{app:ground-spacing} reports the results of the ground-anchor spacing analysis presented in Section \ref{sec:ground-placement}, whereas Section \ref{app:uav-attachment} contains the pre-screening and simulation results supporting the UAV attachment study of Section \ref{sec:dronehook}. Within each section, the tables report the complete metric values together with the outcome of the statistical comparisons against the reference Stewart configuration.
 
-The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in \textbf{bold} indicate statistically significant differences with respect to the reference configuration ($p < 0.05$).
+The \texttt{acts\_stewart} platform is used as the reference configuration. Values shown in bold indicate statistically significant differences with respect to the reference configuration ($p < 0.05$).
 
 
 \section{Ground-anchor spacing study}
@@ -131,7 +127,7 @@ The \texttt{acts\_stewart} platform is used as the reference configuration. Valu
     \end{tabular}
   }
   \caption{Pre-screening results}
-  \label{tab:prescreening_feasibility_all}
+  \label{tab:pre-screening_feasibility_all}
 \end{table}
 
 
@@ -184,7 +180,7 @@ rhombus-int-rectangle-same-point                       & 0.1863 & 0.0773 & 0.052
 \bottomrule
 \end{tabular}
 \caption{Selected routing metrics}
-\label{tab:prescreening_UAVs}
+\label{tab:pre-screening_UAVs}
 \begin{tablenotes}
 \footnotesize
 \item[a] $\sigma_{\min}$ = smallest singular value of the payload Jacobian.
