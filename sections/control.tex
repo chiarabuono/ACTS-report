@@ -73,7 +73,7 @@ The ground subsystem is modeled as a 6-degree-of-freedom Gough-Stewart parallel 
  \begin{figure}
      \centering
      \includegraphics[width=0.5\linewidth]{images/StewartPlatform.png}
-     \caption{Gogh Stewart schematics \cite{wang_adaptive_2023}}
+     \caption{Gough Stewart schematics \cite{wang_adaptive_2023}}
      \label{fig:stewartplatform}
  \end{figure}
 
@@ -97,6 +97,7 @@ The tension planner is the layer responsible for guaranteeing that every cable s
 & x_i^2+y_i^2+z_i^2=l_i^2, \qquad \forall i\in[1,n_a] \\
 & \rho_{\mathrm{WCC}}(\mathcal{U})\leq0, \\
 & \rho_{\mathrm{IFC}}(\mathcal{U})\leq0.
+\label{eq:tensionPlanner}
 \end{aligned}
 \end{equation}
 
@@ -113,7 +114,7 @@ For whatever positions $p_a$, the cable tensions $\tau$ are determined by a seco
 \end{equation}
 The lower bound $\tau_{min, i}>0$ in the wrench feasible condition is what enforces the taut-cable requirement.
 
-As the winch-level control drives $\boldsymbol{\rho} \to \boldsymbol{\rho}^*$, tracking the payload's motion toward its target pose, and $\mathbf{u} \to \mathbf{u}^*$, the achievable wrench set used by the tension planner is itself changing over the trajectory, since it depends on $\mathbf{u}$. As a consequence, $\mathbf{W}_p^*$ may be reachable at the target configuration but momentarily unreachable at the actual configuration, with all tensions kept strictly positive. When this occurs, Equation \ref{eq:tension-planner} should relax the equality constraint $\mathbf{J}_p^\top(\mathbf{u})\,\mathbf{\tau} = \mathbf{W}_p^*$ to a least-squares objective, while keeping $\tau_{min,i} > 0$ as a hard constraint. 
+As the winch-level control drives $\boldsymbol{\rho} \to \boldsymbol{\rho}^*$, tracking the payload's motion toward its target pose, and $\mathbf{u} \to \mathbf{u}^*$, the achievable wrench set used by the tension planner is itself changing over the trajectory, since it depends on $\mathbf{u}$. As a consequence, $\mathbf{W}_p^*$ may be reachable at the target configuration but momentarily unreachable at the actual configuration, with all tensions kept strictly positive. When this occurs, Equation \eqref{eq:tension-planner} should relax the equality constraint $\mathbf{J}_p^\top(\mathbf{u})\,\mathbf{\tau} = \mathbf{W}_p^*$ to a least-squares objective, while keeping $\tau_{min,i} > 0$ as a hard constraint. 
 
 \begin{equation}
 \begin{aligned}
@@ -135,7 +136,7 @@ For the initial stage of development, this general QP is replaced by a simplifie
 
 \subsubsection{Drone disposition planner}
 Once the tension planner computes the scalar target tension magnitudes, the drones must dynamically adjust their orientation and propeller thrusts to impose these forces. 
-From the static equilibrium balance (Equation \ref{eq:uavbalance}) the required propeller thrust vector is given by:
+From the static equilibrium balance (Equation \eqref{eq:uavbalance}) the required propeller thrust vector is given by:
 
 \begin{equation}
 \begin{aligned}

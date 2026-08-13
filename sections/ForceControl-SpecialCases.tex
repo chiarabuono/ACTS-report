@@ -36,18 +36,18 @@ Defined the desired cable tension $\tau^*$ and the desired cable direction $\mat
     \mathbf a^* = \mathbf b + l\,\mathbf u^*
     \label{eq:geometricContraintOnUAV}
 \end{equation}
-where $l$ is the cable length. Equation \ref{eq:geometricContraintOnUAV} is then used as a reference to compute the propeller force.
+where $l$ is the cable length. Equation \eqref{eq:geometricContraintOnUAV} is then used as a reference to compute the propeller force.
 \begin{equation}
     \mathbf F_{\mathrm{prop}} = m_i g\,\mathbf e_3 + \mathbf K_p \left(     \mathbf a^*-\mathbf a \right) + \mathbf K_d \left(     \dot{\mathbf a}^*-\dot{\mathbf a} \right) + \tau^* \mathbf u.
 \end{equation}
 
 \subsubsection{Option 2}
-Given Newton's Second Law applied to the drone described in Equation \ref{eq:uavbalance}, we are able to estimate the cable force $\hat{\mathbf f} = \mathbf F_{a, i}^{est}$
+Given Newton's Second Law applied to the drone described in Equation \eqref{eq:uavbalance}, we are able to estimate the cable force $\hat{\mathbf f} = \mathbf F_{a, i}^{est}$
 \begin{equation}
     m_i\ddot{\mathbf a}_i = \mathbf F_{\mathrm{prop},i} - \hat{\mathbf f} + \mathbf F_{g,i} \qquad \xrightarrow{} \qquad \hat{\mathbf f} = \mathbf F_{\mathrm{prop},i} + \mathbf F_{g,i} - m_i\ddot{\mathbf a}_i
     \label{eq:uavNewton2law}
 \end{equation}
-where all the forces are in the world frame and $\ddot{a}_i$ is the drone linear acceleration. Using Equation \ref{eq:uavbalance}, we would like to apply a propulsion force equal to 
+where all the forces are in the world frame and $\ddot{a}_i$ is the drone linear acceleration. Using Equation \eqref{eq:uavbalance}, we would like to apply a propulsion force equal to 
 
 \begin{equation}
     \mathbf F_{\mathrm{prop},i}^* = \mathbf f^* - \mathbf F_{g,i}.
@@ -102,7 +102,7 @@ where $\mathbf F_{a,2} = \tau_2\mathbf u_2$. This brings us back to the situatio
 
 \subsubsection{Tension and orientation control}
 The goal can also be design $\mathbf F_{prop,1}$ such that an arbitrary force $\mathbf f^*$ on the ground can be applied ($\mathbf F_2 \xrightarrow{} \mathbf f^*$). In other words, $\mathbf u_2 \xrightarrow{} \mathbf u_2^*$ and $\tau_2\xrightarrow{}\tau_2^*$. This case can be interesting to study as in a redundancy system situation, it may be helpful to add additional constraint in one of the cables.
-The only difference from the previous case is that the desired position for the payload $p^*$ is not an input anymore, but obtained such that the second cable is aligned along the desired direction given by $\mathbf f^*$ (Equation \ref{eq:tau_des} and \ref{eq:u_des}). Then:
+The only difference from the previous case is that the desired position for the payload $p^*$ is not an input anymore, but obtained such that the second cable is aligned along the desired direction given by $\mathbf f^*$ (Equation \eqref{eq:tau_des} and \eqref{eq:u_des}). Then:
 \begin{equation}
     \mathbf p^* = \mathbf a_2 - l_2\mathbf u_2^*.
 \end{equation}
@@ -132,7 +132,7 @@ If the input is the desired payload position $\mathbf p^*$, we find ourselves in
     \item $\mathbf p^*$ is inside the triangle $A_1A_3P$, resulting into slack cables
 \end{enumerate}
 
-In the first case, $\mathbf p^*$ is used to compute the desired payload force $\mathbf F_p^*$ (Equation \ref{eq:impedancePayloadcontrol}). Using the simplified payload balance equation related to the forces acting on the payload (Equation \ref{eq:ForceOnPayload}), we obtain the following.
+In the first case, $\mathbf p^*$ is used to compute the desired payload force $\mathbf F_p^*$ (Equation \eqref{eq:impedancePayloadcontrol}). Using the simplified payload balance equation related to the forces acting on the payload (Equation \eqref{eq:ForceOnPayload}), we obtain the following.
 \begin{equation}
     \mathbf F_{a, 1}^*= \mathbf F_p^* - \sum_{i=2}^{n} \mathbf F_{a, i}
 \end{equation}

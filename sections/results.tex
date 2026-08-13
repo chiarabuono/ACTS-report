@@ -4,10 +4,10 @@
 %% Experimental objectives
 The objective of this chapter is to evaluate how the architectural design of an ACTS influences its ability to accurately and robustly manipulate a payload. The focus is on how different cable routing strategies, UAV attachment configurations, and ground hook placements influence the overall system performance.
 
-In fact, a configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables remain under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations.
+A configuration is considered successful if the desired payload is reached with sufficiently small position and orientation errors, all cables are under positive tension throughout the maneuver, and the payload converges to an equilibrium without persistent oscillations. Since the tension and UAV-disposition planner (Equations from \eqref{eq:tensionPlanner} to \eqref{eq:tension-planner-relax}) solves a least-squares relaxation of the wrench-matching condition, there can be a residual between the achieved and desired payload wrench even at convergence, which is the main source of position and orientation tracking error observed in simulation. Therefore, position and orientation error are informative metrics for comparing architectures.
 
 %% Why did you choose Stewart as the reference?
-First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. In fact, if even Stewart-like performs poorly, the problem is likely the controller rather than the architecture. 
+First, the classical Stewart configuration is analyzed and used as a reference architecture due to its geometric symmetry and extensive use in the literature. Moreover, its balanced geometry provides a meaningful baseline for comparing other ACTS architectures. If the reference configuration performs poorly under the developed controller, then the observed limitations may not result from the analyzed architecture, and the control strategy may be analyzed before drawing any conclusions.
 
 The remaining experiments then investigate how modifications to the ground cable routing, UAV attachment geometry, and hook placement affect both the theoretical performance indices and the closed-loop behavior of the system. This progressive analysis makes it possible to identify which geometric features have the greatest influence on payload manipulation performance.
 
@@ -26,9 +26,9 @@ This section verifies the implementation of the optimization and control algorit
 
 \subsubsection{Reference configuration}
 Payload dimensions: $2.0 \times 2.0 \times 0.2$~m \\
-Desired pose: $p^*= [0.5, -0.5, 2.0]^\top$~m \\
-Desired orientation: $R^* = \mathbb{I}$ \\
-Desired payload wrench: $W_p^* = [0, 0, 9.81, 0, 0, 0]^\top$
+Desired pose: $\mathbf p^*= [0.5, -0.5, 2.0]^\top$~m \\
+Desired orientation: $\mathbf R^* = \mathbb{I}$ \\
+Desired payload wrench: $\mathbf{w}_p^* = [0, 0, 9.81, 0, 0, 0]^\top$
 
 \begin{table}[h]
     \centering
@@ -41,18 +41,18 @@ Desired payload wrench: $W_p^* = [0, 0, 9.81, 0, 0, 0]^\top$
 \end{table}
 
 \subsubsection{Ground System Geometry}
-Using Equation~\ref{eq:cableVector}b, the ground cable directions $u_i$ and the corresponding Jacobian are obtained as:
+Using Equation~\eqref{eq:cableVector}b, the ground cable directions $\mathbf u_i$ and the corresponding Jacobian are obtained as:
 
 \begin{equation}
     \begin{aligned}
-    u_4 = [-0.2245,\ 0.4713,\ -0.8529]^\top \qquad u_7 = [-0.7100,\ 0.0828,\ -0.6993]^\top \\
-    u_5 = [-0.0089,\ 0.7024,\ -0.7117]^\top \qquad u_8 = [-0.0124,\ 0.1176,\ -0.9930]^\top \\
-    u_6 = [-0.4545,\ 0.1047,\ -0.8846]^\top \qquad u_9 = [0.2215,\ -0.2937,\ -0.9299]^\top \\
+    \mathbf u_4 = [-0.2245,\ 0.4713,\ -0.8529]^\top \qquad \mathbf u_7 = [-0.7100,\ 0.0828,\ -0.6993]^\top \\
+    \mathbf u_5 = [-0.0089,\ 0.7024,\ -0.7117]^\top \qquad \mathbf u_8 = [-0.0124,\ 0.1176,\ -0.9930]^\top \\
+    \mathbf u_6 = [-0.4545,\ 0.1047,\ -0.8846]^\top \qquad \mathbf u_9 = [0.2215,\ -0.2937,\ -0.9299]^\top \\
     \end{aligned}
 \end{equation}
 
 \begin{equation}
-J_{p,\text{ground}} =
+\mathbf J_{p,\text{ground}} =
 \begin{bmatrix}
 -0.22445 & 0.47135 & -0.85291 & -0.42197 & 0.02245 & 0.12345 \\
 -0.00888 & 0.70238 & -0.71175 & 0.26597 & -0.33812 & 0.33656 \\
@@ -64,27 +64,27 @@ J_{p,\text{ground}} =
 \end{equation}
 
 \subsubsection{Drone Attachment Geometry}
-The UAV positions are not predefined but result from the tension-planning procedure described in Section \ref{sec:tensionPlanner}. The corresponding cable directions $u_1, u_2, u_3$ are therefore extracted from a converged simulation run for this configuration rather than computed from known attachment coordinates:
+The UAV positions are not predefined but result from the tension-planning procedure described in Section \ref{sec:tensionPlanner}. The corresponding cable directions $\mathbf u_1, \mathbf u_2, \mathbf u_3$ are therefore extracted from a converged simulation run for this configuration rather than computed from known attachment coordinates:
 \begin{equation}
     \begin{aligned}
-a_1 = [1.1020, -0.2692, 3.5972]^\top \\
-a_2 = [0.1802, -0.7553, 3.4976]^\top \\
-a_3 = [0.9397, -1.2760, 3.5192]^\top
+\mathbf a_1 = [1.1020, -0.2692, 3.5972]^\top \\
+\mathbf a_2 = [0.1802, -0.7553, 3.4976]^\top \\
+\mathbf a_3 = [0.9397, -1.2760, 3.5192]^\top
     \end{aligned}
 \end{equation}
-Using Equation~\ref{eq:cableVector}b, the resulting drone cable directions are
+Using Equation~\eqref{eq:cableVector}b, the resulting drone cable directions are
 \begin{equation}
     \begin{aligned}
-u_1 = [0.0837, -0.0294, 0.9961]^\top \\
-u_2 = [0.1042, -0.3528, 0.9299]^\top \\
-u_3 = [0.2926, -0.1504, 0.9443]^\top
+\mathbf u_1 = [0.0837, -0.0294, 0.9961]^\top \\
+\mathbf u_2 = [0.1042, -0.3528, 0.9299]^\top \\
+\mathbf u_3 = [0.2926, -0.1504, 0.9443]^\top
     \end{aligned}
 \end{equation}
-with $\lVert a_i - r_i \rVert \approx 1.503$~m for all three, consistent with the nominal drone
+with $\lVert \mathbf a_i - \mathbf r_i \rVert \approx 1.503$~m for all three, consistent with the nominal drone
 cable length of $1.5$~m and confirming the optimizer converged to a geometrically taut solution.
 The corresponding drone Jacobian is
 \begin{equation}
-J_{p,\text{drones}} =
+\mathbf J_{p,\text{drones}} =
 \begin{bmatrix}
 0.0837 & -0.0294 & 0.9961 & 0.2769 & -0.4661  & -0.0370\\
 0.1042 & -0.1042 & 0.9299 & 0.2910 & 0.4533 & 0.1394 \\
@@ -97,17 +97,20 @@ For this configuration, the optimizer returns
 
 \begin{equation}
 \begin{aligned}
-\tau_{\text{UAV}} &= [13.6970,\ 11.1548,\ 14.4154]^\top~\text{N} \\
-\tau_{\text{ground}} &= [5.4903,\ 5.4740,\ 5.4901,\ 5.4784,\ 5.4860,\ 5.4708]^\top~\text{N}
+\boldsymbol{\tau}_{\text{UAV}} &= \begin{bmatrix}
+13.697 & 11.155 & 14.415 \end{bmatrix}^\top~\text{N} \\
+\boldsymbol{\tau}_{\text{ground}} &= \begin{bmatrix}
+    5.5 & 5.5 & 5.50007894 & 5.5 & 5.5000916 & 5.5000083
+\end{bmatrix}^\top~\text{N}
 \end{aligned}
 \end{equation}
 
-All six ground tensions lie close to $\tau_{\min}=5.5$ N. This result is expected: since the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. As a result, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces.
+All six ground tensions lie close to $\tau_{\min}=5.5$ N. This is not indicative of a wrench-singular configuration: since the desired wrench is almost entirely vertical, the UAVs provide most of the lifting force while the Stewart cables primarily stabilize the payload orientation and prevent lateral motion. As a result, the optimizer drives the ground tensions toward their minimum admissible values, maintaining taut cables while minimizing unnecessary internal forces. This observation is confirmed by the capacity margins ($\gamma = 10.46403$, Table \ref{tab:stewart_comparative}), highly positive compared to the negative value obtained when using the minimal tension strategy explained in Section \ref{sec:allocationStrategies}.
 
 \subsubsection{Payload Wrench Verification}
-Combining $J_{p,\text{drones}}$ and $J_{p,\text{ground}}$ into the full Jacobian $J_p$ and evaluating $W_p = J_p\,\tau$ with the tensions above:
+Combining $\mathbf J_{p,\text{drones}}$ and $J_{p,\text{ground}}$ into the full Jacobian $\mathbf J_p$ and evaluating $\mathbf W_p = \mathbf J_p\, \boldsymbol{\tau}$ with the tensions above:
 \begin{equation}
-W_p = J_p\,\tau =
+\mathbf W_p = \mathbf J_p\, \boldsymbol{\tau} =
 \begin{bmatrix} -0.0023 \\ 0.0018 \\ 9.8110 \\ -0.0003 \\ -0.0001 \\ -0.0009 \end{bmatrix},
 \qquad
 W_p^* =
@@ -117,21 +120,22 @@ W_p^* =
 All six components match to within $0.08$ in force units and $0.015$ in moment units. The residual remains small, confirming that the optimizer reproduces the desired wrench within the prescribed tolerance.
 
 \subsubsection{Required Drone Thrust}
-Under the steady-state assumption $p_d = p$, $\dot{p}_d = \dot{p} = 0$,
-Eq.~\ref{eq:drone-disposition} reduces to $F_{prop,i} = \tau_i u_i + m_i g\,e_3$, giving the hand-computed thrust magnitudes
+Under the steady-state assumption $\mathbf p^* = \mathbf p$, $\dot{\mathbf p}^* = \dot{\mathbf p} = \mathbf 0$,
+Eq.~\eqref{eq:drone-disposition} reduces to $F_{prop,i} = \tau_i \mathbf u_i + m_i g\, \mathbf e_3$, giving the hand-computed thrust magnitudes
 \begin{equation}
 T_1 = 33.29~\text{N}, \qquad T_2 = 30.27~\text{N}, \qquad T_3 = 33.57~\text{N}.
 \end{equation}
-The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and $33.5657$~N respectively, matching the hand-computed values to within numerical precision and confirming the correct implementation of Eq. \ref{eq:drone-disposition}.
+The controller-computed thrust commands for the same converged pose are $33.2793$, $30.2683$, and $33.5657$~N respectively, matching the hand-computed values to within numerical precision and confirming the correct implementation of Eq. \eqref{eq:drone-disposition}.
 
 \subsubsection{Discussion}
 The numerical verification confirms the correctness of both the optimization and control implementations. These results provide confidence that the subsequent comparison of ACTS architectures reflects differences in the robot configurations rather than implementation errors.
 
 \subsection{Comparison between tension allocation strategies}
+\label{sec:allocationStrategies}
 As mentioned in Section \ref{sec:highlevelarchitecture}, we evaluate two distinct tension allocation strategies:
 \begin{itemize}
     \item Minimal tension strategy, in which a minimum cable tension is imposed to each cable tension such that $\|\tau_i \| = \tau_{min}$.
-    \item Optimal tension strategy, in which cable tensions are determined by the quadratic optimization problem in Equation \ref{eq:tension-planner-relax}
+    \item Optimal tension strategy, in which cable tensions are determined by the quadratic optimization problem in Equation \eqref{eq:tension-planner-relax}
 \end{itemize}
 
 The performance indices and tracking errors under both strategies across two operational scenarios are summarized in Table \ref{tab:stewart_comparative}.

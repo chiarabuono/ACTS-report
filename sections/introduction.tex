@@ -44,7 +44,6 @@ Nonetheless, the position and orientation of the UAVs directly influence the for
 
 % Hybrid aerial-ground systems attempt to combine the advantages of both approaches.
 The combination of aerial and ground-based actuation can improve the ability of the system to generate and control forces during interaction with the façade while retaining the flexibility of an aerial cable-towed system.
-
 % However, the influence of cable routing, attachment locations and architecture selection on system performance has received limited attention.
 The resulting system, however, is characterized by a large set of design parameters that need to be selected at the design stage and remain fixed during the operation. They strongly influence the workspace, wrench feasibility, controllability, robustness, and energy efficiency of the system. The main design degrees of freedom include:
 
@@ -58,33 +57,17 @@ The resulting system, however, is characterized by a large set of design paramet
 As a result, architectural design cannot be isolated from control system development. A configuration that is mechanically feasible may nevertheless provide poor force distribution or positioning performance in the region of interest. Conversely, an appropriate choice of architecture and attachment locations can improve the controllability and robustness of the system without necessarily increasing its mechanical complexity.
 
 % This thesis addresses this gap by...
-The main objective of this thesis is to study the modelling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for payload manipulation. In particular, the thesis focuses on how the selection of suitable cable routing and attachment configurations to the payload influence the ability of the system to manipulate the payload itself and generate the required payload wrench. The proposed configurations are evaluated through simulation to assess their performance and identify the most suitable architecture for the considered application.
+The main objective of this thesis is to study the modelling, design, and control of a hybrid Aerial Cable-Towed System (ACTS) for payload manipulation. In particular, the thesis focuses on how the selection of suitable cable routing and attachment configurations to the payload influence the ability of the system to manipulate the payload itself and generate the required payload wrench. The proposed configurations are evaluated through simulation to assess their performance and identify the most suitable architecture for the considered application. 
+The thesis is organized as follows.
 
+Chapter \ref{chap:state_of_art} reviews the state of the art on cooperative cable-driven aerial systems, comparing Cable-Driven Parallel Robots (CDPRs), Aerial Cable-Towed Systems (ACTSs), and Flying Parallel Robots (FPRs), and discusses existing approaches to environmental interaction and to the control of cable-suspended UAV systems.
 
-% thesis organization
-The thesis is organized as follows. 
+Chapter \ref{chap:design_modeling} develops the kinematostatic model of the ACTS and introduces the architecture design problem, including the relevant design variables, feasibility conditions (WCC, WFC, IFC), performance indices, and the proposed selection strategy for candidate cable routings.
 
-Chapter \ref{chap:state_of_art}
+Chapter \ref{chap:control} presents the control architecture, starting from simplified point-mass payload cases and extending progressively to the complete ACTS, including the payload-level wrench controller, the tension-distribution optimizer, and the UAV cascade control.
 
-Chapter \ref{chap:design_modeling}
+Chapter \ref{chap:simulation} describes the simulation environment and experimental setup, motivating the choice of MuJoCo over Gazebo, and details the software architecture used to generate, simulate, and evaluate candidate ACTS configurations.
 
-Chapter \ref{chap:control}
+Chapter \ref{chap:results} presents the simulation results, including the validation of the Stewart-platform baseline, the comparison of ground cable routings, the study of ground-anchor spacing, and the analysis of UAV attachment topologies.
 
-
-Chapter \ref{chap:simulation}
-
-Chapter \ref{chap:results}
-
-Chapter \ref{chap:conclusions}
-
-% Chapter \ref{chap:state_of_art} presents the state of the art in cooperative aerial manipulation and cable-driven robotic systems. It reviews existing Aerial Cable-Towed Systems, related cable-driven and flying parallel robots, their modelling and control approaches, and the challenges associated with physical interaction near façades. The chapter concludes by identifying the research gap addressed in this work.
-
-% Chapter \ref{chap:design_modeling} presents the design and modelling of the proposed ACTS. The system architecture is first introduced, followed by the kinematic, static, and kinemato-static models. The main mechanical design choices are then discussed, and candidate architectures are evaluated using appropriate performance indices before selecting the configuration used in the remainder of the thesis.
-
-% Chapter \ref{chap:control} focuses on the control of the ACTS. A force-control approach is first investigated using simplified configurations in order to analyze the relationship between cable tensions and the forces generated on the payload. The approach is then extended to the complete system architecture.
-
-% Chapter \ref{chap:simulation} describes the simulation environment and experimental methodology used to evaluate the proposed system. The simulator selection, software architecture, simulation setup, and evaluation framework are presented.
-
-% Chapter \ref{chap:results} presents and discusses the simulation results. The proposed implementation is first numerically verified using a Stewart platform baseline. The influence of ground cable routing, ground anchor placement, and UAV hook placement is then investigated to evaluate their effect on system performance.
-
-% Finally, Chapter \ref{chap:conclusions} summarizes the main findings of the thesis and discusses the limitations of the current work and possible directions for future research.
+Chapter \ref{chap:conclusions} summarizes the main findings of the thesis and outlines directions for future work.

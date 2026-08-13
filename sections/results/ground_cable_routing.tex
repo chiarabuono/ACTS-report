@@ -56,8 +56,8 @@ parallelepiped-int -- 2X3           & 0.1892 & 0.0784 & 0.0344 & 0.3213 \\
 \begin{tablenotes}
 \footnotesize
 \item[a] $\sigma_{\min}$ = smallest singular value of the payload Jacobian.
-\item[b] $\nu$ = conditioning index (Eq. \ref{eq:conditioning_index})
-\item[c] $w$ = manipulability (Eq. \ref{eq:manipulability})
+\item[b] $\nu$ = conditioning index (Eq. \eqref{eq:conditioning_index})
+\item[c] $w$ = manipulability (Eq. \eqref{eq:manipulability})
 \item[d] $d_{\min}$ = minimum cable-to-cable clearance of the selected routing
 \end{tablenotes}
 \end{threeparttable}
@@ -102,7 +102,7 @@ For each configuration derived in the previous step, a simulation is run over 60
     \label{fig:test_poses}
 \end{figure}
 
-The simulation results only partially agree with the theoretical ranking obtained during the pre-screening stage. The \texttt{rectangle-opposite-2x3-triangle} architecture achieves the highest conditioning index, manipulability and composite score, confirming its excellent geometric properties. However, it also exhibits the lowest pose reachability and near-worst cable rubbing behavior, indicating that favorable static indices alone do not guarantee successful closed-loop operation. Conversely, the \texttt{pentagon-rectangle-same-triangle} architecture, despite ranking only fourth according to the theoretical metrics, achieves the highest pose reachability and is the only architecture with no unstable simulations, although its cable rubbing rate remains moderate. The \texttt{parallel-int-2x3-triangle} architecture combines good pose reachability with a comparatively low cable rubbing rate, making it one of the more balanced dynamic performers despite not being the top-ranked architecture according to the static indices. Notably, \texttt{acts\_stewart}, despite ranking last on every static index, achieves the lowest cable rubbing rate among all architectures, showing that dynamic and static performance can be largely decoupled.
+The simulation results only partially agree with the theoretical ranking obtained during the pre-screening stage. The \texttt{rectangle-opposite-2x3-triangle} architecture achieves the highest conditioning index, manipulability and composite score, confirming its excellent geometric properties. However, it also exhibits the lowest pose reachability and near-worst cable rubbing behavior, indicating that favorable static indices alone do not guarantee successful closed-loop operation. \\ Conversely, the \texttt{pentagon-rectangle-same-triangle} architecture, despite ranking only fourth according to the theoretical metrics, achieves the highest pose reachability and is the only architecture with no unstable simulations, although its cable rubbing rate remains moderate. The \texttt{parallel-int-2x3-triangle} architecture combines good pose reachability with a comparatively low cable rubbing rate, making it one of the more balanced dynamic performers despite not being the top-ranked architecture according to the static indices. Notably, \texttt{acts\_stewart}, despite ranking last on every static index, achieves the lowest cable rubbing rate among all architectures, showing that dynamic and static performance can be largely decoupled.
 
 \begin{table}[htbp]
 \centering
