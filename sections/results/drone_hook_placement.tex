@@ -4,9 +4,7 @@ This section focuses on analyzing how the UAVs attach to the payload. First, we 
 
 \subsection{Stewart cable routing}
 \label{sec:stewartCableRouting}
-The Stewart cable routing is adopted as the reference architecture throughout the remainder of this chapter. The complete numerical results are reported in Tables \ref{tab:tracking_all_configurations}, \ref{tab:performance_all_configurations}, and \ref{tab:dexterity_all_configurations} in Appendix \ref{app:UAVconnectionSimulation}.
-
-Table \ref{tab:meanValuesStewart} shows the evolution of pose reachability as progressively richer UAV attachment geometries are introduced. The point attachment is unable to reach any target pose, while the aligned, line, disaligned, and diagonal layouts provide only modest improvements. These results compared to the 65\% reachability obtained by the triangular drone configuration (\texttt{acts\_stewart} in the table) is statistically significant for the pairwise McNemar test.
+The Stewart cable routing is adopted as the reference architecture throughout the remainder of this chapter. The complete numerical results are reported in Tables \ref{tab:tracking_all_configurations}, \ref{tab:performance_all_configurations}, and \ref{tab:dexterity_all_configurations} in Appendix \ref{app:UAVconnectionSimulation}. Table \ref{tab:meanValuesStewart} shows the evolution of pose reachability as progressively richer UAV attachment geometries are introduced. The point attachment is unable to reach any target pose, while the aligned, line, disaligned, and diagonal layouts provide only modest improvements. These results compared to the 65\% reachability obtained by the triangular drone configuration (\texttt{acts\_stewart} in the table) is statistically significant for the pairwise McNemar test.
 
 In fact, a point attachment allows the three UAVs to apply forces through the same location, producing almost no independent rotational authority. Constraining the attachment points to a line or to nearly collinear configurations restores only a subset of the available moments. As the attachment geometry becomes increasingly two-dimensional, the UAV subsystem acquires greater ability to generate arbitrary six-dimensional wrenches. The triangular attachment provides independent moment arms in two dimensions, allowing the UAV subsystem to contribute effectively to the generation of both forces and moments acting on the payload. This increased wrench-generation capability explains the substantial improvement in task completion.
 
@@ -21,6 +19,7 @@ On the other hand, the Stewart routing does not maximize all geometric performan
 These results justify selecting the Stewart routing as the baseline architecture for the remainder of the UAV hook-placement study. The following sections therefore investigate the influence of the UAV attachment topology while maintaining the Stewart cable routing fixed.
 
 \begin{table}[h]
+    \centering
 \begin{tabular}{lccc}
 \hline
 \multicolumn{1}{c}{\textbf{UAV attachment}} & \multicolumn{1}{c}{\textbf{$N$}} & \multicolumn{1}{c}{\textbf{Pose reached}} & \multicolumn{1}{c}{\textbf{Cable rubbed}} \\ \hline
@@ -38,14 +37,11 @@ Point                    & 2.79   & 0.0\%    & 95.3\%    \\ \hline
 \subsection{Ground screening across UAV attachment topologies}
 \label{sec:ground_screening_uav_topologies}
 
-Before evaluating the different UAV attachment topologies, each candidate payload-ground layout was first passed through the same ground-only pre-screening procedure described in Section \ref{sec:ground_screening} and Algorithm \ref{alg:cable_optimization}. Since this stage operates exclusively on the ground-cable Jacobian $J_{p,\text{ground}}$, it is, by construction, not strongly dependent of the UAV attachment geometry.
+Before evaluating the different UAV attachment topologies, each candidate payload-ground layout was first passed through the same ground-only pre-screening procedure described in Section \ref{sec:ground_screening} and Algorithm \ref{alg:cable_optimization}. Since this stage operates exclusively on the ground-cable Jacobian $J_{p,\text{ground}}$, it is, by construction, not strongly dependent of the UAV attachment geometry. This is confirmed by several repeated payload-ground pairs across topologies. 
 
-This is confirmed by several repeated payload-ground pairs across topologies. \\ \texttt{two-triangles-pentagon} is screened under aligned, diagonal, line, and point and returns the identical routing in all four cases, and \texttt{two-triangles-rectangle-same} likewise returns the same routing under aligned, diagonal, and line. By contrast, two layouts split into distinct routings depending on the topology under which they are screened. \texttt{rhombus-ext-2X3} selects the same routing, under aligned, disaligned, and point, but an alternative routing under diagonal. Similarly, \texttt{arrow-rectangle-same} selects different routings under disaligned and line. In every case where the selected routing differs, the indices differ only by a small margin; whenever the routing matches exactly, the indices agree to full precision.
+\texttt{two-triangles-pentagon} is screened under aligned, diagonal, line, and point and returns the identical routing in all four cases, and \texttt{two-triangles-rectangle-same} likewise returns the same routing under aligned, diagonal, and line. By contrast, two layouts split into distinct routings depending on the topology under which they are screened. \texttt{rhombus-ext-2X3} selects the same routing, under aligned, disaligned, and point, but an alternative routing under diagonal. Similarly, \texttt{arrow-rectangle-same} selects different routings under disaligned and line. In every case where the selected routing differs, the indices differ only by a small margin; whenever the routing matches exactly, the indices agree to full precision.
 
 As shown in Table \ref{tab:pre-screening_feasibility_all} in Appendix \ref{app:full_results}, the pre-screening returned feasible across all six UAV topologies evaluated (triangle, aligned, diagonal, disaligned, line, and point). As in the Stewart baseline analysis of Section \ref{sec:ground_screening}, Wrench Feasibility remains the dominant source of routing rejection, accounting for the large majority of routing-pose failures, while WCC violations are comparatively rare.
-
-
-
 The resulting best routings (shown in Table \ref{tab:pre-screening_UAVs} inside Appendix \ref{app:full_results}) are numerically similar to the triangle baseline reported in Table \ref{tab:pre-screening_index}: the conditioning index of the selected routing lies in the range $\nu \approx 0.076$-$0.083$, the smallest singular value in $\sigma_{\min} \approx 0.185$-$0.201$, and manipulability in $w \approx 0.041$-$0.096$, regardless of which UAV topology the layout is ultimately screened under. Table \ref{tab:pre-screening_by_topology} summarizes the best-scoring layout obtained for each topology.
 
 Three of the five non-triangle topologies (aligned, disaligned, and point) converge on the same best layout, \texttt{two-triangles-2X3}, with identical indices. This is expected given that all three topologies frequently select identical ground routings for shared payload-ground pairs, as discussed above.
@@ -78,9 +74,7 @@ As already explained before, the values reported here serve only to provide a so
 \subsection{Simulations with different UAV attachment topologies}
 \subsubsection{Point}
 The point attachment configuration is never able to command the payload to reach the desired pose, yielding 0 out of 60 successful poses across all setups that employ this drone-placement strategy. This shows that using a shared drone attachment point is a bad design choice, independent from the ground routing it is paired with.
-
 A good way of seeing this limitation is obtained by comparing the same ground cable routing with different drone attachments. For example, contrasting \texttt{line-line-triangle} with \texttt{line-line-point} shows the reachability dropping from 40.00 \% to 0.00\%. Cable rubbing is also near-universal (76.67-100\%, vs. 31.7\% for Stewart) and the capacity margin is negative for every point configuration, meaning the average-pose wrench requirement is not even statically possible with strictly positive tensions.
-
 This is the physically expected consequence of collapsing all three UAV cables onto a single shared attachment point: the drones lose their ability to generate an independent moment about that point, so orientation and fine position control fall almost entirely on the six ground cables. These results show that point-type drone attachment is not an idea and should be left out of the automated architecture search.
 
 \subsubsection{Aligned}
@@ -89,8 +83,7 @@ As shown in Table \ref{tab:performance_all_configurations}, \texttt{two-triangle
 The aligned configuration distributes the UAV attachment points along a single edge of the payload. This geometry improves the conditioning index and manipulability compared with the Stewart layout, indicating a more uniform Jacobian. However, the reduced spatial distribution of the lifting forces limits the ability to generate restoring moments about all axes. As a consequence, despite favorable geometric indices, the dynamic simulations show poor pose reachability and relatively large position and orientation errors.
 
 \subsubsection{Disaligned}
-Like the aligned attachment, the disaligned configuration shows the same qualitative behavior, but in a less extreme way. Conditioning index and manipulability improve significantly over Stewart for all five routings. In contrast, capacity margin and worst-case capacity margin are generally lower, even if not always significantly. 
-
+Like the aligned attachment, the disaligned configuration shows the same qualitative behavior, but in a less extreme way. Conditioning index and manipulability improve significantly over Stewart for all five routings. In contrast, capacity margin and worst-case capacity margin are generally lower, even if not always significantly.
 None of the five routings performs well on task completion, succeeding at most 20\% of the time. To these results, we find a dominating cable rubbing.
 
 
@@ -99,19 +92,13 @@ Although some individual line routings achieve among the highest composite score
 
 \subsubsection{Diagonal}
 Among the non-triangular UAV attachment topologies, the diagonal configuration provides the best overall dynamic performance. Across its five ground routings, it achieves an average pose reachability of 22.3\%, the highest of all the alternative attachment geometries investigated. Nevertheless, this performance remains well below that of the triangular attachment, whose average pose reachability is approximately 65\%. 
-
-The best individual routing, \texttt{rhombus-ext-2x3-diagonal}, reaches 30.0\% of the target\ poses, approximately twice the average best performance obtained with the other non-triangular topologies. Although this is the strongest result within the diagonal family, it still reaches less than half of the poses achieved by the ACTS Stewart baseline. Interestingly, its capacity margin (2.9175) is statistically indistinguishable from that of the Stewart platform (2.7714, p=0.860), while exhibiting a slightly higher nominal value.
-
-As observed for the line and aligned attachment geometries, the static composite score does not reliably predict the dynamic behavior.
+The best individual routing, \texttt{rhombus-ext-2x3-diagonal}, reaches 30.0\% of the target\ poses, approximately twice the average best performance obtained with the other non-triangular topologies. Although this is the strongest result within the diagonal family, it still reaches less than half of the poses achieved by the ACTS Stewart baseline. Interestingly, its capacity margin (2.9175) is statistically indistinguishable from that of the Stewart platform, while exhibiting a slightly higher nominal value.
+As observed for the line and aligned geometries, the static composite score does not reliably predict the dynamic behavior.
 
 
 \subsection{Drone disposition comparison analysis}
-
 Among all evaluated UAV attachment topologies, the triangular configuration consistently provides the best compromise between static wrench quality and dynamic task execution. It is the only architecture that simultaneously achieves high pose reachability (65.0\%), low cable-rubbing rates (31.7\%), and accurate position and orientation tracking. Pairwise statistical tests further confirm that its improvement in pose reachability is significant with respect to every alternative attachment topology.
-
 Although several non-triangular topologies obtain comparable values of conditioning index, manipulability, or composite score, these improvements do not translate into successful task execution. In particular, the aligned, disaligned, and line configurations attain average composite scores close to that of the Stewart architecture while reaching only 9.0\%, 16.0\%, and 4.0\% of the target poses, respectively.
-
 These results indicate that the geometric arrangement of the UAV attachment points is substantially more influential than the precise choice of ground routing. Forming a triangle distributes the aerial forces over the payload surface, allowing the UAV subsystem to generate independent forces and moments in all directions while maintaining good cable separation. 
-
 Among the alternative UAV attachment topologies, the diagonal configuration provides the best overall compromise between tracking performance, force-generation capability, and cable interference. It achieves the highest average pose reachability and the lowest cable-rubbing rate among all non-triangular layouts, substantially outperforming the aligned, disaligned, line, and point configurations. Nevertheless, its performance remains well below that of the Stewart architecture.
 
